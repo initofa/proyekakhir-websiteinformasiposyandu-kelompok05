@@ -134,7 +134,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <i id="eye1" class="fas fa-eye"></i>
                         </button>
                     </div>
-                    <p class="text-xs text-gray-400 mt-1">* Minimal 6 karakter</p>
                 </div>
                 
                 <!-- Konfirmasi Password -->
