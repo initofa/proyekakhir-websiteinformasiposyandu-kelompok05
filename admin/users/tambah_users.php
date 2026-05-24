@@ -34,14 +34,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if(mysqli_num_rows($check) > 0) {
             $_SESSION['error'] = "NIK sudah terdaftar!";
         } else {
-            $query = "INSERT INTO users (nik, password, no_wa, nama_lengkap, alamat, role, status, created_by) 
+            // PERUBAHAN: kolom menggunakan huruf KAPITAL: PASSWORD, ROLE, STATUS, created_by
+            $query = "INSERT INTO users (nik, PASSWORD, no_wa, nama_lengkap, alamat, ROLE, STATUS, created_by) 
                       VALUES ('$nik', '$password', '$no_wa', '$nama_lengkap', '$alamat', '$role', '$status', '$created_by')";
             if(mysqli_query($conn, $query)) {
                 $_SESSION['success'] = "User berhasil ditambahkan!";
                 header("Location: list_users.php?tab=" . ($role == 'ibu' ? 'ibu' : 'bidan'));
                 exit();
             } else {
-                $_SESSION['error'] = "Gagal menambahkan user!";
+                $_SESSION['error'] = "Gagal menambahkan user: " . mysqli_error($conn);
             }
         }
     }
@@ -54,7 +55,18 @@ include __DIR__ . '/../../templates/sidebar.php';
 ?>
 
 <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-6 fade-in">
-    <h1 class="text-2xl font-bold text-green-800 mb-6">Tambah Users</h1>
+    <h1 class="text-2xl font-bold text-green-800 mb-6">Tambah User</h1>
+    
+    <?php if(isset($_SESSION['error'])): ?>
+    <script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Gagal!',
+        text: '<?php echo $_SESSION['error']; unset($_SESSION['error']); ?>',
+        confirmButtonColor: '#dc2626'
+    });
+    </script>
+    <?php endif; ?>
     
     <form method="POST">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -87,7 +99,7 @@ include __DIR__ . '/../../templates/sidebar.php';
                 <label class="block text-gray-700 font-semibold mb-2">Role</label>
                 <div class="relative">
                     <i class="fas fa-user-tag absolute left-3 top-1/2 -translate-y-1/2 text-green-400"></i>
-                    <select name="role" required 
+                    <select name="role" id="role" required 
                             class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition appearance-none bg-white">
                         <option value="ibu">Ibu</option>
                         <option value="bidan">Bidan</option>
@@ -144,7 +156,7 @@ include __DIR__ . '/../../templates/sidebar.php';
                 <label class="block text-gray-700 font-semibold mb-2">Status</label>
                 <div class="relative">
                     <i class="fas fa-circle-info absolute left-3 top-1/2 -translate-y-1/2 text-green-400"></i>
-                    <select name="status" required 
+                    <select name="status" id="status" required 
                             class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition appearance-none bg-white">
                         <option value="active">Aktif</option>
                         <option value="pending">Pending</option>
@@ -205,6 +217,10 @@ if(waInput) {
         this.value = this.value.replace(/[^0-9]/g, '');
         if(this.value.startsWith('0')) {
             this.value = this.value.substring(1);
+        }
+        // Batasi maksimal 13 digit
+        if(this.value.length > 13) {
+            this.value = this.value.substring(0, 13);
         }
     });
 }
