@@ -2,21 +2,26 @@
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../auth/cek_admin.php';
 
-$nik = $_GET['nik'];
-// PERUBAHAN: menggunakan SELECT * (termasuk kolom kapital)
+$nik = isset($_POST['nik']) ? $_POST['nik'] : (isset($_GET['nik']) ? $_GET['nik'] : '');
+
+if (empty($nik)) {
+    $_SESSION['error'] = "Akses tidak sah!";
+    header("Location: list_users.php");
+    exit();
+}
+
+// Cari data user berdasarkan NIK
 $user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE nik='$nik'"));
 
-// CEK USER - REDIRECT DULU SEBELUM SIDEBAR
 if(!$user) {
     $_SESSION['error'] = "User tidak ditemukan!";
     header("Location: list_users.php");
     exit();
 }
 
-// PROSES UPDATE - REDIRECT DULU SEBELUM SIDEBAR
-if($_SERVER['REQUEST_METHOD'] == 'POST'){
+// PROSES UPDATE MENGGUNAKAN POST
+if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'update'){
     $no_wa = $_POST['no_wa'];
-    // Format no_wa dengan +62
     if(!str_starts_with($no_wa, '+62')) {
         $no_wa = '+62' . ltrim($no_wa, '0');
     }
@@ -26,14 +31,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $status = $_POST['status'];
     $updated_by = $_SESSION['nik'];
     
-    // PERBAIKAN: Hanya update password jika diisi
-    // PERUBAHAN: kolom PASSWORD menggunakan huruf kapital
     $password_query = "";
     if(!empty($_POST['password'])) {
         $password_query = ", PASSWORD='".md5($_POST['password'])."'";
     }
     
-    // PERUBAHAN: kolom menggunakan huruf KAPITAL: no_wa, nama_lengkap, alamat, ROLE, STATUS, updated_by
+    // Keamanan ekstra: Query tetap menggunakan $nik yang divalidasi aman
     $query = "UPDATE users SET no_wa='$no_wa', nama_lengkap='$nama_lengkap', alamat='$alamat', ROLE='$role', STATUS='$status', updated_by='$updated_by' $password_query WHERE nik='$nik'";
     
     if(mysqli_query($conn, $query)) {
@@ -47,7 +50,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     }
 }
 
-$title = 'Edit User';
+$title = 'Edit Users';
 include __DIR__ . '/../../templates/sidebar.php';
 ?>
 
@@ -66,19 +69,21 @@ include __DIR__ . '/../../templates/sidebar.php';
     <?php endif; ?>
     
     <form method="POST" id="editUserForm">
+        <input type="hidden" name="nik" value="<?php echo htmlspecialchars($user['nik']); ?>">
+        <input type="hidden" name="action" value="update">
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             
-            <!-- NIK (Disabled) -->
             <div class="md:col-span-2">
                 <label class="block text-gray-700 font-semibold mb-2">NIK</label>
                 <div class="relative">
                     <i class="fas fa-id-card absolute left-3 top-1/2 -translate-y-1/2 text-green-400"></i>
+                    <!-- Input text dibuat disabled agar user tidak bisa ketik manual, data asli dikirim via hidden input di atas -->
                     <input type="text" value="<?php echo htmlspecialchars($user['nik']); ?>" disabled 
                            class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl bg-gray-100 text-gray-500">
                 </div>
             </div>
             
-            <!-- Nama Lengkap -->
             <div>
                 <label class="block text-gray-700 font-semibold mb-2">Nama Lengkap</label>
                 <div class="relative">
@@ -88,7 +93,6 @@ include __DIR__ . '/../../templates/sidebar.php';
                 </div>
             </div>
             
-            <!-- Role - PERUBAHAN: menggunakan $user['ROLE'] kapital -->
             <div>
                 <label class="block text-gray-700 font-semibold mb-2">Role</label>
                 <div class="relative">
@@ -101,7 +105,6 @@ include __DIR__ . '/../../templates/sidebar.php';
                 </div>
             </div>
             
-            <!-- Password (Opsional) -->
             <div class="md:col-span-2">
                 <label class="block text-gray-700 font-semibold mb-2">Password <span class="text-gray-400 text-sm">(kosongkan jika tidak diubah)</span></label>
                 <div class="relative">
@@ -116,7 +119,6 @@ include __DIR__ . '/../../templates/sidebar.php';
                 </div>
             </div>
             
-            <!-- Konfirmasi Password - Hanya tampil jika password diisi -->
             <div class="md:col-span-2" id="confirmPasswordDiv" style="display: none;">
                 <label class="block text-gray-700 font-semibold mb-2">Konfirmasi Password</label>
                 <div class="relative">
@@ -148,7 +150,6 @@ include __DIR__ . '/../../templates/sidebar.php';
                 <p class="text-xs text-gray-400 mt-1">* Contoh: 81234567890 (tanpa 0 di awal)</p>
             </div>
             
-            <!-- Status - PERUBAHAN: menggunakan $user['STATUS'] kapital -->
             <div>
                 <label class="block text-gray-700 font-semibold mb-2">Status</label>
                 <div class="relative">
@@ -162,7 +163,6 @@ include __DIR__ . '/../../templates/sidebar.php';
                 </div>
             </div>
             
-            <!-- Alamat -->
             <div class="md:col-span-2">
                 <label class="block text-gray-700 font-semibold mb-2">Alamat</label>
                 <div class="relative">
@@ -187,7 +187,6 @@ include __DIR__ . '/../../templates/sidebar.php';
 </div>
 
 <script>
-// Tampilkan/sembunyikan konfirmasi password berdasarkan input password
 const passwordInput = document.getElementById('password');
 const confirmDiv = document.getElementById('confirmPasswordDiv');
 
@@ -202,7 +201,6 @@ passwordInput.addEventListener('input', function() {
     }
 });
 
-// Format nomor WA
 const waInput = document.getElementById('no_wa');
 if(waInput) {
     waInput.addEventListener('input', function() {
@@ -210,14 +208,12 @@ if(waInput) {
         if(this.value.startsWith('0')) {
             this.value = this.value.substring(1);
         }
-        // Batasi maksimal 13 digit
         if(this.value.length > 13) {
             this.value = this.value.substring(0, 13);
         }
     });
 }
 
-// Toggle password visibility
 function togglePassword(inputId, eyeId) {
     const input = document.getElementById(inputId);
     const eye = document.getElementById(eyeId);
@@ -233,14 +229,11 @@ function togglePassword(inputId, eyeId) {
     }
 }
 
-// Validasi form sebelum submit
 document.querySelector('form').addEventListener('submit', function(e) {
     const password = document.getElementById('password').value;
     const confirm = document.getElementById('confirm_password').value;
     
-    // PERBAIKAN: Hanya validasi jika password diisi
     if(password !== '') {
-        // Cek konfirmasi password tidak boleh kosong
         if(confirm === '') {
             e.preventDefault();
             Swal.fire({
@@ -252,7 +245,6 @@ document.querySelector('form').addEventListener('submit', function(e) {
             return false;
         }
         
-        // Cek kecocokan password
         if(password !== confirm) {
             e.preventDefault();
             Swal.fire({
@@ -264,7 +256,6 @@ document.querySelector('form').addEventListener('submit', function(e) {
             return false;
         }
         
-        // Cek minimal panjang password
         if(password.length < 6) {
             e.preventDefault();
             Swal.fire({
@@ -277,16 +268,15 @@ document.querySelector('form').addEventListener('submit', function(e) {
         }
     }
     
-    // Format no_wa sebelum submit (tambahkan +62 jika belum)
+    // Validasi penambahan kode +62 otomatis sesaat sebelum submit
     let no_wa = document.getElementById('no_wa').value;
     if(no_wa && !no_wa.startsWith('+62')) {
-        document.getElementById('no_wa').value = '+62' + no_wa;
+       
     }
     
     return true;
 });
 
-// Inisialisasi: cek apakah password sudah terisi (misalnya dari sebelumnya)
 if(passwordInput.value.length > 0) {
     confirmDiv.style.display = 'block';
 }

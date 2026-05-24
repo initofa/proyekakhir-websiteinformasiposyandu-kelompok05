@@ -2,10 +2,6 @@
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../auth/cek_admin.php';
 
-// ============================================
-// PROSES REDIRECT - HARUS SEBELUM SIDEBAR
-// ============================================
-
 $tab = isset($_GET['tab']) ? $_GET['tab'] : 'ibu';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 15;
@@ -17,7 +13,7 @@ if (isset($_GET['confirm'])) {
     $nik = $_GET['confirm'];
     mysqli_query($conn, "UPDATE users SET STATUS='active', updated_by='{$_SESSION['nik']}' WHERE nik='$nik'");
     $_SESSION['success'] = "Akun berhasil dikonfirmasi!";
-    header("Location: list_users.php?tab=" . $tab); // PERUBAHAN: otomatis kembali ke tab asal
+    header("Location: list_users.php?tab=" . $tab); 
     exit();
 }
 
@@ -26,7 +22,7 @@ if (isset($_GET['reject'])) {
     $nik = $_GET['reject'];
     mysqli_query($conn, "UPDATE users SET STATUS='inactive', updated_by='{$_SESSION['nik']}' WHERE nik='$nik'");
     $_SESSION['warning'] = "Pendaftaran ditolak!";
-    header("Location: list_users.php?tab=" . $tab); // PERUBAHAN: otomatis kembali ke tab asal
+    header("Location: list_users.php?tab=" . $tab);
     exit();
 }
 
@@ -35,7 +31,7 @@ if (isset($_GET['activate'])) {
     $nik = $_GET['activate'];
     mysqli_query($conn, "UPDATE users SET STATUS='active', updated_by='{$_SESSION['nik']}' WHERE nik='$nik'");
     $_SESSION['success'] = "Akun berhasil diaktifkan kembali!";
-    header("Location: list_users.php?tab=" . $tab); // PERUBAHAN: otomatis kembali ke tab asal
+    header("Location: list_users.php?tab=" . $tab);
     exit();
 }
 
@@ -44,47 +40,28 @@ if (isset($_GET['deactivate'])) {
     $nik = $_GET['deactivate'];
     mysqli_query($conn, "UPDATE users SET STATUS='inactive', updated_by='{$_SESSION['nik']}' WHERE nik='$nik'");
     $_SESSION['warning'] = "Akun berhasil dinonaktifkan!";
-    header("Location: list_users.php?tab=" . $tab); // PERUBAHAN: otomatis kembali ke tab asal
+    header("Location: list_users.php?tab=" . $tab);
     exit();
 }
 
-// ============================================
-// HITUNG TOTAL IBU DAN BIDAN (TERPISAH)
-// ============================================
-
-// PERUBAHAN DI SINI: Total Ibu sekarang menghitung semua status agar sinkron dengan data yang ditampilkan
 $total_ibu = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM users WHERE ROLE='ibu'"))['total'];
-
-// Total Bidan (semua status)
 $total_bidan = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM users WHERE ROLE='bidan'"))['total'];
 
-// ============================================
-// SETELAH SEMUA REDIRECT, BARU INCLUDE SIDEBAR
-// ============================================
-
-$title = 'Manajemen User';
+$title = 'Manajemen Users';
 include __DIR__ . '/../../templates/sidebar.php';
-
-// ============================================
-// QUERY DATABASE DENGAN PAGINATION
-// ============================================
 
 // Query untuk Ibu
 if ($tab == 'ibu') {
-    // PERUBAHAN DI SINI: Menghilangkan `STATUS='active'` agar status `inactive` juga ikut ditarik ke tabel
     $where = "WHERE ROLE='ibu'";
     if ($search) $where .= " AND (nama_lengkap LIKE '%$search%' OR nik LIKE '%$search%')";
-    
     $total = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM users $where"))['total'];
     $total_pages = ceil($total / $limit);
-    // Diurutkan berdasarkan status active dulu, baru tanggal daftar terbaru
     $result = mysqli_query($conn, "SELECT * FROM users $where ORDER BY CASE STATUS WHEN 'active' THEN 0 ELSE 1 END, created_at DESC LIMIT $offset, $limit");
 } 
 // Query untuk Bidan
 else {
     $where = "WHERE ROLE='bidan'";
     if ($search) $where .= " AND (nama_lengkap LIKE '%$search%' OR nik LIKE '%$search%')";
-    
     $total = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM users $where"))['total'];
     $total_pages = ceil($total / $limit);
     $result = mysqli_query($conn, "SELECT * FROM users $where ORDER BY 
@@ -96,6 +73,11 @@ else {
         created_at DESC LIMIT $offset, $limit");
 }
 ?>
+
+<!-- Form Tersembunyi Global untuk Mengirim NIK via POST ke Halaman Edit -->
+<form id="formEditPost" action="edit_users.php" method="POST" style="display:none;">
+    <input type="hidden" name="nik" id="nikEditPost">
+</form>
 
 <div class="fade-in">
     <div class="flex justify-between items-center mb-4">
@@ -138,7 +120,7 @@ else {
         </form>
     </div>
     
-    <!-- ==================== TABEL IBU (DENGAN KOLOM STATUS BARU) ==================== -->
+    <!-- ==================== TABEL IBU ==================== -->
     <?php if ($tab == 'ibu'): ?>
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
         <div class="overflow-x-auto">
@@ -150,7 +132,7 @@ else {
                         <th class="p-4 text-left text-sm font-semibold">Nama Lengkap</th>
                         <th class="p-4 text-left text-sm font-semibold">No. WhatsApp</th>
                         <th class="p-4 text-left text-sm font-semibold">Alamat</th>
-                        <th class="p-4 text-left text-sm font-semibold">Status</th> <!-- PERUBAHAN DI SINI: Tambah Header Status -->
+                        <th class="p-4 text-left text-sm font-semibold">Status</th>
                         <th class="p-4 text-center text-sm font-semibold">Aksi</th>
                     </tr>
                 </thead>
@@ -163,8 +145,6 @@ else {
                         <td class="p-4 font-semibold text-gray-800"><?php echo htmlspecialchars($row['nama_lengkap']); ?></td>
                         <td class="p-4 text-sm"><?php echo htmlspecialchars($row['no_wa']); ?></td>
                         <td class="p-4 text-sm text-gray-600 max-w-xs break-words"><?php echo htmlspecialchars($row['alamat']); ?></td>
-                        
-                        <!-- PERUBAHAN DI SINI: Tambah Kolom Badge Status untuk Ibu -->
                         <td class="p-4">
                             <?php if($row['STATUS'] == 'active'): ?>
                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
@@ -177,7 +157,6 @@ else {
                             <?php endif; ?>
                         </td>
 
-                        <!-- PERUBAHAN DI SINI: Logika Tombol Aksi Dinamis untuk Ibu -->
                         <td class="p-4 text-center">
                             <?php if($row['STATUS'] == 'inactive'): ?>
                             <div class="flex justify-center gap-2">
@@ -190,9 +169,10 @@ else {
                             </div>
                             <?php else: ?>
                             <div class="flex justify-center gap-2">
-                                <a href="edit_users.php?nik=<?php echo $row['nik']; ?>" class="text-blue-500 hover:text-blue-700 transition p-1" title="Edit">
+                                <!-- PERUBAHAN DI SINI: Menggunakan kirimEditPost() via JavaScript untuk metode POST -->
+                                <button type="button" onclick="kirimEditPost('<?php echo $row['nik']; ?>')" class="text-blue-500 hover:text-blue-700 transition p-1" title="Edit">
                                     <i class="fas fa-edit text-lg"></i>
-                                </a>
+                                </button>
                                 <a href="?deactivate=<?php echo $row['nik']; ?>&tab=ibu" class="text-orange-500 hover:text-orange-700 p-1" title="Nonaktifkan" onclick="return confirmAction(event, this.href, 'Nonaktifkan Akun', 'Nonaktifkan akun ibu ini?', 'Ya, Nonaktifkan!')">
                                     <i class="fas fa-ban text-lg"></i>
                                 </a>
@@ -224,7 +204,7 @@ else {
     </div>
     <?php endif; ?>
     
-    <!-- ==================== TABEL BIDAN (DENGAN KOLOM STATUS) ==================== -->
+    <!-- ==================== TABEL BIDAN ==================== -->
     <?php else: ?>
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
         <div class="overflow-x-auto">
@@ -285,9 +265,10 @@ else {
                             </div>
                             <?php else: ?>
                             <div class="flex justify-center gap-2">
-                                <a href="edit_users.php?nik=<?php echo $row['nik']; ?>" class="text-blue-500 hover:text-blue-700 p-1" title="Edit">
+                                <!-- PERUBAHAN DI SINI: Menggunakan kirimEditPost() via JavaScript untuk metode POST -->
+                                <button type="button" onclick="kirimEditPost('<?php echo $row['nik']; ?>')" class="text-blue-500 hover:text-blue-700 p-1" title="Edit">
                                     <i class="fas fa-edit text-lg"></i>
-                                </a>
+                                </button>
                                 <a href="?deactivate=<?php echo $row['nik']; ?>&tab=bidan" class="text-orange-500 hover:text-orange-700 p-1" title="Nonaktifkan" onclick="return confirmAction(event, this.href, 'Nonaktifkan Akun', 'Nonaktifkan akun bidan ini?', 'Ya, Nonaktifkan!')">
                                     <i class="fas fa-ban text-lg"></i>
                                 </a>
@@ -322,6 +303,12 @@ else {
 </div>
 
 <script>
+// PERUBAHAN DI SINI: Fungsi JavaScript untuk mengisi form hidden lalu men-submit-nya secara POST
+function kirimEditPost(nik) {
+    document.getElementById('nikEditPost').value = nik;
+    document.getElementById('formEditPost').submit();
+}
+
 function confirmAction(event, url, title, text, confirmButtonText) {
     event.preventDefault();
     Swal.fire({

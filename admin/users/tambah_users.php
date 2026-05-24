@@ -2,17 +2,12 @@
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../auth/cek_admin.php';
 
-// ============================================
-// PROSES FORM - HARUS SEBELUM SIDEBAR
-// ============================================
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nik = $_POST['nik'];
     $password_plain = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
     $password = md5($password_plain);
     
-    // Format no_wa dengan +62
     $no_wa = $_POST['no_wa'];
     if(!str_starts_with($no_wa, '+62')) {
         $no_wa = '+62' . ltrim($no_wa, '0');
@@ -24,7 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $status = $_POST['status'];
     $created_by = $_SESSION['nik'];
     
-    // Validasi password
     if($password_plain != $confirm_password) {
         $_SESSION['error'] = "Password tidak cocok!";
     } elseif(strlen($password_plain) < 6) {
@@ -34,7 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if(mysqli_num_rows($check) > 0) {
             $_SESSION['error'] = "NIK sudah terdaftar!";
         } else {
-            // PERUBAHAN: kolom menggunakan huruf KAPITAL: PASSWORD, ROLE, STATUS, created_by
             $query = "INSERT INTO users (nik, PASSWORD, no_wa, nama_lengkap, alamat, ROLE, STATUS, created_by) 
                       VALUES ('$nik', '$password', '$no_wa', '$nama_lengkap', '$alamat', '$role', '$status', '$created_by')";
             if(mysqli_query($conn, $query)) {
@@ -50,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
 }
 
-$title = 'Tambah User';
+$title = 'Tambah Users';
 include __DIR__ . '/../../templates/sidebar.php';
 ?>
 
@@ -71,7 +64,6 @@ include __DIR__ . '/../../templates/sidebar.php';
     <form method="POST">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             
-            <!-- NIK -->
             <div class="md:col-span-2">
                 <label class="block text-gray-700 font-semibold mb-2">NIK</label>
                 <div class="relative">
@@ -83,7 +75,6 @@ include __DIR__ . '/../../templates/sidebar.php';
                 </div>
             </div>
             
-            <!-- Nama Lengkap -->
             <div>
                 <label class="block text-gray-700 font-semibold mb-2">Nama Lengkap</label>
                 <div class="relative">
@@ -94,7 +85,6 @@ include __DIR__ . '/../../templates/sidebar.php';
                 </div>
             </div>
             
-            <!-- Role -->
             <div>
                 <label class="block text-gray-700 font-semibold mb-2">Role</label>
                 <div class="relative">
@@ -108,7 +98,6 @@ include __DIR__ . '/../../templates/sidebar.php';
                 </div>
             </div>
             
-            <!-- Password -->
             <div>
                 <label class="block text-gray-700 font-semibold mb-2">Password</label>
                 <div class="relative">
@@ -123,7 +112,6 @@ include __DIR__ . '/../../templates/sidebar.php';
                 </div>
             </div>
             
-            <!-- Konfirmasi Password -->
             <div>
                 <label class="block text-gray-700 font-semibold mb-2">Konfirmasi Password</label>
                 <div class="relative">
@@ -138,7 +126,6 @@ include __DIR__ . '/../../templates/sidebar.php';
                 </div>
             </div>
             
-            <!-- WhatsApp -->
             <div>
                 <label class="block text-gray-700 font-semibold mb-2">No. WhatsApp</label>
                 <div class="flex">
@@ -151,7 +138,6 @@ include __DIR__ . '/../../templates/sidebar.php';
                 </div>
             </div>
             
-            <!-- Status -->
             <div>
                 <label class="block text-gray-700 font-semibold mb-2">Status</label>
                 <div class="relative">
@@ -166,7 +152,6 @@ include __DIR__ . '/../../templates/sidebar.php';
                 </div>
             </div>
             
-            <!-- Alamat -->
             <div class="md:col-span-2">
                 <label class="block text-gray-700 font-semibold mb-2">Alamat</label>
                 <div class="relative">
@@ -191,7 +176,6 @@ include __DIR__ . '/../../templates/sidebar.php';
 </div>
 
 <script>
-// Counter NIK
 const nikInput = document.getElementById('nik');
 const nikCounter = document.getElementById('nikCounter');
 
@@ -210,7 +194,6 @@ if(nikInput) {
     });
 }
 
-// Format nomor WA
 const waInput = document.getElementById('no_wa');
 if(waInput) {
     waInput.addEventListener('input', function() {
@@ -225,7 +208,6 @@ if(waInput) {
     });
 }
 
-// Toggle password visibility
 function togglePassword(inputId, eyeId) {
     const input = document.getElementById(inputId);
     const eye = document.getElementById(eyeId);
@@ -241,7 +223,6 @@ function togglePassword(inputId, eyeId) {
     }
 }
 
-// Validasi form sebelum submit
 document.querySelector('form').addEventListener('submit', function(e) {
     const password = document.getElementById('password').value;
     const confirm = document.getElementById('confirm_password').value;
@@ -280,7 +261,6 @@ document.querySelector('form').addEventListener('submit', function(e) {
         return false;
     }
     
-    // Format no_wa sebelum submit
     let no_wa = document.getElementById('no_wa').value;
     if(no_wa && !no_wa.startsWith('+62')) {
         document.getElementById('no_wa').value = '+62' + no_wa;
