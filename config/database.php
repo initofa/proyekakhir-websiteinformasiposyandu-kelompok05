@@ -1,21 +1,26 @@
 <?php
-$host = 'localhost';
-$user = 'root';
-$password = '';
-$database = 'db_posyandu';
+// config/database.php
+$host = "localhost";
+$user = "root";
+$pass = "";
+$dbname = "db_posyandu";
 
-$conn = mysqli_connect($host, $user, $password, $database);
+// Menggunakan mysqli object oriented
+$conn = new mysqli($host, $user, $pass, $dbname);
 
-if (!$conn) {
-    die("Koneksi database gagal: " . mysqli_connect_error());
+if ($conn->connect_error) {
+    die("Koneksi gagal: " . $conn->connect_error);
 }
 
 date_default_timezone_set('Asia/Jakarta');
 
-if (session_status() == PHP_SESSION_NONE) {
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// ============================================
+// CONSTANTS
+// ============================================
 define('BASE_URL', 'http://localhost/db_posyandu/');
 define('UPLOAD_PATH', $_SERVER['DOCUMENT_ROOT'] . '/db_posyandu/uploads/');
 
@@ -25,19 +30,27 @@ if (!file_exists(UPLOAD_PATH)) {
     mkdir(UPLOAD_PATH . 'artikel/', 0777, true);
 }
 
-
+// ============================================
+// AUTH FUNCTIONS
+// ============================================
 function isLoggedIn() {
     return isset($_SESSION['nik']);
 }
 
 function getCurrentUser() {
     global $conn;
-    if (isset($_SESSION['nik'])) {
-        $nik = $_SESSION['nik'];
-        $query = "SELECT * FROM users WHERE nik = '$nik'";
-        $result = mysqli_query($conn, $query);
-        return mysqli_fetch_assoc($result);
+
+    if (!isset($_SESSION['nik'])) {
+        return null;
     }
+
+    $nik = mysqli_real_escape_string($conn, $_SESSION['nik']);
+    $query = mysqli_query($conn, "SELECT * FROM users WHERE nik = '$nik'");
+    
+    if ($query && mysqli_num_rows($query) > 0) {
+        return mysqli_fetch_assoc($query);
+    }
+    
     return null;
 }
 
@@ -47,26 +60,54 @@ function hasRole($role) {
 }
 
 function redirectIfNotLoggedIn() {
+    // Halaman yang boleh diakses tanpa login
+    $allowed_pages = ['login.php', 'register.php', 'index.php', 'artikel.php', 'artikel_detail.php'];
+    $current_page = basename($_SERVER['PHP_SELF']);
+    
+    // Jika di halaman yang diperbolehkan, jangan redirect
+    if (in_array($current_page, $allowed_pages)) {
+        return;
+    }
+    
     if (!isLoggedIn()) {
-        header("Location: /posyandu/auth/login.php");
+        header("Location: " . BASE_URL . "auth/login.php");
         exit();
     }
 }
+
 function redirectIfRole($role) {
     $user = getCurrentUser();
+    $current_page = basename($_SERVER['PHP_SELF']);
+    
     if ($user && $user['role'] == $role) {
-        header("Location: /posyandu/dashboard.php");
-        exit();
+        // Hindari redirect loop dengan mengecek halaman tujuan
+        $dashboard_pages = ['dashboard.php', 'index.php'];
+        if (!in_array($current_page, $dashboard_pages)) {
+            if ($role == 'admin') {
+                header("Location: " . BASE_URL . "admin/dashboard.php");
+            } elseif ($role == 'bidan') {
+                header("Location: " . BASE_URL . "bidan/dashboard.php");
+            } elseif ($role == 'ibu') {
+                header("Location: " . BASE_URL . "ibu/dashboard.php");
+            }
+            exit();
+        }
     }
 }
 
 function getUserName($nik) {
     global $conn;
     if (empty($nik)) return '-';
-    $query = "SELECT nama_lengkap FROM users WHERE nik = '$nik'";
-    $result = mysqli_query($conn, $query);
-    $data = mysqli_fetch_assoc($result);
-    return $data ? $data['nama_lengkap'] : '-';
+    
+    $nik = mysqli_real_escape_string($conn, $nik);
+    $query = mysqli_query($conn, "SELECT nama_lengkap FROM users WHERE nik = '$nik'");
+    
+    if ($query && mysqli_num_rows($query) > 0) {
+        $data = mysqli_fetch_assoc($query);
+        return $data['nama_lengkap'];
+    }
+    
+    return '-';
 }
 
 function paginate($current_page, $total_pages, $url) {
