@@ -27,7 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (mysqli_num_rows($check) > 0) {
             $error = "NIK sudah terdaftar!";
         } else {
-            $insert = "INSERT INTO users (nik, password, no_wa, nama_lengkap, alamat, role, status) 
+            // PERUBAHAN: kolom menggunakan huruf KAPITAL: PASSWORD, ROLE, STATUS
+            $insert = "INSERT INTO users (nik, PASSWORD, no_wa, nama_lengkap, alamat, ROLE, STATUS) 
                        VALUES ('$nik', '$password', '$no_wa', '$nama_lengkap', '$alamat', '$role', '$status')";
             
             if (mysqli_query($conn, $insert)) {
@@ -126,13 +127,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <div class="relative">
                         <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-green-400"></i>
                         <input type="password" name="password" id="password" required
-                               placeholder="Masukkan password"
+                               placeholder="Masukkan password (min 6 karakter)"
                                class="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition">
                         <button type="button" onclick="togglePassword('password', 'eye1')"
                                 class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-green-600">
                             <i id="eye1" class="fas fa-eye"></i>
                         </button>
                     </div>
+                    <p class="text-xs text-gray-400 mt-1">* Minimal 6 karakter</p>
                 </div>
                 
                 <!-- Konfirmasi Password -->
@@ -171,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
             </div>
             
-          <!-- Tombol Submit -->
+            <!-- Tombol Submit -->
             <button type="submit"
                     class="w-full bg-gradient-to-r from-green-600 to-emerald-500 text-white py-3 rounded-xl font-semibold mt-6 hover:shadow-lg transition duration-300 transform hover:scale-105 flex items-center justify-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,9 +182,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 Daftar Sekarang
             </button>
 
-            <!-- Tombol Kembali - Style 1: Outline Hijau -->
+            <!-- Tombol Kembali -->
             <a href="/posyandu/index.php" 
-            class="w-full flex items-center justify-center gap-2 mt-3 py-3 rounded-xl font-semibold text-green-600 border-2 border-green-500 hover:bg-green-600 hover:text-white hover:border-green-600 transition duration-300">
+               class="w-full flex items-center justify-center gap-2 mt-3 py-3 rounded-xl font-semibold text-green-600 border-2 border-green-500 hover:bg-green-600 hover:text-white hover:border-green-600 transition duration-300">
                 Kembali
             </a>
         </form>
@@ -220,6 +222,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             this.value = this.value.replace(/[^0-9]/g, '');
             if (this.value.startsWith('0')) {
                 this.value = this.value.substring(1);
+            }
+            if (this.value.length > 13) {
+                this.value = this.value.substring(0, 13);
             }
         });
         

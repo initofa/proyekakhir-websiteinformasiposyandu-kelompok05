@@ -24,32 +24,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $check_nik_result = mysqli_query($conn, $check_nik_query);
     
     if (mysqli_num_rows($check_nik_result) == 0) {
-        // NIK tidak ditemukan - PRIORITAS UTAMA
-        $error = "NIK yang Anda masukkan salah!";
-        $error_type = 'nik_salah';
+        // NIK tidak ditemukan
+        if (!empty($password)) {
+            $error = "NIK dan Password yang Anda masukkan salah!";
+            $error_type = 'both_wrong';
+        } else {
+            $error = "NIK yang Anda masukkan salah!";
+            $error_type = 'nik_salah';
+        }
     } else {
         // NIK ditemukan, sekarang cek password
         $user = mysqli_fetch_assoc($check_nik_result);
         $hashed_password = md5($password);
         
-        if ($user['password'] !== $hashed_password) {
-            // Password salah
+        // PERHATIAN: Kolom di database namanya "PASSWORD" (huruf besar)
+        // Jadi harus menggunakan $user['PASSWORD'] bukan $user['password']
+        if ($user['PASSWORD'] !== $hashed_password) {
             $error = "Password yang Anda masukkan salah!";
             $error_type = 'wrong_password';
-        } elseif ($user['status'] == 'pending') {
+        } elseif ($user['STATUS'] == 'pending') {
             $error = "Akun Anda belum dikonfirmasi. Silakan hubungi admin.";
             $error_type = 'pending';
-        } elseif ($user['status'] == 'inactive') {
+        } elseif ($user['STATUS'] == 'inactive') {
             $error = "Akun Anda tidak aktif. Silakan hubungi admin.";
             $error_type = 'inactive';
         } else {
             // Login sukses
             $_SESSION['nik'] = $user['nik'];
             $_SESSION['nama_lengkap'] = $user['nama_lengkap'];
-            $_SESSION['role'] = $user['role'];
+            $_SESSION['role'] = $user['ROLE'];
             
-            if ($user['role'] == 'admin') header("Location: ../admin/dashboard.php");
-            elseif ($user['role'] == 'bidan') header("Location: ../bidan/dashboard.php");
+            if ($user['ROLE'] == 'admin') header("Location: ../admin/dashboard.php");
+            elseif ($user['ROLE'] == 'bidan') header("Location: ../bidan/dashboard.php");
             else header("Location: ../ibu/dashboard.php");
             exit();
         }
@@ -80,6 +86,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
 
         <!-- SWEETALERT ERROR HANDLING -->
+        <?php if ($error && $error_type == 'both_wrong'): ?>
+        <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'NIK & Password Salah!',
+            text: '<?php echo addslashes($error); ?>',
+            confirmButtonColor: '#dc2626',
+            confirmButtonText: 'Coba Lagi'
+        });
+        </script>
+        <?php endif; ?>
+
         <?php if ($error && $error_type == 'nik_salah'): ?>
         <script>
         Swal.fire({
@@ -159,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <input type="text" name="nik" id="nik" maxlength="16" required 
                            placeholder="Masukkan 16 digit NIK" 
                            value="<?php echo htmlspecialchars($old_nik); ?>"
-                           class="w-full pl-10 pr-16 py-3 border <?php echo ($error && $error_type == 'nik_salah') ? 'border-red-500 bg-red-50' : 'border-gray-200'; ?> rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition">
+                           class="w-full pl-10 pr-16 py-3 border <?php echo ($error && ($error_type == 'nik_salah' || $error_type == 'both_wrong')) ? 'border-red-500 bg-red-50' : 'border-gray-200'; ?> rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition">
                     <span id="nikCounter" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-400">
                         <?php echo strlen($old_nik); ?>/16
                     </span>
@@ -172,7 +190,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-green-400"></i>
                     <input type="password" name="password" id="password" required 
                            placeholder="Masukkan password" 
-                           class="w-full pl-10 pr-12 py-3 border <?php echo ($error && $error_type == 'wrong_password') ? 'border-red-500 bg-red-50' : 'border-gray-200'; ?> rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition">
+                           class="w-full pl-10 pr-12 py-3 border <?php echo ($error && ($error_type == 'wrong_password' || $error_type == 'both_wrong')) ? 'border-red-500 bg-red-50' : 'border-gray-200'; ?> rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition">
                     <button type="button" onclick="togglePassword()" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-600">
                         <i id="eyeIcon" class="fas fa-eye"></i>
                     </button>
@@ -196,7 +214,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     const nikCounter = document.getElementById('nikCounter');
 
     nikInput.addEventListener('input', function () {
-        // hanya angka
         this.value = this.value.replace(/[^0-9]/g, '');
         let length = this.value.length;
         nikCounter.textContent = length + '/16';
