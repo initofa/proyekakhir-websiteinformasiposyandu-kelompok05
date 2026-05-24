@@ -34,10 +34,14 @@ include __DIR__ . '/templates/header_public.php';
                     <span class="text-gray-600">Aplikasi Posyandu Terpercaya</span>
                 </div>
                 
-                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-800 leading-tight mb-4">
-                    Pantau Kesehatan
-                    <span class="bg-gradient-to-r from-green-600 to-pink-500 bg-clip-text text-transparent">Anak & Bunda</span>
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-800 leading-tight mb-2">
+                    <span class="bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">SIPANDA</span>
                 </h1>
+                
+                <!-- Kepanjangan SIPANDA -->
+                <div class="text-sm text-gray-500 mb-3 font-medium">
+                    Sistem Informasi Posyandu <span class="text-green-600">Anak</span> & <span class="text-pink-500">Bunda</span>
+                </div>
                 
                 <p class="text-gray-600 text-base mb-6 max-w-md mx-auto lg:mx-0">
                     SIPANDA membantu ibu memantau imunisasi anak, tumbuh kembang, dan kesehatan kehamilan dengan mudah.
@@ -69,11 +73,11 @@ include __DIR__ . '/templates/header_public.php';
             <!-- Right Content - Card Ringkas & Manis -->
             <div class="relative">
                 <div class="bg-white rounded-2xl shadow-xl p-5 border border-gray-100">
-                    <!-- Header -->
+                    <!-- Header dengan kepanjangan -->
                     <div class="flex items-center gap-3 mb-4">
                         <div>
-                            <p class="font-bold text-gray-800 text-sm">Apa aja sih di SIPANDA?</p>
-                            <p class="text-xs text-gray-400">Fitur lengkap untuk ibu modern</p>
+                            <p class="font-bold text-gray-800 text-sm">Ada Apa aja sih di SIPANDA?</p>
+                            <p class="text-gray-500 text-xs">beberapa fitur unggulan</p>
                         </div>
                     </div>
                     
