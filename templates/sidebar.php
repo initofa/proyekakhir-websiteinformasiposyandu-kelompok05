@@ -72,12 +72,10 @@ $base_url = "/posyandu";
         /* DESKTOP STYLES (min-width: 1024px) */
         /* ============================================ */
         @media (min-width: 1024px) {
-            /* Container utama */
             body {
                 position: relative;
             }
             
-            /* Sidebar desktop */
             #sidebar {
                 position: fixed;
                 left: 0;
@@ -91,44 +89,45 @@ $base_url = "/posyandu";
                 overflow-x: hidden;
             }
             
-            /* Sidebar saat hover */
             #sidebar:hover {
                 width: 280px !important;
             }
             
-            /* Sembunyikan teks saat sidebar mini */
+            .menu-item {
+                justify-content: center !important;
+            }
+
+            #sidebar:hover .menu-item {
+                justify-content: flex-start !important;
+                padding-left: 1.25rem !important;
+            }
+            
             .sidebar-text {
                 display: none !important;
                 white-space: nowrap;
             }
             
-            /* Tampilkan teks saat sidebar hover */
             #sidebar:hover .sidebar-text {
                 display: inline-block !important;
                 margin-left: 12px;
             }
             
-            /* Main content - ikut bergeser saat sidebar hover */
             #mainContent {
                 margin-left: 80px !important;
                 transition: margin-left 0.35s ease-in-out;
                 width: calc(100% - 80px);
             }
             
-            /* Saat sidebar hover, main content ikut bergeser */
             #sidebar:hover ~ #mainContent {
                 margin-left: 280px !important;
                 width: calc(100% - 280px);
             }
             
-            /* Pastikan main content adalah sibling setelah sidebar */
-            /* Menggunakan flexbox agar main content bisa bergeser */
             .desktop-wrapper {
                 display: flex;
                 min-height: 100vh;
             }
             
-            /* Sembunyikan elemen mobile di desktop */
             #mobileMenuBtn, #overlay {
                 display: none !important;
             }
@@ -138,7 +137,6 @@ $base_url = "/posyandu";
         /* MOBILE STYLES (max-width: 1023px) */
         /* ============================================ */
         @media (max-width: 1023px) {
-            /* Sidebar tertutup di awal */
             #sidebar {
                 position: fixed;
                 left: 0;
@@ -151,21 +149,18 @@ $base_url = "/posyandu";
                 border-radius: 0 !important;
             }
             
-            /* Sidebar terbuka */
             #sidebar.mobile-open {
                 transform: translateX(0) !important;
             }
             
-            /* Teks sidebar tampil semua */
             .sidebar-text {
                 display: inline-block !important;
                 margin-left: 12px;
             }
             
-            /* Menu item */
             .menu-item {
                 width: 100%;
-                justify-content: flex-start;
+                justify-content: flex-start !important;
             }
             
             .menu-item i {
@@ -173,7 +168,6 @@ $base_url = "/posyandu";
                 text-align: center;
             }
             
-            /* Overlay */
             #overlay {
                 position: fixed;
                 inset: 0;
@@ -190,14 +184,12 @@ $base_url = "/posyandu";
                 display: block !important;
             }
             
-            /* Main content mobile */
             #mainContent {
                 margin-left: 0 !important;
                 padding-top: 70px !important;
                 width: 100%;
             }
             
-            /* Hamburger button */
             #mobileMenuBtn {
                 display: flex !important;
                 position: fixed;
@@ -211,16 +203,16 @@ $base_url = "/posyandu";
 
 <body class="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 overflow-x-hidden">
 
-<!-- OVERLAY MOBILE (hanya muncul di mobile) -->
+<!-- OVERLAY MOBILE -->
 <div id="overlay" class="fixed inset-0 bg-black/50 z-45 hidden"></div>
 
-<!-- BUTTON HAMBURGER MOBILE (hanya muncul di mobile) -->
+<!-- BUTTON HAMBURGER MOBILE -->
 <button id="mobileMenuBtn"
     class="fixed top-4 left-4 z-55 hidden bg-gradient-to-r from-green-600 to-green-500 text-white w-12 h-12 rounded-xl shadow-lg flex items-center justify-center hover:scale-105 transition-transform">
     <i class="fas fa-bars text-xl"></i>
 </button>
 
-<!-- WRAPPER FLEX UNTUK DESKTOP (agar main content bisa bergeser) -->
+<!-- WRAPPER FLEX UNTUK DESKTOP -->
 <div class="desktop-wrapper" style="display: flex; min-height: 100vh;">
 
     <!-- SIDEBAR -->
@@ -229,7 +221,7 @@ $base_url = "/posyandu";
         style="width: 80px; border-radius: 0 20px 20px 0;">
 
         <!-- LOGO -->
-        <div class="text-white text-center mb-4 mt-4">
+        <div class="text-white text-center mb-3 mt-4 px-2">
             <div class="w-14 h-14 mx-auto mb-2 bg-white bg-opacity-20 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
                 <img src="<?= $base_url ?>/img/sipanda.png" 
                      alt="SIPANDA Logo" 
@@ -253,7 +245,8 @@ $base_url = "/posyandu";
         </div>
 
         <!-- MENU -->
-        <ul class="space-y-0.5 px-2">
+        <!-- Jarak antar list dirapatkan menggunakan space-y-1 -->
+        <ul class="space-y-1 px-2">
 
             <!-- ADMIN -->
             <?php if ($role == 'admin'): ?>
@@ -261,64 +254,64 @@ $base_url = "/posyandu";
             <li>
                 <a href="<?= $base_url ?>/admin/dashboard.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-home text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Dashboard</span>
+                    <i class="fas fa-home text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Dashboard</span>
                 </a>
             </li>
 
             <li>
                 <a href="<?= $base_url ?>/admin/ibu_hamil/list_ibu_hamil.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-female text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Ibu Hamil</span>
+                    <i class="fas fa-female text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Ibu Hamil</span>
                 </a>
             </li>
 
             <li>
                 <a href="<?= $base_url ?>/admin/anak/list_anak.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-baby text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Anak</span>
+                    <i class="fas fa-baby text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Anak</span>
                 </a>
             </li>
 
             <li>
                 <a href="<?= $base_url ?>/admin/vaksin/list_vaksin.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-syringe text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Vaksin</span>
+                    <i class="fas fa-syringe text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Vaksin</span>
                 </a>
             </li>
 
             <li>
                 <a href="<?= $base_url ?>/admin/jadwal/list_jadwal.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-calendar-alt text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Jadwal</span>
+                    <i class="fas fa-calendar-alt text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Jadwal</span>
                 </a>
             </li>
 
             <li>
                 <a href="<?= $base_url ?>/admin/artikel/list_artikel.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-newspaper text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Artikel</span>
+                    <i class="fas fa-newspaper text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Artikel</span>
                 </a>
             </li>
 
             <li>
                 <a href="<?= $base_url ?>/admin/kategori/list_kategori.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-tags text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Kategori</span>
+                    <i class="fas fa-tags text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Kategori</span>
                 </a>
             </li>
 
             <li>
                 <a href="<?= $base_url ?>/admin/users/list_users.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-users text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Users</span>
+                    <i class="fas fa-users text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Users</span>
                 </a>
             </li>
 
@@ -328,48 +321,48 @@ $base_url = "/posyandu";
             <li>
                 <a href="<?= $base_url ?>/bidan/dashboard.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-home text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Dashboard</span>
+                    <i class="fas fa-home text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Dashboard</span>
                 </a>
             </li>
 
             <li>
                 <a href="<?= $base_url ?>/bidan/ibu_hamil/list_ibu_hamil.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-female text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Ibu Hamil</span>
+                    <i class="fas fa-female text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Ibu Hamil</span>
                 </a>
             </li>
 
             <li>
                 <a href="<?= $base_url ?>/bidan/anak/list_anak.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-baby text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Anak</span>
+                    <i class="fas fa-baby text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Anak</span>
                 </a>
             </li>
 
             <li>
                 <a href="<?= $base_url ?>/bidan/vaksin/list_vaksin.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-syringe text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Vaksin</span>
+                    <i class="fas fa-syringe text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Vaksin</span>
                 </a>
             </li>
 
             <li>
                 <a href="<?= $base_url ?>/bidan/imunisasi/list_pendaftaran.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-clipboard-list text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Imunisasi</span>
+                    <i class="fas fa-clipboard-list text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Imunisasi</span>
                 </a>
             </li>
 
             <li>
                 <a href="<?= $base_url ?>/bidan/artikel/list_artikel.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-book text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Artikel</span>
+                    <i class="fas fa-book text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Artikel</span>
                 </a>
             </li>
 
@@ -379,56 +372,56 @@ $base_url = "/posyandu";
             <li>
                 <a href="<?= $base_url ?>/ibu/dashboard.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-home text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Dashboard</span>
+                    <i class="fas fa-home text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Dashboard</span>
                 </a>
             </li>
 
             <li>
                 <a href="<?= $base_url ?>/ibu/kehamilan/riwayat_hamil.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-baby-carriage text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Kehamilan</span>
+                    <i class="fas fa-baby-carriage text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Kehamilan</span>
                 </a>
             </li>
 
             <li>
                 <a href="<?= $base_url ?>/ibu/anak/list_anak.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-baby text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Anak</span>
+                    <i class="fas fa-baby text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Anak</span>
                 </a>
             </li>
 
             <li>
                 <a href="<?= $base_url ?>/ibu/imunisasi/jadwal_imunisasi.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-calendar-plus text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Jadwal</span>
+                    <i class="fas fa-calendar-plus text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Jadwal</span>
                 </a>
             </li>
 
             <li>
                 <a href="<?= $base_url ?>/ibu/imunisasi/riwayat_imunisasi.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-history text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Riwayat</span>
+                    <i class="fas fa-history text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Riwayat</span>
                 </a>
             </li>
 
             <li>
                 <a href="<?= $base_url ?>/ibu/perkembangan/detail_perkembangan.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-chart-line text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Perkembangan</span>
+                    <i class="fas fa-chart-line text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Perkembangan</span>
                 </a>
             </li>
 
             <li>
                 <a href="<?= $base_url ?>/ibu/artikel/list_artikel.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-book text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Artikel</span>
+                    <i class="fas fa-book text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Artikel</span>
                 </a>
             </li>
 
@@ -438,8 +431,8 @@ $base_url = "/posyandu";
             <li class="pt-1 mt-1 border-t border-white/20">
                 <a href="javascript:void(0)" id="logoutBtn"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-sign-out-alt text-lg w-6"></i>
-                    <span class="ml-3 sidebar-text hidden">Logout</span>
+                    <i class="fas fa-sign-out-alt text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Logout</span>
                 </a>
             </li>
 

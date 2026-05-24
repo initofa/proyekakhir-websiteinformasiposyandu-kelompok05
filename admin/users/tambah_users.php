@@ -55,7 +55,7 @@ include __DIR__ . '/../../templates/sidebar.php';
 ?>
 
 <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-6 fade-in">
-    <h1 class="text-2xl font-bold text-green-800 mb-6">Tambah User</h1>
+    <h1 class="text-2xl font-bold text-green-800 mb-6">Tambah Users</h1>
     
     <?php if(isset($_SESSION['error'])): ?>
     <script>
