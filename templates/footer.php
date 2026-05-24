@@ -1,73 +1,186 @@
-</div>
+<!-- templates/footer.php -->
+    </div> <!-- Penutup mainContent -->
+</div> <!-- Penutup desktop-wrapper -->
 
 <script>
-// ============================================
-// SIDEBAR FUNCTION
-// ============================================
 const sidebar = document.getElementById('sidebar');
 const mainContent = document.getElementById('mainContent');
 const texts = document.querySelectorAll('.sidebar-text');
 const menuItems = document.querySelectorAll('.menu-item');
 
-let isOpen = false;
+const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const overlay = document.getElementById('overlay');
+const logoutBtn = document.getElementById('logoutBtn');
 
-// ============================================
-// OPEN SIDEBAR
-// ============================================
-function openSidebar() {
+let isOpen = false;
+let isHovering = false;
+
+// ============================
+// CEK MOBILE
+// ============================
+function isMobile() {
+    return window.innerWidth < 1024;
+}
+
+// ============================
+// DESKTOP: OPEN SIDEBAR (expand)
+// ============================
+function openSidebarDesktop() {
+    if (isMobile()) return;
     if (isOpen) return;
-    sidebar.classList.remove('w-20');
-    sidebar.classList.add('w-64');
-    mainContent.classList.remove('ml-24');
-    mainContent.classList.add('ml-72');
+    
+    sidebar.style.width = '280px';
     texts.forEach(el => {
         el.classList.remove('hidden');
+        el.style.display = 'inline-block';
     });
     isOpen = true;
 }
 
-// ============================================
-// CLOSE SIDEBAR
-// ============================================
-function closeSidebar() {
+// ============================
+// DESKTOP: CLOSE SIDEBAR (collapse)
+// ============================
+function closeSidebarDesktop() {
+    if (isMobile()) return;
     if (!isOpen) return;
-    sidebar.classList.remove('w-64');
-    sidebar.classList.add('w-20');
-    mainContent.classList.remove('ml-72');
-    mainContent.classList.add('ml-24');
+    
+    sidebar.style.width = '80px';
     texts.forEach(el => {
         el.classList.add('hidden');
+        el.style.display = 'none';
     });
     isOpen = false;
 }
 
-// ============================================
-// HOVER SIDEBAR => OPEN
-// ============================================
-sidebar.addEventListener('mouseenter', () => {
-    openSidebar();
-});
+// ============================
+// MOBILE: OPEN SIDEBAR
+// ============================
+function openSidebarMobile() {
+    if (!isMobile()) return;
+    sidebar.classList.add('mobile-open');
+    overlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
 
-// ============================================
-// HOVER MAIN CONTENT => CLOSE
-// ============================================
-mainContent.addEventListener('mouseenter', () => {
-    closeSidebar();
-});
+// ============================
+// MOBILE: CLOSE SIDEBAR
+// ============================
+function closeSidebarMobile() {
+    if (!isMobile()) return;
+    sidebar.classList.remove('mobile-open');
+    overlay.classList.add('hidden');
+    document.body.style.overflow = '';
+}
 
-// ============================================
-// CLICK MENU => CLOSE SIDEBAR
-// ============================================
+// ============================
+// DESKTOP HOVER EVENTS
+// ============================
+if (!isMobile()) {
+    sidebar.addEventListener('mouseenter', () => {
+        isHovering = true;
+        openSidebarDesktop();
+    });
+    
+    sidebar.addEventListener('mouseleave', () => {
+        isHovering = false;
+        // Delay close to prevent flicker
+        setTimeout(() => {
+            if (!isHovering && !isMobile()) {
+                closeSidebarDesktop();
+            }
+        }, 100);
+    });
+    
+    mainContent.addEventListener('mouseenter', () => {
+        if (isOpen && !isHovering) {
+            closeSidebarDesktop();
+        }
+    });
+}
+
+// ============================
+// MOBILE BUTTON
+// ============================
+if (mobileMenuBtn) {
+    mobileMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (sidebar.classList.contains('mobile-open')) {
+            closeSidebarMobile();
+        } else {
+            openSidebarMobile();
+        }
+    });
+}
+
+// ============================
+// OVERLAY CLICK (mobile)
+// ============================
+if (overlay) {
+    overlay.addEventListener('click', () => {
+        closeSidebarMobile();
+    });
+}
+
+// ============================
+// LOGOUT CONFIRMATION
+// ============================
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Yakin ingin logout?',
+            text: 'Anda akan keluar dari sistem dan perlu login kembali',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#10b981',
+            cancelButtonColor: '#dc2626',
+            confirmButtonText: 'Ya, Logout!',
+            cancelButtonText: 'Batal',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '<?= $base_url ?>/auth/logout.php';
+            }
+        });
+    });
+}
+
+// ============================
+// MENU CLICK - tutup sidebar di mobile
+// ============================
 menuItems.forEach(item => {
     item.addEventListener('click', function() {
-        setTimeout(() => {
-            closeSidebar();
-        }, 150);
+        if (this.id === 'logoutBtn') return;
+        
+        if (isMobile()) {
+            setTimeout(() => {
+                closeSidebarMobile();
+            }, 200);
+        }
     });
 });
 
+// ============================
+// WINDOW RESIZE
+// ============================
+window.addEventListener('resize', () => {
+    if (!isMobile()) {
+        // Reset mobile state
+        sidebar.classList.remove('mobile-open');
+        if (overlay) overlay.classList.add('hidden');
+        document.body.style.overflow = '';
+        
+        // Reset desktop sidebar to mini
+        closeSidebarDesktop();
+        sidebar.style.width = '80px';
+    } else {
+        // Reset desktop state
+        closeSidebarDesktop();
+    }
+});
+
 // ============================================
-// SWEETALERT SUCCESS
+// SWEETALERT NOTIFICATIONS
 // ============================================
 <?php if (isset($_SESSION['success'])): ?>
 Swal.fire({
@@ -79,9 +192,6 @@ Swal.fire({
 });
 <?php unset($_SESSION['success']); endif; ?>
 
-// ============================================
-// SWEETALERT ERROR
-// ============================================
 <?php if (isset($_SESSION['error'])): ?>
 Swal.fire({
     icon: 'error',
@@ -92,9 +202,6 @@ Swal.fire({
 });
 <?php unset($_SESSION['error']); endif; ?>
 
-// ============================================
-// SWEETALERT WARNING
-// ============================================
 <?php if (isset($_SESSION['warning'])): ?>
 Swal.fire({
     icon: 'warning',
@@ -105,9 +212,6 @@ Swal.fire({
 });
 <?php unset($_SESSION['warning']); endif; ?>
 
-// ============================================
-// SWEETALERT INFO
-// ============================================
 <?php if (isset($_SESSION['info'])): ?>
 Swal.fire({
     icon: 'info',
@@ -119,7 +223,7 @@ Swal.fire({
 <?php unset($_SESSION['info']); endif; ?>
 
 // ============================================
-// CONFIRM DELETE FUNCTION
+// CONFIRM DELETE
 // ============================================
 function confirmDelete(event, url, message = 'Data akan dihapus permanen!') {
     event.preventDefault();
@@ -138,70 +242,6 @@ function confirmDelete(event, url, message = 'Data akan dihapus permanen!') {
         }
     });
 }
-
-// ============================================
-// CONFIRM ACTION FUNCTION (Terima/Tolak/Aktifkan)
-// ============================================
-function confirmAction(event, url, title, text, confirmText = 'Ya, lanjutkan!') {
-    event.preventDefault();
-    Swal.fire({
-        title: title,
-        text: text,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#10b981',
-        cancelButtonColor: '#dc2626',
-        confirmButtonText: confirmText,
-        cancelButtonText: 'Batal'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = url;
-        }
-    });
-}
-
-// ============================================
-// TOAST NOTIFICATION FUNCTION
-// ============================================
-function showToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.className = 'fixed bottom-4 right-4 z-50 px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 transition-all duration-300 transform translate-x-0';
-    
-    const colors = {
-        success: 'bg-green-500 text-white',
-        error: 'bg-red-500 text-white',
-        warning: 'bg-yellow-500 text-white',
-        info: 'bg-blue-500 text-white'
-    };
-    
-    const icons = {
-        success: 'fa-check-circle',
-        error: 'fa-exclamation-circle',
-        warning: 'fa-exclamation-triangle',
-        info: 'fa-info-circle'
-    };
-    
-    toast.className += ' ' + colors[type];
-    toast.innerHTML = '<i class="fas ' + icons[type] + ' text-xl mr-2"></i>' + message;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(100%)';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
-
-// ============================================
-// AUTO HIDE ALERT
-// ============================================
-document.querySelectorAll('.alert-auto').forEach(alert => {
-    setTimeout(() => {
-        alert.style.opacity = '0';
-        alert.style.transform = 'translateX(100%)';
-        setTimeout(() => alert.remove(), 300);
-    }, 5000);
-});
 </script>
 </body>
 </html>
