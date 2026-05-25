@@ -556,7 +556,8 @@ include __DIR__ . '/templates/header_public.php';
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    overflow: hidden;
+    overflow: hidden; 
+    line-clamp: 2;          
 }
 
 .line-clamp-3 {
@@ -564,6 +565,7 @@ include __DIR__ . '/templates/header_public.php';
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    line-clamp: 3;
 }
 </style>
 

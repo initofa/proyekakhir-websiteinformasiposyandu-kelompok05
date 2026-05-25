@@ -1,5 +1,4 @@
 <?php
-// artikel_detail.php - Halaman detail artikel (publik)
 require_once __DIR__ . '/config/database.php';
 
 $id_artikel = isset($_GET['id']) ? (int)$_GET['id'] : 0;
@@ -17,7 +16,6 @@ if(!$artikel) {
     exit();
 }
 
-// Ambil artikel terkait (same category)
 $query_terkait = "SELECT a.*, k.nama_kategori 
     FROM artikel a 
     LEFT JOIN kategori_artikel k ON a.id_kategori = k.id_kategori 
@@ -29,7 +27,6 @@ $title = htmlspecialchars($artikel['judul']) . ' - SIPANDA';
 include __DIR__ . '/templates/header_public.php';
 ?>
 
-<!-- ========== BREADCRUMB ========== -->
 <div class="bg-white border-b border-gray-100 sticky top-16 z-40 shadow-sm">
     <div class="container mx-auto px-4 py-3">
         <div class="flex items-center gap-2 text-sm flex-wrap">
@@ -51,21 +48,17 @@ include __DIR__ . '/templates/header_public.php';
     </div>
 </div>
 
-<!-- ========== ARTIKEL DETAIL ========== -->
 <div class="container mx-auto px-4 py-12">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        <!-- ========== MAIN CONTENT ========== -->
         <div class="lg:col-span-2">
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
                 
-                <!-- Header dengan Thumbnail -->
                 <div class="relative h-72 md:h-96 overflow-hidden cursor-pointer bg-gradient-to-r from-green-600 to-green-500" 
-                     onclick="openImageModal('<?php echo $artikel['thumbnail'] ? '../posyandu/uploads/artikel/' . $artikel['thumbnail'] : ''; ?>', '<?php echo htmlspecialchars($artikel['judul']); ?>')">
+                     onclick="openImageModal('<?php echo $artikel['thumbnail'] ? 'uploads/artikel/' . $artikel['thumbnail'] : ''; ?>', '<?php echo htmlspecialchars($artikel['judul']); ?>')">
                     
-                    <!-- Gambar Thumbnail -->
-                    <?php if($artikel['thumbnail'] && file_exists("../posyandu/uploads/artikel/" . $artikel['thumbnail'])): ?>
-                    <img src="../posyandu/uploads/artikel/<?php echo $artikel['thumbnail']; ?>" 
+                    <?php if($artikel['thumbnail'] && file_exists("uploads/artikel/" . $artikel['thumbnail'])): ?>
+                    <img src="uploads/artikel/<?php echo $artikel['thumbnail']; ?>" 
                          alt="<?php echo htmlspecialchars($artikel['judul']); ?>" 
                          class="w-full h-full object-cover hover:scale-105 transition duration-500">
                     <?php else: ?>
@@ -74,24 +67,18 @@ include __DIR__ . '/templates/header_public.php';
                             <path d="M12 2a10 10 0 0110 10 10 10 0 01-10 10 10 10 0 01-10-10 10 10 0 0110-10m0 2a8 8 0 00-8 8 8 8 0 008 8 8 8 0 008-8 8 8 0 00-8-8z"/>
                             <path d="M12 6v6l4 2"/>
                         </svg>
-                        <p class="text-white/60 mt-2">Tidak ada thumbnail</p>
+                        <p class="text-white/60 mt-2 text-sm font-medium">Tidak ada gambar sampul</p>
                     </div>
                     <?php endif; ?>
                     
-                    <!-- Overlay Gradient -->
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                     
-                    <!-- Kategori Badge -->
                     <div class="absolute bottom-4 left-6 z-10">
-                        <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-white/90 backdrop-blur-sm text-green-700 text-sm font-semibold rounded-xl shadow-md">
-                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M4 6h16v2H4V6zm2-4h12v2H6V2zm16 8H2v12h20V10zm-2 10H4v-8h16v8z"></path>
-                            </svg>
-                            <?php echo htmlspecialchars($artikel['nama_kategori'] ?? 'Kesehatan'); ?>
+                        <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-white/90 backdrop-blur-sm text-green-700 text-xs font-bold rounded-xl shadow-md uppercase tracking-wider">
+                            <i class="fas fa-folder-open text-[11px] opacity-80 mr-0.5"></i><?php echo htmlspecialchars($artikel['nama_kategori'] ?? 'Kesehatan'); ?>
                         </span>
                     </div>
                     
-                    <!-- Zoom Hint -->
                     <div class="absolute bottom-4 right-4 z-10 bg-black/50 backdrop-blur-sm rounded-full p-2">
                         <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
@@ -99,62 +86,48 @@ include __DIR__ . '/templates/header_public.php';
                     </div>
                 </div>
                 
-                <!-- Content -->
                 <div class="p-6 md:p-8">
-                    <!-- Judul -->
-                    <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mb-4 leading-tight">
+                    <h1 class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-gray-800 mb-4 leading-tight tracking-tight">
                         <?php echo htmlspecialchars($artikel['judul']); ?>
                     </h1>
                     
-                    <!-- Meta Info -->
                     <div class="flex flex-wrap items-center gap-4 mb-6 pb-4 border-b border-gray-100">
                         <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
-                                </svg>
+                            <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white shadow-sm">
+                                <i class="fas fa-user-edit text-xs"></i>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-400">Penulis</p>
-                                <p class="text-sm font-medium text-gray-700"><?php echo htmlspecialchars($artikel['penulis'] ?? 'Admin SIPANDA'); ?></p>
+                                <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Penulis</p>
+                                <p class="text-xs font-bold text-gray-700"><?php echo htmlspecialchars($artikel['penulis'] ?? 'Admin SIPANDA'); ?></p>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
+                            <div class="w-8 h-8 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center text-gray-500">
+                                <i class="far fa-calendar-alt text-xs"></i>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-400">Tanggal Publikasi</p>
-                                <p class="text-sm font-medium text-gray-700"><?php echo date('d F Y', strtotime($artikel['created_at'])); ?></p>
+                                <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Rilis Publik</p>
+                                <p class="text-xs font-bold text-gray-700"><?php echo formatTanggalIndonesia($artikel['created_at']); ?></p>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
+                            <div class="w-8 h-8 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center text-gray-500">
+                                <i class="far fa-clock text-xs"></i>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-400">Estimasi Baca</p>
-                                <p class="text-sm font-medium text-gray-700"><?php echo ceil(str_word_count(strip_tags($artikel['konten'])) / 200); ?> menit</p>
+                                <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Estimasi Baca</p>
+                                <p class="text-xs font-bold text-gray-700"><?php echo ceil(str_word_count(strip_tags($artikel['konten'])) / 200); ?> menit</p>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Konten Artikel -->
-                    <div class="prose prose-green max-w-none">
+                    <div class="prose prose-green max-w-none text-gray-700">
                         <?php echo nl2br(htmlspecialchars_decode($artikel['konten'])); ?>
                     </div>
                     
-                    <!-- Share Section -->
                     <div class="border-t border-gray-100 mt-8 pt-6">
-                        <p class="text-gray-600 mb-3 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
-                            </svg>
-                            Bagikan artikel ini
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                            <i class="fas fa-share-nodes text-green-600 text-sm"></i> Bagikan Artikel Informasi
                         </p>
                         <div class="flex gap-3 flex-wrap">
                             <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode('http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']); ?>" target="_blank" class="group w-10 h-10 bg-[#1877F2] text-white rounded-xl flex items-center justify-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
@@ -173,9 +146,7 @@ include __DIR__ . '/templates/header_public.php';
                                 </svg>
                             </a>
                             <button onclick="copyToClipboard()" class="group w-10 h-10 bg-gray-600 text-white rounded-xl flex items-center justify-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
-                                </svg>
+                                <i class="fas fa-link text-sm"></i>
                             </button>
                         </div>
                     </div>
@@ -183,55 +154,44 @@ include __DIR__ . '/templates/header_public.php';
             </div>
         </div>
         
-        <!-- ========== SIDEBAR ========== -->
-            <div class="lg:col-span-1">
-            <!-- Kartu Profil SIPANDA -->
-            <div class="bg-gradient-to-r from-green-600 to-green-500 rounded-2xl p-6 text-white mb-6 relative overflow-hidden group">
+        <div class="lg:col-span-1">
+            <div class="bg-gradient-to-r from-green-600 to-green-500 rounded-2xl p-6 text-white mb-6 relative overflow-hidden group shadow-md">
                 <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition"></div>
                 <div class="relative z-10">
-                    <!-- Logo SIPANDA -->
                     <div class="flex justify-center mb-4">
                         <img src="img/sipanda.png" alt="SIPANDA" class="w-16 h-16 object-contain drop-shadow-lg">
                     </div>
-                    <h3 class="text-xl font-bold mb-2 text-center">SIPANDA</h3>
-                    <p class="text-green-100 text-sm mb-4 text-center">Sistem Informasi Pemantauan Anak dan Bunda</p>
-                    <a href="auth/register.php" class="inline-flex items-center justify-center gap-2 bg-white text-green-600 px-4 py-2 rounded-xl text-sm font-semibold hover:shadow-lg transition-all hover:gap-3 w-full">
-                        Daftar Sekarang
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                        </svg>
+                    <h3 class="text-xl font-bold mb-1 text-center tracking-tight">SIPANDA</h3>
+                    <p class="text-green-100 text-xs mb-4 text-center font-medium">Sistem Informasi Posyandu Anak dan Bunda</p>
+                    <a href="auth/register.php" class="inline-flex items-center justify-center gap-2 bg-white text-green-600 px-4 py-2.5 rounded-xl text-xs font-bold hover:shadow-lg transition-all hover:gap-3 w-full">
+                        Daftar Sekarang <i class="fas fa-arrow-right text-[10px]"></i>
                     </a>
                 </div>
             </div>
             
-            <!-- Artikel Terkait -->
             <?php if(mysqli_num_rows($artikel_terkait) > 0): ?>
-            <div class="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
+            <div class="bg-white rounded-2xl shadow-lg p-5 mb-6 border border-gray-100">
                 <div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100">
-                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M4 6h16v2H4V6zm2-4h12v2H6V2zm16 8H2v12h20V10zm-2 10H4v-8h16v8z"></path>
-                        </svg>
+                    <div class="w-7 h-7 bg-green-50 text-green-600 rounded-lg flex items-center justify-center shadow-sm border border-green-100/60">
+                        <i class="fas fa-layer-group text-xs"></i>
                     </div>
-                    <h3 class="font-bold text-gray-800">Artikel Terkait</h3>
+                    <h3 class="font-bold text-gray-800 text-sm">Artikel Sejenis</h3>
                 </div>
-                <div class="space-y-4">
+                <div class="space-y-3.5">
                     <?php while($terkait = mysqli_fetch_assoc($artikel_terkait)): ?>
-                    <a href="artikel_detail.php?id=<?php echo $terkait['id_artikel']; ?>" class="group flex gap-3 p-3 rounded-xl hover:bg-green-50 transition-all duration-300">
-                        <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-green-100 to-pink-100">
-                            <?php if($terkait['thumbnail'] && file_exists("../posyandu/uploads/artikel/" . $terkait['thumbnail'])): ?>
-                            <img src="../posyandu/uploads/artikel/<?php echo $terkait['thumbnail']; ?>" alt="<?php echo htmlspecialchars($terkait['judul']); ?>" class="w-full h-full object-cover group-hover:scale-105 transition">
+                    <a href="artikel_detail.php?id=<?php echo $terkait['id_artikel']; ?>" class="group flex gap-3 p-2 rounded-xl hover:bg-gray-50 transition duration-200">
+                        <div class="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-green-50 to-emerald-100 border border-gray-100/40">
+                            <?php if($terkait['thumbnail'] && file_exists("uploads/artikel/" . $terkait['thumbnail'])): ?>
+                            <img src="uploads/artikel/<?php echo $terkait['thumbnail']; ?>" alt="<?php echo htmlspecialchars($terkait['judul']); ?>" class="w-full h-full object-cover group-hover:scale-105 transition">
                             <?php else: ?>
-                            <div class="w-full h-full flex items-center justify-center">
-                                <svg class="w-6 h-6 text-green-400" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 2a10 10 0 0110 10 10 10 0 01-10 10 10 10 0 01-10-10 10 10 0 0110-10m0 2a8 8 0 00-8 8 8 8 0 008 8 8 8 0 008-8 8 8 0 00-8-8z"/>
-                                </svg>
+                            <div class="w-full h-full flex items-center justify-center text-green-300">
+                                <i class="fas fa-image text-xl"></i>
                             </div>
                             <?php endif; ?>
                         </div>
-                        <div class="flex-1">
-                            <p class="text-xs text-gray-400 mb-1"><?php echo date('d M Y', strtotime($terkait['created_at'])); ?></p>
-                            <h4 class="font-semibold text-gray-800 group-hover:text-green-600 transition line-clamp-2 text-sm">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[10px] text-gray-400 font-semibold uppercase mb-0.5"><?php echo formatTanggalIndonesia($terkait['created_at']); ?></p>
+                            <h4 class="font-bold text-gray-700 group-hover:text-green-600 transition line-clamp-2 text-xs leading-snug">
                                 <?php echo htmlspecialchars($terkait['judul']); ?>
                             </h4>
                         </div>
@@ -244,7 +204,6 @@ include __DIR__ . '/templates/header_public.php';
     </div>
 </div>
 
-<!-- ========== MODAL IMAGE FULLSCREEN ========== -->
 <div id="imageModal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-50" onclick="closeImageModal()">
     <div class="relative max-w-5xl w-full max-h-[90vh] mx-4 flex items-center justify-center">
         <img id="modalImage" src="" alt="" class="max-w-full max-h-[85vh] object-contain cursor-pointer transition-transform duration-200" ondblclick="toggleZoom()">
@@ -254,7 +213,7 @@ include __DIR__ . '/templates/header_public.php';
             </svg>
         </button>
     </div>
-    <p id="modalCaption" class="absolute bottom-6 left-0 right-0 text-center text-white/80 text-sm"></p>
+    <p id="modalCaption" class="absolute bottom-6 left-0 right-0 text-center text-white/80 text-sm font-semibold px-4"></p>
 </div>
 
 <script>
@@ -266,7 +225,7 @@ function copyToClipboard() {
             icon: 'success',
             title: 'Berhasil!',
             text: 'Link artikel telah disalin ke clipboard',
-            confirmButtonColor: '#22c55e',
+            confirmButtonColor: '#10b981',
             timer: 2000,
             showConfirmButton: false
         });
@@ -275,7 +234,7 @@ function copyToClipboard() {
             icon: 'error',
             title: 'Gagal!',
             text: 'Gagal menyalin link',
-            confirmButtonColor: '#dc2626'
+            confirmButtonColor: '#ef4444'
         });
     });
 }
@@ -373,6 +332,20 @@ document.addEventListener('keydown', function(e) {
     #modalImage {
         cursor: zoom-in;
         transition: transform 0.2s ease;
+    }
+    .line-clamp-1 {
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-clamp: 1;
+    }
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-clamp: 2;
     }
 </style>
 

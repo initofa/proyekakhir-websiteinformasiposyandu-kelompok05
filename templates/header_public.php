@@ -17,21 +17,78 @@ if (!isset($title)) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
-        * { font-family: 'Inter', sans-serif; }
-        .fade-in { animation: fadeIn 0.6s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .hover-scale { transition: all 0.3s ease; }
-        .hover-scale:hover { transform: translateY(-5px); }
-        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-        .line-clamp-4 { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
-        html { scroll-behavior: smooth; }
-        .bg-grid { background-image: radial-gradient(circle at 1px 1px, rgba(34,197,94,0.05) 1px, transparent 1px); background-size: 40px 40px; }
-        .shadow-glow { box-shadow: 0 0 20px rgba(34,197,94,0.1); }
-        .card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .card-hover:hover { box-shadow: 0 20px 40px -12px rgba(0,0,0,0.15); }
+      * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hover-scale {
+            transition: all 0.3s ease;
+        }
+
+        .hover-scale:hover {
+            transform: translateY(-5px);
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-clamp: 2; 
+        }
+
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-clamp: 3; 
+        }
+
+        .line-clamp-4 {
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-clamp: 4; 
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .bg-grid {
+            background-image: radial-gradient(circle at 1px 1px, rgba(34, 197, 94, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .shadow-glow {
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.1);
+        }
+
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-hover:hover {
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+        }
         
-        /* Glassmorphism Navbar */
         .glass-navbar {
             background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(50px);
@@ -87,12 +144,10 @@ if (!isset($title)) {
 </head>
 <body class="bg-white">
 
-<!-- ========== NAVBAR GLASSMORPHISM MODERN ========== -->
 <nav class="glass-navbar sticky top-0 z-50">
     <div class="container mx-auto px-4 md:px-8">
         <div class="flex justify-between items-center py-3 md:py-4">
             
-            <!-- Logo dengan Gambar -->
             <a href="index.php" class="flex items-center space-x-3 group">
                 <img src="img/sipanda.png" alt="SIPANDA" class="w-10 h-10 md:w-11 md:h-11 object-contain rounded-xl group-hover:scale-105 transition duration-300">
                 <div>
@@ -100,7 +155,7 @@ if (!isset($title)) {
                 </div>
             </a>
             
-            <!-- Desktop Menu - Tanpa Icon -->
+            <!-- Desktop Menu -->
             <div class="hidden md:flex items-center space-x-8">
                 <a href="index.php#profil" class="nav-link text-gray-700 hover:text-green-600 font-medium py-2 transition-all duration-200">
                     Profil
@@ -151,7 +206,6 @@ if (!isset($title)) {
 </nav>
 
 <script>
-    // Mobile menu toggle
     const mobileBtn = document.getElementById('mobileMenuBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     
@@ -160,7 +214,6 @@ if (!isset($title)) {
             mobileMenu.classList.toggle('hidden');
         });
         
-        // Close mobile menu when clicking a link
         document.querySelectorAll('#mobileMenu a').forEach(link => {
             link.addEventListener('click', () => {
                 mobileMenu.classList.add('hidden');
@@ -168,7 +221,6 @@ if (!isset($title)) {
         });
     }
     
-    // Active link detection on scroll
     window.addEventListener('scroll', () => {
         const sections = ['profil', 'layanan', 'kontak'];
         const scrollPos = window.scrollY + 100;

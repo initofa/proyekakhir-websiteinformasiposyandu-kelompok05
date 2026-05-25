@@ -1,44 +1,46 @@
 <?php
-// templates/footer_public.php - Footer untuk halaman publik
 $current_year = date('Y');
 ?>
-
-<!-- ========== CTA SECTION MODERN ========== -->
-<section class="py-20 relative overflow-hidden">
+<section class="py-12 relative overflow-hidden">
     <div class="absolute inset-0 bg-gradient-to-r from-green-700 via-green-600 to-green-500"></div>
-    <div class="absolute top-0 -left-20 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-0 -right-20 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+    <div class="absolute top-0 -left-20 w-60 h-60 bg-white/10 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 -right-20 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
     <div class="container mx-auto px-4 text-center relative z-10">
-        <div class="max-w-3xl mx-auto">
-            <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-white/90 text-sm mb-6">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+        <div class="max-w-2xl mx-auto">
+            <div class="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-sm px-3.5 py-1 rounded-full text-white/95 text-xs mb-4 font-medium tracking-wide">
+                <svg class="w-3.5 h-3.5 text-pink-300 fill-current animate-pulse" viewBox="0 0 24 24">
+                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                 </svg>
-                <span>Bergabung dengan ribuan keluarga sehat</span>
+                <span>Mitra Terpercaya untuk Ibu dan Buah Hati</span>
             </div>
-            <h3 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">Siap Menjaga Kesehatan<br>Keluarga Anda?</h3>
-            <p class="text-green-100 text-lg mb-8 max-w-xl mx-auto">Daftar sekarang dan nikmati kemudahan akses layanan kesehatan secara online</p>
-            <div class="flex gap-4 justify-center flex-wrap">
-                <a href="auth/register.php" class="group bg-white text-green-600 px-8 py-3.5 rounded-full font-bold hover:shadow-2xl transition-all duration-300 hover:scale-105 flex items-center gap-2">
+            
+            <h3 class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white mb-3 leading-tight">
+                Kesehatan Buah Hati & Kehamilan dalam Satu Genggaman
+            </h3>
+            
+            <p class="text-green-50 text-sm md:text-base mb-6 max-w-xl mx-auto leading-relaxed">
+                Akses pendaftaran Posyandu secara online, pantau jadwal imunisasi otomatis, dan pantau tumbuh kembang si kecil tanpa perlu antre lama.
+            </p>
+            
+            <div class="flex gap-3 justify-center flex-wrap text-sm">
+                <a href="auth/register.php" class="group bg-white text-green-600 px-6 py-2.5 rounded-full font-bold hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-1.5">
                     <span>Daftar Sekarang</span>
-                    <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                     </svg>
                 </a>
-                <a href="index.php#layanan" class="border-2 border-white text-white px-8 py-3.5 rounded-full font-bold hover:bg-white hover:text-green-600 transition-all duration-300">
-                    Lihat Layanan
+                <a href="index.php#layanan" class="border border-white/80 text-white px-6 py-2.5 rounded-full font-semibold hover:bg-white hover:text-green-600 transition-all duration-300 backdrop-blur-sm">
+                    Pelajari Layanan
                 </a>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ========== FOOTER MODERN DENGAN ID KONTAK ========== -->
 <footer id="kontak" class="bg-gray-900 pt-16 pb-8">
     <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
             
-        <!-- Brand Column -->
         <div class="lg:col-span-1">
             <div class="flex items-center space-x-3 mb-4">
                 <img src="img/sipanda.png" alt="SIPANDA" class="w-10 h-10 object-contain">
@@ -70,7 +72,6 @@ $current_year = date('Y');
                 </a>
             </div>
         </div>
-            <!-- Explore Column -->
             <div>
                 <h4 class="text-white font-semibold text-lg mb-5">Jelajahi</h4>
                 <ul class="space-y-3">
@@ -81,7 +82,6 @@ $current_year = date('Y');
                 </ul>
             </div>
             
-            <!-- Layanan Column -->
             <div>
                 <h4 class="text-white font-semibold text-lg mb-5">Layanan Kami</h4>
                 <ul class="space-y-3">
@@ -104,7 +104,6 @@ $current_year = date('Y');
                 </ul>
             </div>
             
-            <!-- Kontak Column (highlighted) -->
             <div id="kontak-section">
                 <h4 class="text-white font-semibold text-lg mb-5">Kontak Kami</h4>
                 <ul class="space-y-4">
@@ -150,7 +149,6 @@ $current_year = date('Y');
     </div>
 </footer>
 
-<!-- ========== BACK TO TOP BUTTON MODERN ========== -->
 <button id="backToTop" class="fixed bottom-8 right-8 w-12 h-12 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 opacity-0 invisible hover:scale-110 z-50 flex items-center justify-center group">
     <svg class="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
@@ -158,7 +156,6 @@ $current_year = date('Y');
 </button>
 
 <script>
-    // Back to Top Button
     const backToTop = document.getElementById('backToTop');
     
     window.addEventListener('scroll', () => {
