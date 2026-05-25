@@ -32,7 +32,8 @@ $total = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM p
     WHERE a.nik_ibu='$nik' $where_anak"))['total'];
 $total_pages = ceil($total / $limit);
 
-$result = mysqli_query($conn, "SELECT pi.*, a.nama_anak, v.nama_vaksin, j.tanggal, hi.berat_badan, hi.tinggi_badan, hi.status_gizi, hi.nafsu_makan
+// PERUBAHAN: Memastikan pemanggilan pi.STATUS alias status_pendaftaran agar tidak rancu dan terhindar dari error Undefined index
+$result = mysqli_query($conn, "SELECT pi.*, pi.STATUS as status_pendaftaran, a.nama_anak, v.nama_vaksin, j.tanggal, hi.berat_badan, hi.tinggi_badan, hi.status_gizi, hi.nafsu_makan
     FROM pendaftaran_imunisasi pi 
     JOIN anak a ON pi.id_anak = a.id_anak 
     JOIN jadwal_imunisasi j ON pi.id_jadwal = j.id_jadwal 
@@ -43,31 +44,32 @@ $result = mysqli_query($conn, "SELECT pi.*, a.nama_anak, v.nama_vaksin, j.tangga
     LIMIT $offset, $limit");
 ?>
 
+<form id="formDetailImunisasiPost" action="detail_imunisasi.php" method="POST" style="display:none;">
+    <input type="hidden" name="id_pendaftaran" id="idPendaftaranPost">
+</form>
+
 <div class="fade-in">
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-bold text-green-800">Riwayat Imunisasi</h1>
-        <a href="jadwal_imunisasi.php" class="text-green-600 hover:text-green-700 text-sm">
-            <i class="fas fa-calendar-plus mr-1"></i> Jadwal Imunisasi
-        </a>
+       
     </div>
     
-    <!-- Filter Anak (Hanya muncul jika lebih dari 1 anak) -->
     <?php if($jumlah_anak > 1): ?>
     <div class="bg-white rounded-2xl shadow-lg p-4 mb-6">
         <form method="GET" class="flex flex-col sm:flex-row gap-3 items-end">
             <div class="flex-1">
                 <label class="block text-sm font-semibold text-gray-700 mb-1">Filter Berdasarkan Anak</label>
-                <select name="anak_id" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-green-400" onchange="this.form.submit()">
+                <select name="anak_id" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-green-400 bg-white text-sm" onchange="this.form.submit()">
                     <option value="0">Semua Anak</option>
                     <?php mysqli_data_seek($anak_list, 0); while($a = mysqli_fetch_assoc($anak_list)): ?>
                     <option value="<?php echo $a['id_anak']; ?>" <?php echo $anak_filter == $a['id_anak'] ? 'selected' : ''; ?>>
-                        <?php echo $a['nama_anak']; ?>
+                        <?php echo htmlspecialchars($a['nama_anak']); ?>
                     </option>
                     <?php endwhile; ?>
                 </select>
             </div>
             <?php if($anak_filter > 0): ?>
-            <a href="riwayat_imunisasi.php" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition text-center">
+            <a href="riwayat_imunisasi.php" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition text-center text-sm font-semibold shadow-sm">
                 <i class="fas fa-times mr-1"></i> Reset Filter
             </a>
             <?php endif; ?>
@@ -75,9 +77,11 @@ $result = mysqli_query($conn, "SELECT pi.*, a.nama_anak, v.nama_vaksin, j.tangga
     </div>
     <?php endif; ?>
     
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <?php if(mysqli_num_rows($result) > 0): ?>
         <?php while($row = mysqli_fetch_assoc($result)): 
-            // Status hanya: pending, selesai, batal
+            $status_curr = $row['status_pendaftaran']; // Menggunakan alias hasil query baru
+
             $status_color = [
                 'pending' => 'bg-yellow-100 text-yellow-700 border-l-4 border-yellow-500',
                 'selesai' => 'bg-green-100 text-green-700 border-l-4 border-green-500',
@@ -94,118 +98,121 @@ $result = mysqli_query($conn, "SELECT pi.*, a.nama_anak, v.nama_vaksin, j.tangga
                 'batal' => 'Dibatalkan'
             ];
             
-            // Default jika status tidak dikenal
-            $color = isset($status_color[$row['status']]) ? $status_color[$row['status']] : 'bg-gray-100 text-gray-700 border-l-4 border-gray-500';
-            $icon = isset($status_icon[$row['status']]) ? $status_icon[$row['status']] : 'fa-question-circle';
-            $text = isset($status_text[$row['status']]) ? $status_text[$row['status']] : ucfirst($row['status']);
+            $color = isset($status_color[$status_curr]) ? $status_color[$status_curr] : 'bg-gray-100 text-gray-700 border-l-4 border-gray-500';
+            $icon = isset($status_icon[$status_curr]) ? $status_icon[$status_curr] : 'fa-question-circle';
+            $text = isset($status_text[$status_curr]) ? $status_text[$status_curr] : ucfirst($status_curr);
         ?>
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 duration-300">
-            <!-- Header Card -->
-            <div class="<?php echo $color; ?> p-4">
-                <div class="flex justify-between items-start">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
-                            <i class="fas fa-syringe text-green-600 text-xl"></i>
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 duration-300 flex flex-col justify-between border border-gray-100">
+            <div>
+                <div class="<?php echo $color; ?> p-4 bg-opacity-40">
+                    <div class="flex justify-between items-start gap-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm flex-shrink-0">
+                                <i class="fas fa-syringe text-green-600 text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-sm leading-tight"><?php echo htmlspecialchars($row['nama_vaksin']); ?></h3>
+                                <p class="text-xs text-gray-500 mt-0.5"><?php echo htmlspecialchars($row['nama_anak']); ?></p>
+                            </div>
                         </div>
-                        <div>
-                            <h3 class="font-bold text-gray-800"><?php echo $row['nama_vaksin']; ?></h3>
-                            <p class="text-xs text-gray-500"><?php echo $row['nama_anak']; ?></p>
+                        <div class="flex-shrink-0">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold shadow-sm
+                                <?php echo $status_curr == 'pending' ? 'bg-yellow-200 text-yellow-800' : 
+                                    ($status_curr == 'selesai' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'); ?>">
+                                <i class="fas <?php echo $icon; ?> text-[10px]"></i>
+                                <?php echo $text; ?>
+                            </span>
                         </div>
                     </div>
-                    <div class="text-right">
-                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium 
-                            <?php echo $row['status'] == 'pending' ? 'bg-yellow-200 text-yellow-800' : 
-                                ($row['status'] == 'selesai' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'); ?>">
-                            <i class="fas <?php echo $icon; ?> text-xs"></i>
-                            <?php echo $text; ?>
-                        </span>
+                </div>
+                
+                <div class="p-4 space-y-3">
+                    <div class="flex items-center gap-2 text-gray-600 bg-gray-50 p-2.5 rounded-xl border border-gray-100 text-xs">
+                        <i class="fas fa-calendar-alt text-green-500 w-4 text-center"></i>
+                        <span class="font-medium"><?php echo formatTanggalIndonesia($row['tanggal']); ?></span>
                     </div>
+                    
+                    <?php if($status_curr == 'selesai' && $row['berat_badan']): ?>
+                    <div class="bg-white border border-gray-100 rounded-xl p-3 shadow-sm space-y-2">
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                                <p class="text-gray-400 font-medium">Berat Badan</p>
+                                <p class="font-bold text-gray-700 text-sm mt-0.5"><?php echo number_format($row['berat_badan'], 2); ?> kg</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 font-medium">Tinggi Badan</p>
+                                <p class="font-bold text-gray-700 text-sm mt-0.5"><?php echo number_format($row['tinggi_badan'], 2); ?> cm</p>
+                            </div>
+                            <div class="col-span-2 pt-1 border-t border-gray-100">
+                                <p class="text-gray-400 font-medium">Status Gizi</p>
+                                <p class="font-bold text-sm mt-0.5 <?php echo $row['status_gizi'] == 'Normal' ? 'text-green-600' : 'text-yellow-600'; ?>">
+                                    <?php echo htmlspecialchars($row['status_gizi'] ?: 'Normal'); ?>
+                                    <?php if($row['status_gizi'] != 'Normal' && $row['status_gizi'] != ''): ?>
+                                    <i class="fas fa-exclamation-triangle ml-1 text-xs"></i>
+                                    <?php endif; ?>
+                                </p>
+                            </div>
+                            <?php if($row['nafsu_makan']): ?>
+                            <div class="col-span-2 pt-1 border-t border-gray-100">
+                                <p class="text-gray-400 font-medium">Nafsu Makan Balita</p>
+                                <p class="font-semibold text-gray-700 mt-0.5"><?php echo ucfirst($row['nafsu_makan']); ?></p>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <?php elseif($status_curr == 'pending'): ?>
+                    <div class="bg-yellow-50/50 border border-yellow-100 rounded-xl p-4 text-center">
+                        <i class="fas fa-hourglass-half text-yellow-500 text-lg mb-1 block animate-spin" style="animation-duration: 3s;"></i>
+                        <span class="text-xs text-yellow-700 font-medium">Menunggu kedatangan dan pelayanan di lokasi posyandu</span>
+                    </div>
+                    <?php elseif($status_curr == 'batal'): ?>
+                    <div class="bg-red-50/50 border border-red-100 rounded-xl p-4 text-center">
+                        <i class="fas fa-ban text-red-400 text-lg mb-1 block"></i>
+                        <span class="text-xs text-red-700 font-medium">Sesi pendaftaran imunisasi ini telah dibatalkan</span>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
             
-            <!-- Body Card -->
-            <div class="p-4">
-                <div class="flex items-center gap-2 text-gray-600 mb-3">
-                    <i class="fas fa-calendar-alt text-green-500 w-4"></i>
-                    <span class="text-sm"><?php echo date('d F Y', strtotime($row['tanggal'])); ?></span>
-                </div>
-                
-                <?php if($row['status'] == 'selesai' && $row['berat_badan']): ?>
-                <div class="bg-gray-50 rounded-lg p-3 mb-3">
-                    <div class="grid grid-cols-2 gap-2 text-sm">
-                        <div>
-                            <p class="text-gray-500 text-xs">Berat Badan</p>
-                            <p class="font-semibold text-gray-800"><?php echo $row['berat_badan']; ?> kg</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-500 text-xs">Tinggi Badan</p>
-                            <p class="font-semibold text-gray-800"><?php echo $row['tinggi_badan']; ?> cm</p>
-                        </div>
-                        <div class="col-span-2">
-                            <p class="text-gray-500 text-xs">Status Gizi</p>
-                            <p class="font-semibold <?php echo $row['status_gizi'] == 'Normal' ? 'text-green-600' : 'text-yellow-600'; ?>">
-                                <?php echo $row['status_gizi']; ?>
-                                <?php if($row['status_gizi'] != 'Normal'): ?>
-                                <i class="fas fa-exclamation-triangle ml-1 text-xs"></i>
-                                <?php endif; ?>
-                            </p>
-                        </div>
-                        <?php if($row['nafsu_makan']): ?>
-                        <div class="col-span-2">
-                            <p class="text-gray-500 text-xs">Nafsu Makan</p>
-                            <p class="font-semibold text-gray-800"><?php echo ucfirst($row['nafsu_makan']); ?></p>
-                        </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                <?php elseif($row['status'] == 'pending'): ?>
-                <div class="bg-yellow-50 rounded-lg p-3 mb-3 text-center">
-                    <i class="fas fa-hourglass-half text-yellow-500 mr-1"></i>
-                    <span class="text-xs text-yellow-700">Menunggu jadwal imunisasi</span>
-                </div>
-                <?php elseif($row['status'] == 'batal'): ?>
-                <div class="bg-red-50 rounded-lg p-3 mb-3 text-center">
-                    <i class="fas fa-ban text-red-500 mr-1"></i>
-                    <span class="text-xs text-red-700">Pendaftaran dibatalkan</span>
-                </div>
-                <?php endif; ?>
-                
-                <!-- Tombol Detail -->
-                <a href="detail_imunisasi.php?id=<?php echo $row['id_pendaftaran']; ?>" 
-                   class="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-green-600 to-emerald-500 text-white py-2 rounded-lg text-sm font-semibold hover:shadow-md transition">
-                    <i class="fas fa-info-circle"></i> Lihat Detail
-                    <i class="fas fa-arrow-right text-xs"></i>
-                </a>
+            <div class="p-4 pt-0">
+                <button type="button" onclick="bukaDetailImunisasiPost('<?php echo $row['id_pendaftaran']; ?>')" 
+                        class="w-full bg-gradient-to-r from-green-600 to-emerald-500 text-white py-2 rounded-xl text-xs font-bold hover:shadow-lg transition flex items-center justify-center gap-1.5 shadow-sm">
+                    <i class="fas fa-info-circle text-sm"></i> Lihat Detail
+                </button>
             </div>
         </div>
         <?php endwhile; ?>
-        
-        <?php if(mysqli_num_rows($result) == 0): ?>
-        <div class="col-span-full">
-            <div class="bg-white rounded-2xl shadow-lg p-12 text-center">
-                <i class="fas fa-syringe text-6xl text-gray-300 mb-4"></i>
-                <i class="fas fa-times-circle text-6xl text-gray-300 -ml-4"></i>
-                <h3 class="text-xl font-semibold text-gray-600 mb-2">Belum Ada Riwayat Imunisasi</h3>
-                <p class="text-gray-500">
-                    <?php if($anak_filter > 0): ?>
-                    Anak ini belum memiliki riwayat imunisasi
-                    <?php else: ?>
-                    Silakan daftar imunisasi terlebih dahulu
-                    <?php endif; ?>
-                </p>
-                <a href="jadwal_imunisasi.php" class="inline-block mt-4 bg-green-600 text-white px-6 py-2 rounded-xl hover:bg-green-700 transition">
-                    <i class="fas fa-calendar-plus mr-2"></i> Lihat Jadwal Imunisasi
-                </a>
-            </div>
+        <?php else: ?>
+        <div class="col-span-full bg-white rounded-2xl shadow-lg p-12 text-center">
+            <i class="fas fa-history text-6xl text-gray-300 mb-3"></i>
+            <h3 class="text-xl font-bold text-gray-600 mb-1">Belum Ada Riwayat</h3>
+            <p class="text-gray-400 text-sm">
+                <?php if($anak_filter > 0): ?>
+                Anak yang dipilih belum memiliki riwayat pendaftaran imunisasi.
+                <?php else: ?>
+                Anda belum memiliki riwayat pendaftaran pelayanan imunisasi di posyandu.
+                <?php endif; ?>
+            </p>
+            <a href="jadwal_imunisasi.php" class="inline-block mt-4 bg-green-600 text-white px-5 py-2 rounded-xl text-xs font-semibold hover:bg-green-700 transition shadow-sm">
+                <i class="fas fa-calendar-plus mr-1"></i> Lihat Jadwal Aktif
+            </a>
         </div>
         <?php endif; ?>
     </div>
     
     <?php if($total_pages > 1): ?>
-    <div class="mt-6">
+    <div class="mt-8 flex justify-center">
         <?php echo paginate($page, $total_pages, "riwayat_imunisasi.php" . ($anak_filter > 0 ? "?anak_id=$anak_filter" : "")); ?>
     </div>
     <?php endif; ?>
 </div>
+
+<script>
+// Fungsi pemicu form POST tersembunyi demi menjaga kebersihan url parameter
+function bukaDetailImunisasiPost(idPendaftaran) {
+    document.getElementById('idPendaftaranPost').value = idPendaftaran;
+    document.getElementById('formDetailImunisasiPost').submit();
+}
+</script>
 
 <?php include __DIR__ . '/../../templates/footer.php'; ?>
