@@ -6,27 +6,42 @@ include __DIR__ . '/../../templates/sidebar.php';
 
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $tab = isset($_GET['tab']) ? $_GET['tab'] : 'semua';
+$search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
 $limit = 15;
 $offset = ($page - 1) * $limit;
 
-// HITUNG TOTAL SEMUA STATUS
-$total_aktif = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM ibu_hamil WHERE status_kehamilan='aktif'"))['total'];
-$total_melahirkan = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM ibu_hamil WHERE status_kehamilan='melahirkan'"))['total'];
-$total_keguguran = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM ibu_hamil WHERE status_kehamilan='keguguran'"))['total'];
-$total_pindah = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM ibu_hamil WHERE status_kehamilan='pindah'"))['total'];
+// HITUNG TOTAL SEMUA STATUS (dengan pencarian)
+$search_condition = "";
+if($search) {
+    $search_condition = "AND (u.nama_lengkap LIKE '%$search%' OR u.nik LIKE '%$search%' OR u.alamat LIKE '%$search%')";
+}
+
+$total_aktif = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM ibu_hamil ih JOIN users u ON ih.nik_ibu=u.nik WHERE ih.status_kehamilan='aktif' $search_condition"))['total'];
+$total_melahirkan = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM ibu_hamil ih JOIN users u ON ih.nik_ibu=u.nik WHERE ih.status_kehamilan='melahirkan' $search_condition"))['total'];
+$total_keguguran = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM ibu_hamil ih JOIN users u ON ih.nik_ibu=u.nik WHERE ih.status_kehamilan='keguguran' $search_condition"))['total'];
+$total_pindah = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM ibu_hamil ih JOIN users u ON ih.nik_ibu=u.nik WHERE ih.status_kehamilan='pindah' $search_condition"))['total'];
 $total_semua = $total_aktif + $total_melahirkan + $total_keguguran + $total_pindah;
 
 // Filter berdasarkan tab
 if($tab == 'aktif') {
-    $where = "WHERE status_kehamilan='aktif'";
+    $where = "WHERE ih.status_kehamilan='aktif'";
 } elseif($tab == 'melahirkan') {
-    $where = "WHERE status_kehamilan='melahirkan'";
+    $where = "WHERE ih.status_kehamilan='melahirkan'";
 } elseif($tab == 'keguguran') {
-    $where = "WHERE status_kehamilan='keguguran'";
+    $where = "WHERE ih.status_kehamilan='keguguran'";
 } elseif($tab == 'pindah') {
-    $where = "WHERE status_kehamilan='pindah'";
+    $where = "WHERE ih.status_kehamilan='pindah'";
 } else {
     $where = "";
+}
+
+// Tambahkan kondisi pencarian
+if($search) {
+    if($where) {
+        $where .= " AND (u.nama_lengkap LIKE '%$search%' OR u.nik LIKE '%$search%' OR u.alamat LIKE '%$search%')";
+    } else {
+        $where = "WHERE (u.nama_lengkap LIKE '%$search%' OR u.nik LIKE '%$search%' OR u.alamat LIKE '%$search%')";
+    }
 }
 
 // Hitung total data untuk pagination
@@ -43,9 +58,10 @@ if($tab == 'semua') {
 }
 $total_pages = ceil($total_data / $limit);
 
-// AMBIL DATA
-$result = mysqli_query($conn, "SELECT ih.*, u.nama_lengkap, u.no_wa, u.alamat,
-    (SELECT MAX(tanggal_pemeriksaan) FROM pemeriksaan_kehamilan WHERE id_kehamilan=ih.id_kehamilan) as tgl_periksa_terakhir
+// AMBIL DATA (ditambahkan total_pemeriksaan)
+$result = mysqli_query($conn, "SELECT ih.*, u.nama_lengkap, u.no_wa, u.alamat, u.nik,
+    (SELECT MAX(tanggal_pemeriksaan) FROM pemeriksaan_kehamilan WHERE id_kehamilan=ih.id_kehamilan) as tgl_periksa_terakhir,
+    (SELECT COUNT(*) FROM pemeriksaan_kehamilan WHERE id_kehamilan=ih.id_kehamilan) as total_pemeriksaan
     FROM ibu_hamil ih 
     JOIN users u ON ih.nik_ibu=u.nik 
     $where
@@ -82,21 +98,23 @@ function cekLamaTidakPeriksa($tgl_periksa_terakhir) {
     return $bulan_selisih >= 2;
 }
 
-// Fungsi untuk mendapatkan warna card berdasarkan status
+// PERUBAHAN: Fungsi untuk mendapatkan warna card berdasarkan status
+// Warna pink untuk peringatan diubah menjadi garis tepi (border) seperti yang lain
 function getCardColor($status, $need_attention) {
+    // Jika butuh perhatian (2 bulan tidak periksa) dan status aktif, tambahkan border pink
     if($need_attention && $status == 'aktif') {
-        return 'bg-pink-50 border-2 border-pink-300';
+        return 'bg-white border-l-4 border-pink-500 border-2 border-pink-300';
     }
     
     switch($status) {
         case 'aktif':
             return 'bg-white border-l-4 border-green-500';
         case 'melahirkan':
-            return 'bg-blue-50 border-l-4 border-blue-500';
+            return 'bg-white border-l-4 border-blue-500';
         case 'keguguran':
-            return 'bg-red-50 border-l-4 border-red-500';
+            return 'bg-white border-l-4 border-red-500';
         case 'pindah':
-            return 'bg-orange-50 border-l-4 border-orange-500';
+            return 'bg-white border-l-4 border-orange-500';
         default:
             return 'bg-white';
     }
@@ -121,27 +139,50 @@ function getStatusBadge($status) {
 
 <div class="fade-in">
     <!-- Header -->
-    <h1 class="text-2xl font-bold text-green-800 mb-4">Data Ibu Hamil</h1>
+    <div class="flex justify-between items-center mb-4">
+        <h1 class="text-2xl font-bold text-green-800">Data Ibu Hamil</h1>
+    </div>
+    
+    <!-- Search Bar -->
+    <div class="bg-white rounded-2xl shadow-lg p-4 mb-6">
+        <form method="GET" class="flex flex-col sm:flex-row gap-3">
+            <input type="hidden" name="tab" value="<?php echo $tab; ?>">
+            <div class="flex-1 relative">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" 
+                       placeholder="Cari ibu hamil (NIK, Nama, atau Alamat)..." 
+                       class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200">
+            </div>
+            <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-xl hover:bg-green-700 transition flex items-center justify-center gap-2">
+                <i class="fas fa-search"></i> Cari
+            </button>
+            <?php if($search): ?>
+            <a href="?tab=<?php echo $tab; ?>&page=1" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition flex items-center justify-center gap-2">
+                <i class="fas fa-times"></i> Reset
+            </a>
+            <?php endif; ?>
+        </form>
+    </div>
     
     <!-- Tab Navigation -->
     <div class="flex flex-wrap gap-2 mb-6 border-b border-gray-200 pb-2">
-        <a href="?tab=semua&page=1" 
+        <a href="?tab=semua&page=1<?php echo $search ? '&search='.urlencode($search) : ''; ?>" 
            class="px-4 py-2 rounded-t-lg text-sm font-medium transition-all duration-300 <?php echo $tab == 'semua' ? 'bg-green-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'; ?>">
             <i class="fas fa-chart-pie mr-1"></i> Semua (<?php echo $total_semua; ?>)
         </a>
-        <a href="?tab=aktif&page=1" 
+        <a href="?tab=aktif&page=1<?php echo $search ? '&search='.urlencode($search) : ''; ?>" 
            class="px-4 py-2 rounded-t-lg text-sm font-medium transition-all duration-300 <?php echo $tab == 'aktif' ? 'bg-green-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'; ?>">
             <i class="fas fa-check-circle text-green-600 mr-1"></i> Aktif (<?php echo $total_aktif; ?>)
         </a>
-        <a href="?tab=melahirkan&page=1" 
+        <a href="?tab=melahirkan&page=1<?php echo $search ? '&search='.urlencode($search) : ''; ?>" 
            class="px-4 py-2 rounded-t-lg text-sm font-medium transition-all duration-300 <?php echo $tab == 'melahirkan' ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'; ?>">
             <i class="fas fa-baby-carriage text-blue-600 mr-1"></i> Melahirkan (<?php echo $total_melahirkan; ?>)
         </a>
-        <a href="?tab=keguguran&page=1" 
+        <a href="?tab=keguguran&page=1<?php echo $search ? '&search='.urlencode($search) : ''; ?>" 
            class="px-4 py-2 rounded-t-lg text-sm font-medium transition-all duration-300 <?php echo $tab == 'keguguran' ? 'bg-red-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'; ?>">
             <i class="fas fa-heart-broken text-red-600 mr-1"></i> Keguguran (<?php echo $total_keguguran; ?>)
         </a>
-        <a href="?tab=pindah&page=1" 
+        <a href="?tab=pindah&page=1<?php echo $search ? '&search='.urlencode($search) : ''; ?>" 
            class="px-4 py-2 rounded-t-lg text-sm font-medium transition-all duration-300 <?php echo $tab == 'pindah' ? 'bg-orange-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'; ?>">
             <i class="fas fa-exchange-alt text-orange-600 mr-1"></i> Pindah (<?php echo $total_pindah; ?>)
         </a>
@@ -180,7 +221,8 @@ function getStatusBadge($status) {
                 <div class="flex justify-between items-center">
                     <div>
                         <i class="fas fa-female text-2xl"></i>
-                        <h3 class="text-lg font-bold"><?php echo $row['nama_lengkap']; ?></h3>
+                        <h3 class="text-lg font-bold"><?php echo htmlspecialchars($row['nama_lengkap']); ?></h3>
+                        <p class="text-xs text-white/80">NIK: <?php echo $row['nik']; ?></p>
                     </div>
                     <div class="text-right">
                         <span class="bg-white/20 px-2 py-1 rounded-full text-xs"><?php echo $usia_display; ?></span>
@@ -196,11 +238,14 @@ function getStatusBadge($status) {
                 <p><i class="fas fa-heartbeat w-4 text-gray-500"></i> TD: <?php echo $row['tekanan_darah']; ?></p>
                 <p><i class="fas fa-clock w-4 text-gray-500"></i> Usia: <?php echo $usia_display; ?></p>
                 
+                <!-- TAMBAHAN: Total Pemeriksaan -->
+                <p class="mt-1"><i class="fas fa-stethoscope w-4 text-gray-500"></i> Pemeriksaan: <?php echo $row['total_pemeriksaan']; ?> kali</p>
+                
                 <?php if($need_attention): ?>
-                <div class="mt-2 p-2 bg-pink-100 border border-pink-300 rounded-lg">
+                <div class="mt-2 p-2 bg-pink-50 border border-pink-200 rounded-lg">
                     <div class="flex items-center gap-2">
                         <i class="fas fa-exclamation-triangle text-pink-600"></i>
-                        <span class="text-xs text-pink-700 font-semibold">Sudah 2 bulan tidak periksa!</span>
+                        <span class="text-xs text-pink-700 font-semibold">⚠️ Sudah 2 bulan tidak periksa!</span>
                     </div>
                     <?php if($row['tgl_periksa_terakhir']): ?>
                     <p class="text-xs text-pink-600 mt-1">Terakhir periksa: <?php echo date('d/m/Y', strtotime($row['tgl_periksa_terakhir'])); ?></p>
@@ -212,11 +257,11 @@ function getStatusBadge($status) {
                 
                 <div class="flex gap-2 mt-3">
                     <a href="detail_ibu_hamil.php?id=<?php echo $row['id_kehamilan']; ?>" class="flex-1 text-center bg-green-600 text-white py-1 rounded-lg text-sm hover:bg-green-700 transition">
-                        Detail
+                        <i class="fas fa-eye mr-1"></i> Detail
                     </a>
                     <?php if($row['status_kehamilan'] == 'aktif'): ?>
                     <a href="pemeriksaan.php?id=<?php echo $row['id_kehamilan']; ?>" class="flex-1 text-center bg-blue-600 text-white py-1 rounded-lg text-sm hover:bg-blue-700 transition">
-                        Pemeriksaan
+                    Pemeriksaan
                     </a>
                     <?php endif; ?>
                     <a href="<?php echo $wa_url; ?>" target="_blank" class="flex-1 text-center bg-green-500 text-white py-1 rounded-lg text-sm hover:bg-green-600 transition flex items-center justify-center gap-1">
@@ -232,7 +277,7 @@ function getStatusBadge($status) {
             <div class="bg-white rounded-2xl shadow-lg p-12 text-center">
                 <i class="fas fa-folder-open text-6xl text-gray-300 mb-4"></i>
                 <h3 class="text-xl font-semibold text-gray-600 mb-2">Tidak Ada Data</h3>
-                <p class="text-gray-500">Tidak ada data ibu hamil dengan status ini</p>
+                <p class="text-gray-500">Tidak ada data ibu hamil dengan kriteria pencarian ini</p>
             </div>
         </div>
         <?php endif; ?>
@@ -240,7 +285,7 @@ function getStatusBadge($status) {
     
     <?php if($total_pages > 1): ?>
     <div class="mt-6">
-        <?php echo paginate($page, $total_pages, "list_ibu_hamil.php?tab=$tab"); ?>
+        <?php echo paginate($page, $total_pages, "list_ibu_hamil.php?tab=$tab" . ($search ? "&search=" . urlencode($search) : "")); ?>
     </div>
     <?php endif; ?>
 </div>
