@@ -10,11 +10,6 @@ $nik = $_SESSION['nik'];
 $cek_aktif = mysqli_query($conn, "SELECT id_kehamilan FROM ibu_hamil WHERE nik_ibu = '$nik' AND status_kehamilan = 'aktif'");
 $ada_kehamilan_aktif = mysqli_num_rows($cek_aktif) > 0;
 
-// Ambil HPHT terakhir dari riwayat kehamilan (jika ada)
-$query_hpht_terakhir = mysqli_query($conn, "SELECT hpht FROM ibu_hamil WHERE nik_ibu = '$nik' ORDER BY created_at DESC LIMIT 1");
-$hpht_terakhir = mysqli_fetch_assoc($query_hpht_terakhir);
-$hpht_lama = $hpht_terakhir ? $hpht_terakhir['hpht'] : '';
-
 $error = '';
 $success = '';
 
@@ -71,7 +66,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !$ada_kehamilan_aktif){
         
         <form method="POST" id="formKehamilan">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- HPHT dengan penjelasan untuk ibu hamil -->
                 <div class="md:col-span-2">
                     <label class="block font-semibold text-gray-700 mb-2">
                         HPHT 
@@ -80,11 +74,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !$ada_kehamilan_aktif){
                         </button>
                         <span class="text-red-500">*</span>
                     </label>
-                    <input type="date" name="hpht" id="hpht" required 
-                           value="<?php echo $hpht_lama; ?>"
+                    <input type="date" name="hpht" id="hpht" required value=""
                            class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-green-400">
                     
-                    <!-- Penjelasan singkat ramah ibu hamil -->
                     <div class="text-sm text-green-700 bg-green-50 p-3 rounded-md mt-2 border border-green-200">
                         <i class="fas fa-female mr-1"></i> 
                         <strong>Apa itu HPHT?</strong> Hari Pertama Haid Terakhir, yaitu <span class="font-semibold">tanggal pertama kali Anda mengalami menstruasi sebelum hamil</span>.
@@ -93,7 +85,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !$ada_kehamilan_aktif){
                     </div>
                 </div>
                 
-                <!-- Usia Kehamilan (otomatis) -->
                 <div>
                     <label class="block font-semibold text-gray-700 mb-2">
                         Usia Kehamilan (minggu)
@@ -103,7 +94,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !$ada_kehamilan_aktif){
                     <p class="text-xs text-gray-400 mt-1">✅ Dihitung otomatis dari HPHT</p>
                 </div>
                 
-                <!-- HPL (otomatis) dengan penjelasan -->
                 <div>
                     <label class="block font-semibold text-gray-700 mb-2">
                         HPL
@@ -118,27 +108,24 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !$ada_kehamilan_aktif){
                     </p>
                 </div>
                 
-                <!-- Berat Badan -->
                 <div>
                     <label class="block font-semibold text-gray-700 mb-2">
                         Berat Badan (kg) <span class="text-red-500">*</span>
                     </label>
-                    <input type="number" step="0.1" name="berat_badan_ibu" required 
+                    <input type="number" step="0.1" name="berat_badan_ibu" id="berat_badan_ibu" required 
                            class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-green-400"
                            placeholder="Contoh: 55.5">
                 </div>
                 
-                <!-- Tinggi Badan -->
                 <div>
                     <label class="block font-semibold text-gray-700 mb-2">
                         Tinggi Badan (cm) <span class="text-red-500">*</span>
                     </label>
-                    <input type="number" step="0.1" name="tinggi_badan_ibu" required 
+                    <input type="number" step="0.1" name="tinggi_badan_ibu" id="tinggi_badan_ibu" required 
                            class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-green-400"
                            placeholder="Contoh: 158">
                 </div>
                 
-                <!-- Tekanan Darah -->
                 <div class="md:col-span-2">
                     <label class="block font-semibold text-gray-700 mb-2">
                         Tekanan Darah <span class="text-red-500">*</span>
@@ -149,7 +136,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !$ada_kehamilan_aktif){
                     <p class="text-xs text-gray-400 mt-1">Format: sistolik/diastolik (contoh: 120/80)</p>
                 </div>
                 
-                <!-- Catatan Kesehatan -->
                 <div class="md:col-span-2">
                     <label class="block font-semibold text-gray-700 mb-2">
                         📝 Catatan Kesehatan
@@ -181,7 +167,6 @@ function hitungUsiaKehamilan() {
         const hphtDate = new Date(hpht);
         const today = new Date();
         
-        // Validasi HPHT tidak boleh lebih dari hari ini
         if(hphtDate > today) {
             Swal.fire({
                 icon: 'error',
@@ -189,12 +174,12 @@ function hitungUsiaKehamilan() {
                 text: 'Tanggal HPHT tidak boleh lebih dari hari ini!',
                 confirmButtonColor: '#dc2626'
             });
+            document.getElementById('hpht').value = '';
             document.getElementById('usia_kehamilan').value = '';
             document.getElementById('hpl_display').value = '';
             return;
         }
         
-        // Hitung usia kehamilan dalam minggu
         const diffTime = today - hphtDate;
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
         const minggu = Math.floor(diffDays / 7);
@@ -213,7 +198,6 @@ function hitungUsiaKehamilan() {
             document.getElementById('usia_kehamilan').value = 0;
         }
         
-        // Hitung HPL (HPHT + 280 hari)
         const hplDate = new Date(hphtDate);
         hplDate.setDate(hplDate.getDate() + 280);
         const day = String(hplDate.getDate()).padStart(2, '0');
@@ -276,7 +260,6 @@ document.getElementById('hpht').addEventListener('change', function() {
     hitungUsiaKehamilan();
 });
 
-// Event listener untuk HPHT (jika diisi manual)
 document.getElementById('hpht').addEventListener('input', function() {
     if(this.value) {
         hitungUsiaKehamilan();
@@ -332,18 +315,6 @@ document.getElementById('formKehamilan').addEventListener('submit', function(e) 
     
     return true;
 });
-
-document.addEventListener('DOMContentLoaded', function() {
-    const hphtValue = document.getElementById('hpht').value;
-    if(hphtValue) {
-        hitungUsiaKehamilan();
-    }
-});
-
-// Inisialisasi juga jika HPHT sudah diisi (alternatif)
-if(document.getElementById('hpht').value) {
-    hitungUsiaKehamilan();
-}
 </script>
 
 <?php include __DIR__ . '/../../templates/footer.php'; ?>

@@ -40,32 +40,17 @@ function getStatusBadge($status) {
     }
 }
 
-// Fungsi untuk mendapatkan warna card berdasarkan status dan kondisi kesehatan
-function getCardColor($status, $catatan_kesehatan) {
-    // Cek apakah ada indikasi tidak sehat
-    $tidak_sehat = false;
-    if($status == 'aktif' && !empty($catatan_kesehatan)) {
-        $keywords = ['kurang', 'lemah', 'pusing', 'mual', 'darah tinggi', 'diabetes', 'anemia', 'komplikasi'];
-        foreach($keywords as $keyword) {
-            if(stripos($catatan_kesehatan, $keyword) !== false) {
-                $tidak_sehat = true;
-                break;
-            }
-        }
-    }
-    
+// Fungsi untuk mendapatkan warna card berdasarkan status (tanpa background, hanya border kiri)
+function getCardColor($status) {
     switch($status) {
         case 'aktif':
-            if($tidak_sehat) {
-                return 'bg-orange-50 border-l-4 border-orange-500'; // Tidak sehat - Orange
-            }
-            return 'bg-pink-50 border-l-4 border-pink-500'; // Sehat - Pink
+            return 'bg-white border-l-4 border-green-500';
         case 'melahirkan':
-            return 'bg-blue-50 border-l-4 border-blue-500'; // Biru
+            return 'bg-white border-l-4 border-blue-500';
         case 'keguguran':
-            return 'bg-red-50 border-l-4 border-red-500'; // Merah
+            return 'bg-white border-l-4 border-red-500';
         case 'pindah':
-            return 'bg-gray-50 border-l-4 border-gray-500'; // Abu-abu
+            return 'bg-white border-l-4 border-orange-500';
         default:
             return 'bg-white border-l-4 border-gray-300';
     }
@@ -85,7 +70,7 @@ function getCardColor($status, $catatan_kesehatan) {
     </div>
     
     <?php if(mysqli_num_rows($result) > 0): ?>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <?php while($row = mysqli_fetch_assoc($result)): 
             $hpl = new DateTime($row['hpl']);
             $today = new DateTime();
@@ -96,20 +81,12 @@ function getCardColor($status, $catatan_kesehatan) {
             $sisa_minggu = $usia_minggu % 4;
             $usia_text = $usia_bulan . ' bulan ' . $sisa_minggu . ' minggu';
             
-            $card_color = getCardColor($row['status_kehamilan'], $row['catatan_kesehatan']);
+            $card_color = getCardColor($row['status_kehamilan']);
             
-            // Tentukan ikon status
+            // Tentukan ikon status untuk header
             $status_icon = '';
             if($row['status_kehamilan'] == 'aktif') {
-                $tidak_sehat = false;
-                $keywords = ['kurang', 'lemah', 'pusing', 'mual', 'darah tinggi', 'diabetes', 'anemia', 'komplikasi'];
-                foreach($keywords as $keyword) {
-                    if(stripos($row['catatan_kesehatan'], $keyword) !== false) {
-                        $tidak_sehat = true;
-                        break;
-                    }
-                }
-                $status_icon = $tidak_sehat ? '⚠️ Perlu Perhatian' : '❤️ Sehat';
+                $status_icon = '❤️ Sehat';
             } elseif($row['status_kehamilan'] == 'melahirkan') {
                 $status_icon = '👶 Telah Melahirkan';
             } elseif($row['status_kehamilan'] == 'keguguran') {
@@ -118,53 +95,52 @@ function getCardColor($status, $catatan_kesehatan) {
                 $status_icon = '📦 Pindah';
             }
         ?>
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition">
-            <div class="<?php echo $card_color; ?>">
-                <div class="p-4">
-                    <div class="flex justify-between items-start mb-3">
-                        <div>
-                            <div class="flex items-center gap-2 mb-1">
-                                <i class="fas fa-female text-green-600"></i>
-                                <h3 class="font-bold text-gray-800">Kehamilan <?php echo date('Y', strtotime($row['created_at'])); ?></h3>
-                            </div>
-                            <div class="flex flex-wrap gap-2 items-center">
-                                <?php echo getStatusBadge($row['status_kehamilan']); ?>
-                                <span class="text-xs text-gray-500"><?php echo $status_icon; ?></span>
-                            </div>
+        <div class="<?php echo $card_color; ?> rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition bg-white">
+            <div class="p-4">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="fas fa-female text-green-600"></i>
+                            <h3 class="font-bold text-gray-800">Kehamilan <?php echo date('Y', strtotime($row['created_at'])); ?></h3>
+                        </div>
+                        <div class="flex flex-wrap gap-2 items-center">
+                            <?php echo getStatusBadge($row['status_kehamilan']); ?>
+                            <span class="text-xs text-gray-500"><?php echo $status_icon; ?></span>
                         </div>
                     </div>
-                    
-                    <div class="grid grid-cols-2 gap-2 text-sm mb-3">
-                        <div class="flex items-center gap-1">
-                            <i class="fas fa-calendar-alt w-4 text-green-500"></i>
-                            <span>HPL: <?php echo date('d/m/Y', strtotime($row['hpl'])); ?></span>
-                        </div>
-                        <div class="flex items-center gap-1">
-                            <i class="fas fa-hourglass-half w-4 text-green-500"></i>
-                            <span>Sisa: <?php echo $sisa_hari; ?> hari</span>
-                        </div>
-                        <div class="flex items-center gap-1">
-                            <i class="fas fa-clock w-4 text-green-500"></i>
-                            <span>Usia: <?php echo $usia_text; ?></span>
-                        </div>
-                        <div class="flex items-center gap-1">
-                            <i class="fas fa-stethoscope w-4 text-green-500"></i>
-                            <span>Pemeriksaan: <?php echo $row['total_pemeriksaan']; ?>x</span>
-                        </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-2 text-sm mt-3">
+                    <div class="flex items-center gap-1">
+                        <i class="fas fa-calendar-alt w-4 text-green-500"></i>
+                        <span>HPL: <?php echo date('d/m/Y', strtotime($row['hpl'])); ?></span>
                     </div>
-                    
-                    <?php if($row['status_kehamilan'] == 'aktif' && !empty($row['catatan_kesehatan'])): ?>
-                    <div class="mt-2 mb-2 p-2 bg-yellow-50 rounded-lg text-xs text-yellow-700">
-                        <i class="fas fa-info-circle mr-1"></i> <?php echo substr($row['catatan_kesehatan'], 0, 100); ?>
+                    <div class="flex items-center gap-1">
+                        <i class="fas fa-hourglass-half w-4 text-green-500"></i>
+                        <span>Sisa: <?php echo $sisa_hari; ?> hari</span>
                     </div>
-                    <?php endif; ?>
-                    
-                    <div class="flex gap-2 mt-3 pt-3 border-t border-gray-100">
-                        <a href="detail_hamil.php?id=<?php echo $row['id_kehamilan']; ?>" 
-                           class="flex-1 text-center bg-green-600 text-white py-1 rounded-lg text-sm hover:bg-green-700 transition">
-                            <i class="fas fa-eye mr-1"></i> Periksa Detail
-                        </a>
+                    <div class="flex items-center gap-1">
+                        <i class="fas fa-clock w-4 text-green-500"></i>
+                        <span>Usia: <?php echo $usia_text; ?></span>
                     </div>
+                    <div class="flex items-center gap-1">
+                        <i class="fas fa-stethoscope w-4 text-green-500"></i>
+                        <span>Pemeriksaan: <?php echo $row['total_pemeriksaan']; ?>x</span>
+                    </div>
+                </div>
+                
+                <?php if($row['status_kehamilan'] == 'aktif' && !empty($row['catatan_kesehatan'])): ?>
+                <div class="mt-3 p-2 bg-yellow-50 rounded-lg text-xs text-yellow-700 border border-yellow-200">
+                    <i class="fas fa-info-circle mr-1"></i> <?php echo substr($row['catatan_kesehatan'], 0, 100); ?>
+                    <?php if(strlen($row['catatan_kesehatan']) > 100): ?>...<?php endif; ?>
+                </div>
+                <?php endif; ?>
+                
+                <div class="flex gap-2 mt-4 pt-3 border-t border-gray-100">
+                    <a href="detail_hamil.php?id=<?php echo $row['id_kehamilan']; ?>" 
+                       class="flex-1 text-center bg-green-600 text-white py-2 rounded-lg text-sm hover:bg-green-700 transition">
+                        <i class="fas fa-eye mr-1"></i> Lihat Detail
+                    </a>
                 </div>
             </div>
         </div>
