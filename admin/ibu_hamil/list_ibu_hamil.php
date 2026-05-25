@@ -7,7 +7,7 @@ include __DIR__ . '/../../templates/sidebar.php';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $tab = isset($_GET['tab']) ? $_GET['tab'] : 'semua';
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
-$limit = 15;
+$limit = 6;
 $offset = ($page - 1) * $limit;
 
 // HITUNG TOTAL SEMUA STATUS (dengan pencarian)

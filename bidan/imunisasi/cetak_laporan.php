@@ -36,6 +36,7 @@ $jumlah_peserta = mysqli_num_rows($result_peserta);
     <meta charset="UTF-8">
     <title>Laporan Pelaksanaan Imunisasi #<?php echo $id_jadwal; ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="/posyandu/img/sipanda.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         @media print {

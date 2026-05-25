@@ -122,22 +122,46 @@ function getUserStatus($nik) {
     return $data ? $data['STATUS'] : '-';
 }
 
-function paginate($current_page, $total_pages, $url) {
+function paginate($current_page, $total_pages, $base_url, $additional_params = []) {
+    if ($total_pages <= 1) return '';
+
+    // Bangun string untuk parameter tambahan (seperti search, kategori, dll)
+    $query_string = '';
+    if (!empty($additional_params)) {
+        foreach ($additional_params as $key => $value) {
+            if ($value !== '') {
+                $query_string .= '&' . urlencode($key) . '=' . urlencode($value);
+            }
+        }
+    }
+
+    // Deteksi apakah base_url sudah memiliki tanda tanya (?) atau belum
+    $connector = (strpos($base_url, '?') === false) ? '?' : '&';
+
     $html = '<div class="flex justify-between items-center mt-4 px-4 py-3 border-t border-gray-200">';
     $html .= '<div class="text-sm text-gray-600">Halaman ' . $current_page . ' dari ' . $total_pages . '</div>';
     $html .= '<div class="flex gap-2">';
     
+    // Tombol Previous
     if ($current_page > 1) {
-        $html .= '<a href="' . $url . '&page=' . ($current_page - 1) . '" class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 transition">« Prev</a>';
+        $prev_url = $base_url . $connector . 'page=' . ($current_page - 1) . $query_string;
+        $html .= '<a href="' . $prev_url . '" class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 transition text-sm font-medium text-gray-700">« Prev</a>';
     }
     
-    for ($i = max(1, $current_page - 2); $i <= min($total_pages, $current_page + 2); $i++) {
-        $active = ($i == $current_page) ? 'bg-green-600 text-white' : 'bg-gray-200 hover:bg-gray-300';
-        $html .= '<a href="' . $url . '&page=' . $i . '" class="px-3 py-1 ' . $active . ' rounded-lg transition">' . $i . '</a>';
+    // Nomor Halaman (Rentang Aktif)
+    $start = max(1, $current_page - 2);
+    $end = min($total_pages, $current_page + 2);
+    
+    for ($i = $start; $i <= $end; $i++) {
+        $active = ($i == $current_page) ? 'bg-green-600 text-white font-bold' : 'bg-gray-200 hover:bg-gray-300 text-gray-700';
+        $page_url = $base_url . $connector . 'page=' . $i . $query_string;
+        $html .= '<a href="' . $page_url . '" class="px-3 py-1 ' . $active . ' rounded-lg transition text-sm">' . $i . '</a>';
     }
     
+    // Tombol Next
     if ($current_page < $total_pages) {
-        $html .= '<a href="' . $url . '&page=' . ($current_page + 1) . '" class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 transition">Next »</a>';
+        $next_url = $base_url . $connector . 'page=' . ($current_page + 1) . $query_string;
+        $html .= '<a href="' . $next_url . '" class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 transition text-sm font-medium text-gray-700">Next »</a>';
     }
     
     $html .= '</div></div>';
@@ -195,7 +219,5 @@ function validatePhoneNumber($phone) {
     return preg_match('/^[0-9]{10,15}$/', $phone);
 }
 
-function validateEmail($email) {
-    return filter_var($email, FILTER_VALIDATE_EMAIL);
-}
+
 ?>

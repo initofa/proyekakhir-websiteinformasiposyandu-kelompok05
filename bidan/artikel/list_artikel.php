@@ -10,7 +10,7 @@ include __DIR__ . '/../../templates/sidebar.php';
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, trim($_GET['search'])) : '';
 $kategori_id = isset($_GET['kategori']) ? (int)$_GET['kategori'] : '';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = 12;
+$limit = 6;
 $offset = ($page - 1) * $limit;
 
 $where = "WHERE 1=1";
@@ -52,7 +52,6 @@ while($cat = mysqli_fetch_assoc($kategori_query)) {
         </a>
     </div>
     
-    <!-- Search & Filter -->
     <div class="bg-white rounded-2xl shadow-lg p-4 mb-6">
         <form method="GET" class="flex flex-col md:flex-row gap-3">
             <div class="flex-1 relative">
@@ -79,16 +78,13 @@ while($cat = mysqli_fetch_assoc($kategori_query)) {
         </form>
     </div>
     
-    <!-- Cards Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <?php if(mysqli_num_rows($result) > 0): ?>
         <?php while($row = mysqli_fetch_assoc($result)): 
-            // PERUBAHAN UTAMA: Cek apakah artikel ini milik bidan yang login saat ini
             $is_my_article = ($row['penulis_nik'] === $nik_login);
         ?>
         <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 duration-300 flex flex-col justify-between border border-gray-100">
             <div>
-                <!-- Thumbnail -->
                 <div class="h-48 bg-gradient-to-r from-green-400 to-emerald-400 relative overflow-hidden">
                     <?php if($row['thumbnail'] && file_exists("../../uploads/artikel/" . $row['thumbnail'])): ?>
                     <img src="../../uploads/artikel/<?php echo $row['thumbnail']; ?>" 
@@ -100,7 +96,6 @@ while($cat = mysqli_fetch_assoc($kategori_query)) {
                     </div>
                     <?php endif; ?>
                     
-                    <!-- Kategori Badge -->
                     <div class="absolute top-3 left-3">
                         <span class="px-2 py-1 bg-white/90 backdrop-blur-sm text-green-700 text-xs font-semibold rounded-lg shadow-sm">
                             <?php echo htmlspecialchars($row['nama_kategori'] ?? 'Tanpa Kategori'); ?>
@@ -108,7 +103,6 @@ while($cat = mysqli_fetch_assoc($kategori_query)) {
                     </div>
                 </div>
                 
-                <!-- Content -->
                 <div class="p-4">
                     <h3 class="font-bold text-gray-800 text-lg mb-2 line-clamp-2"><?php echo htmlspecialchars($row['judul']); ?></h3>
                     <p class="text-gray-500 text-sm mb-3 line-clamp-3"><?php echo htmlspecialchars(substr(strip_tags($row['konten']), 0, 100)); ?>...</p>
@@ -116,7 +110,6 @@ while($cat = mysqli_fetch_assoc($kategori_query)) {
             </div>
             
             <div class="p-4 pt-0">
-                <!-- Meta Info -->
                 <div class="flex items-center justify-between text-xs text-gray-400 mb-4 bg-gray-50 p-2 rounded-xl border border-gray-100/60">
                     <div class="flex items-center gap-1 min-w-0">
                         <i class="fas fa-user flex-shrink-0 text-green-600"></i>
@@ -130,14 +123,12 @@ while($cat = mysqli_fetch_assoc($kategori_query)) {
                     </div>
                 </div>
                 
-                <!-- Action Buttons -->
                 <div class="flex gap-2 pt-3 border-t border-gray-100">
                     <button type="button" onclick="kirimAksiArtikelPost('detail_artikel.php', '<?php echo $row['id_artikel']; ?>')" 
                        class="flex-1 text-center bg-green-500 hover:bg-green-600 text-white py-2 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1 shadow-sm">
                         <i class="fas fa-eye text-[11px]"></i> Detail
                     </button>
                     
-                    <!-- PERUBAHAN UTAMA: Kondisi dinamis menyembunyikan tombol Edit & Hapus jika bukan buatannya sendiri -->
                     <?php if($is_my_article): ?>
                         <button type="button" onclick="kirimAksiArtikelPost('edit_artikel.php', '<?php echo $row['id_artikel']; ?>')" 
                                 class="flex-1 text-center bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1 shadow-sm">
@@ -163,15 +154,9 @@ while($cat = mysqli_fetch_assoc($kategori_query)) {
         <?php endif; ?>
     </div>
     
-    <!-- Pagination Footer -->
     <?php if($total_pages > 1): ?>
-    <div class="flex justify-center items-center mt-8 gap-1">
-        <?php for($i = 1; $i <= $total_pages; $i++): ?>
-            <a href="?search=<?php echo urlencode($search); ?>&kategori=<?php echo $kategori_id; ?>&page=<?php echo $i; ?>" 
-               class="px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-sm border <?php echo $page == $i ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'; ?>">
-                <?php echo $i; ?>
-            </a>
-        <?php endfor; ?>
+    <div class="mt-8">
+        <?php echo paginate($page, $total_pages, 'list_artikel.php', ['search' => $search, 'kategori' => $kategori_id]); ?>
     </div>
     <?php endif; ?>
 </div>

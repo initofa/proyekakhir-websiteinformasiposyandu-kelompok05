@@ -6,7 +6,7 @@ require_once __DIR__ . '/../../auth/cek_ibu.php';
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, trim($_GET['search'])) : '';
 
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = 15;
+$limit = 6;
 $offset = ($page - 1) * $limit;
 
 // Klausa dasar: Hanya menampilkan jadwal yang hari ini atau masa depan
@@ -149,7 +149,7 @@ include __DIR__ . '/../../templates/sidebar.php';
     </div>
     
     <?php if($total_pages > 1): ?>
-    <div class="mt-6 flex justify-center">
+    <div class="mt-6">
         <?php echo paginate($page, $total_pages, "jadwal_imunisasi.php"); ?>
     </div>
     <?php endif; ?>

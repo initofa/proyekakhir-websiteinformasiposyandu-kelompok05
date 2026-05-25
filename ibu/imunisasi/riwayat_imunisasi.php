@@ -7,7 +7,7 @@ include __DIR__ . '/../../templates/sidebar.php';
 $nik = $_SESSION['nik'];
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $anak_filter = isset($_GET['anak_id']) ? (int)$_GET['anak_id'] : 0;
-$limit = 12;
+$limit = 6;
 $offset = ($page - 1) * $limit;
 
 // Ambil semua anak ibu
@@ -201,7 +201,7 @@ $result = mysqli_query($conn, "SELECT pi.*, pi.STATUS as status_pendaftaran, a.n
     </div>
     
     <?php if($total_pages > 1): ?>
-    <div class="mt-8 flex justify-center">
+    <div class="mt-6">
         <?php echo paginate($page, $total_pages, "riwayat_imunisasi.php" . ($anak_filter > 0 ? "?anak_id=$anak_filter" : "")); ?>
     </div>
     <?php endif; ?>

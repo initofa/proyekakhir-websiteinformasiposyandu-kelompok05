@@ -5,10 +5,32 @@ require_once __DIR__ . '/../../auth/cek_admin.php';
 // Tangkap kata kunci pencarian jika ada
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, trim($_GET['search'])) : '';
 
+// Fitur Pagination
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = 6; // Menampilkan 6 kartu per halaman agar pas dengan grid 3 kolom
+$offset = ($page - 1) * $limit;
+
 $title = 'Jadwal Imunisasi';
 include __DIR__ . '/../../templates/sidebar.php';
 
-// Query Utama dengan Subquery kalkulasi statistik 4 pilar lengkap
+// Kondisi filter query SQL
+$search_condition = "";
+if ($search !== '') {
+    $search_condition = " WHERE v.nama_vaksin LIKE '%$search%' 
+                          OR j.lokasi LIKE '%$search%' 
+                          OR u.nama_lengkap LIKE '%$search%'";
+}
+
+// 1. HITUNG TOTAL DATA JADWAL (Untuk Pagination Admin)
+$total_query = "SELECT COUNT(*) as total 
+                FROM jadwal_imunisasi j 
+                JOIN vaksin v ON j.id_vaksin=v.id_vaksin 
+                LEFT JOIN users u ON j.petugas_nik = u.nik
+                $search_condition";
+$total_data = mysqli_fetch_assoc(mysqli_query($conn, $total_query))['total'];
+$total_pages = ceil($total_data / $limit);
+
+// 2. QUERY UTAMA DENGAN SUBQUERY + LIMIT & OFFSET
 $query_base = "SELECT j.*, v.nama_vaksin, u.nama_lengkap as nama_bidan,
     (SELECT COUNT(*) FROM pendaftaran_imunisasi WHERE id_jadwal=j.id_jadwal AND STATUS != 'batal') as total_daftar,
     (SELECT COUNT(*) FROM pendaftaran_imunisasi WHERE id_jadwal=j.id_jadwal AND STATUS='pending') as total_pending,
@@ -16,15 +38,11 @@ $query_base = "SELECT j.*, v.nama_vaksin, u.nama_lengkap as nama_bidan,
     (SELECT COUNT(*) FROM pendaftaran_imunisasi WHERE id_jadwal=j.id_jadwal AND STATUS='batal') as total_batal
     FROM jadwal_imunisasi j 
     JOIN vaksin v ON j.id_vaksin=v.id_vaksin 
-    LEFT JOIN users u ON j.petugas_nik = u.nik";
+    LEFT JOIN users u ON j.petugas_nik = u.nik
+    $search_condition
+    ORDER BY CASE WHEN j.tanggal = CURDATE() THEN 0 ELSE 1 END, j.tanggal DESC
+    LIMIT $offset, $limit";
 
-if ($search !== '') {
-    $query_base .= " WHERE v.nama_vaksin LIKE '%$search%' 
-                     OR j.lokasi LIKE '%$search%' 
-                     OR u.nama_lengkap LIKE '%$search%'";
-}
-
-$query_base .= " ORDER BY CASE WHEN j.tanggal = CURDATE() THEN 0 ELSE 1 END, j.tanggal DESC";
 $result = mysqli_query($conn, $query_base);
 ?>
 
@@ -39,7 +57,7 @@ $result = mysqli_query($conn, $query_base);
 <div class="fade-in">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-green-800">Jadwal Imunisasi</h1>
-        <a href="tambah_jadwal.php" class="bg-gradient-to-r from-green-600 to-emerald-500 text-white px-4 py-2 rounded-xl hover:shadow-lg transition">
+        <a href="tambah_jadwal.php" class="bg-gradient-to-r from-green-600 to-emerald-500 text-white px-4 py-2 rounded-xl hover:shadow-lg transition text-sm font-semibold">
             <i class="fas fa-plus mr-2"></i>Jadwal
         </a>
     </div>
@@ -53,11 +71,11 @@ $result = mysqli_query($conn, $query_base);
                        class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 text-sm">
             </div>
             <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-xl hover:bg-green-700 transition flex items-center justify-center gap-2 text-sm font-semibold shadow-sm">
-                <i class="fas fa-search"></i> Cari
+                <i class="fas fa-search text-xs"></i> Cari
             </button>
             <?php if ($search): ?>
             <a href="list_jadwal.php" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition flex items-center justify-center gap-2 text-sm font-semibold shadow-sm">
-                <i class="fas fa-times"></i> Reset
+                <i class="fas fa-times text-xs"></i> Reset
             </a>
             <?php endif; ?>
         </form>
@@ -176,6 +194,12 @@ $result = mysqli_query($conn, $query_base);
         </div>
         <?php endif; ?>
     </div>
+
+    <?php if($total_pages > 1): ?>
+    <div class="mt-8">
+        <?php echo paginate($page, $total_pages, 'list_jadwal.php', ['search' => $search]); ?>
+    </div>
+    <?php endif; ?>
 </div>
 
 <div id="masterPesertaModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4" onclick="closeMasterModal(event)">
@@ -257,7 +281,6 @@ function closeMasterModal(event) {
     document.getElementById('masterPesertaModal').classList.remove('flex');
 }
 
-// FUNGSI BARU: SweetAlert2 Konfirmasi Pemulihan Sesi Batal
 function konfirmasiDaftarUlang(idPendaftaran, idJadwal) {
     Swal.fire({
         title: 'Pulihkan Pendaftaran?',
@@ -294,14 +317,13 @@ function confirmDelete(event, url) {
     return false;
 }
 
-// OTOMATIS BUKA MODAL KEMBALI JIKA SELESAI PROSES PULIH
 document.addEventListener("DOMContentLoaded", function() {
     const urlParams = new URLSearchParams(window.location.search);
     const bukaJadwalId = urlParams.get('buka_jadwal');
     if (bukaJadwalId) {
         const btnBuka = document.getElementById('btn-buka-jadwal-' + bukaJadwalId);
         if (btnBuka) {
-            defaultTabTarget = 'batal'; // Fokus langsung ke tab batal pas modal kebuka lagi
+            defaultTabTarget = 'batal';
             btnBuka.click();
         }
     }

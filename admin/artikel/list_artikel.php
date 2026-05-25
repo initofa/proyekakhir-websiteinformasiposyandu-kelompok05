@@ -4,10 +4,10 @@ require_once __DIR__ . '/../../auth/cek_admin.php';
 $title = 'Artikel';
 include __DIR__ . '/../../templates/sidebar.php';
 
-$search = isset($_GET['search']) ? $_GET['search'] : '';
+$search = isset($_GET['search']) ? mysqli_real_escape_string($conn, trim($_GET['search'])) : '';
 $kategori_id = isset($_GET['kategori']) ? (int)$_GET['kategori'] : '';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = 12;
+$limit = 6;
 $offset = ($page - 1) * $limit;
 
 $where = "WHERE 1=1";
@@ -29,7 +29,6 @@ $result = mysqli_query($conn, $query_artikel);
 $kategori = mysqli_query($conn, "SELECT * FROM kategori_artikel");
 ?>
 
-<!-- Form Tersembunyi Global untuk Mengirim ID Artikel via POST ke Halaman Edit atau Detail -->
 <form id="formAksiArtikelPost" method="POST" style="display:none;">
     <input type="hidden" name="id_artikel" id="idArtikelAksiPost">
 </form>
@@ -37,44 +36,42 @@ $kategori = mysqli_query($conn, "SELECT * FROM kategori_artikel");
 <div class="fade-in">
     <div class="flex flex-wrap justify-between items-center mb-4 gap-3">
         <h1 class="text-2xl font-bold text-green-800">Artikel Kesehatan</h1>
-        <a href="tambah_artikel.php" class="bg-gradient-to-r from-green-600 to-emerald-500 text-white px-4 py-2 rounded-xl hover:shadow-lg transition">
+        <a href="tambah_artikel.php" class="bg-gradient-to-r from-green-600 to-emerald-500 text-white px-4 py-2 rounded-xl hover:shadow-lg transition text-sm font-semibold">
             <i class="fas fa-plus mr-2"></i>Artikel
         </a>
     </div>
     
-    <!-- Search & Filter -->
     <div class="bg-white rounded-2xl shadow-lg p-4 mb-6">
         <form method="GET" class="flex flex-col md:flex-row gap-3">
             <div class="flex-1 relative">
                 <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                 <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Cari artikel..." 
-                       class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200">
+                       class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 text-sm">
             </div>
-            <select name="kategori" class="px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-green-400 bg-white">
+            <select name="kategori" class="px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-green-400 bg-white text-sm">
                 <option value="">Semua Kategori</option>
                 <?php while($cat = mysqli_fetch_assoc($kategori)): ?>
                 <option value="<?php echo $cat['id_kategori']; ?>" <?php echo $kategori_id == $cat['id_kategori'] ? 'selected' : ''; ?>>
-                    <?php echo $cat['nama_kategori']; ?>
+                    <?php echo htmlspecialchars($cat['nama_kategori']); ?>
                 </option>
                 <?php endwhile; ?>
             </select>
-            <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-xl hover:bg-green-700 transition">
+            <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-xl hover:bg-green-700 transition text-sm font-semibold shadow-sm">
                 <i class="fas fa-search mr-2"></i> Filter
             </button>
             <?php if($search || $kategori_id): ?>
-            <a href="list_artikel.php" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition text-center flex items-center justify-center">
+            <a href="list_artikel.php" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition text-center flex items-center justify-center text-sm font-semibold shadow-sm">
                 <i class="fas fa-times mr-2"></i> Reset
             </a>
             <?php endif; ?>
         </form>
     </div>
     
-    <!-- Cards Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <?php if(mysqli_num_rows($result) > 0): ?>
         <?php while($row = mysqli_fetch_assoc($result)): ?>
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 duration-300 flex flex-col justify-between">
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1 duration-300 flex flex-col justify-between border border-gray-100">
             <div>
-                <!-- Thumbnail -->
                 <div class="h-48 bg-gradient-to-r from-green-400 to-emerald-400 relative overflow-hidden">
                     <?php if($row['thumbnail'] && file_exists("../../uploads/artikel/" . $row['thumbnail'])): ?>
                     <img src="../../uploads/artikel/<?php echo $row['thumbnail']; ?>" 
@@ -86,7 +83,6 @@ $kategori = mysqli_query($conn, "SELECT * FROM kategori_artikel");
                     </div>
                     <?php endif; ?>
                     
-                    <!-- Kategori Badge -->
                     <div class="absolute top-3 left-3">
                         <span class="px-2 py-1 bg-white/90 backdrop-blur-sm text-green-700 text-xs font-semibold rounded-lg shadow-sm">
                             <?php echo htmlspecialchars($row['nama_kategori'] ?? 'Tanpa Kategori'); ?>
@@ -94,7 +90,6 @@ $kategori = mysqli_query($conn, "SELECT * FROM kategori_artikel");
                     </div>
                 </div>
                 
-                <!-- Content -->
                 <div class="p-4">
                     <h3 class="font-bold text-gray-800 text-lg mb-2 line-clamp-2"><?php echo htmlspecialchars($row['judul']); ?></h3>
                     <p class="text-gray-500 text-sm mb-3 line-clamp-3"><?php echo htmlspecialchars(substr(strip_tags($row['konten']), 0, 100)); ?>...</p>
@@ -102,47 +97,49 @@ $kategori = mysqli_query($conn, "SELECT * FROM kategori_artikel");
             </div>
             
             <div class="p-4 pt-0">
-                <!-- Meta Info -->
-                <div class="flex items-center justify-between text-xs text-gray-400 mb-4">
-                    <div class="flex items-center gap-1">
-                        <i class="fas fa-user"></i>
-                        <span><?php echo htmlspecialchars($row['nama_penulis'] ?? 'Anonim'); ?></span>
+                <div class="flex items-center justify-between text-xs text-gray-400 mb-4 bg-gray-50 p-2 rounded-xl border border-gray-100/60">
+                    <div class="flex items-center gap-1 min-w-0">
+                        <i class="fas fa-user text-green-600 flex-shrink-0"></i>
+                        <span class="truncate text-gray-600 font-medium"><?php echo htmlspecialchars($row['nama_penulis'] ?? 'Anonim'); ?></span>
                     </div>
-                    <div class="flex items-center gap-1">
+                    <div class="flex items-center gap-1 flex-shrink-0">
                         <i class="far fa-calendar-alt"></i>
                         <span><?php echo formatTanggalIndonesia($row['created_at']); ?></span>
                     </div>
                 </div>
                 
-                <!-- Action Buttons -->
                 <div class="flex gap-2 pt-3 border-t border-gray-100">
                     <button type="button" onclick="kirimAksiArtikelPost('detail_artikel.php', '<?php echo $row['id_artikel']; ?>')" 
-                       class="flex-1 text-center bg-green-500 hover:bg-green-600 text-white py-2 rounded-xl text-sm transition flex items-center justify-center gap-1 shadow-sm">
-                        <i class="fas fa-eye"></i> Detail
+                       class="flex-1 text-center bg-green-500 hover:bg-green-600 text-white py-2 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1 shadow-sm">
+                        <i class="fas fa-eye text-[11px]"></i> Detail
                     </button>
                     
                     <button type="button" onclick="kirimAksiArtikelPost('edit_artikel.php', '<?php echo $row['id_artikel']; ?>')" 
-                            class="flex-1 text-center bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-xl text-sm transition flex items-center justify-center gap-1 shadow-sm">
-                        <i class="fas fa-edit"></i> Edit
+                            class="flex-1 text-center bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1 shadow-sm">
+                        <i class="fas fa-edit text-[11px]"></i> Edit
                     </button>
                     
                     <a href="hapus_artikel.php?id=<?php echo $row['id_artikel']; ?>" 
-                       class="flex-1 text-center bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl text-sm transition flex items-center justify-center gap-1 shadow-sm"
+                       class="flex-1 text-center bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1 shadow-sm"
                        onclick="confirmDelete(event, this.href)">
-                        <i class="fas fa-trash"></i> Hapus
+                        <i class="fas fa-trash text-[11px]"></i> Hapus
                     </a>
                 </div>
             </div>
         </div>
         <?php endwhile; ?>
+        <?php else: ?>
+        <div class="col-span-full bg-white rounded-2xl shadow-lg p-12 text-center mt-2">
+            <i class="fas fa-newspaper text-6xl text-gray-300 mb-4 opacity-70"></i>
+            <h3 class="text-xl font-semibold text-gray-600 mb-1">Data Tidak Ditemukan</h3>
+            <p class="text-gray-400 text-sm">Tidak ada artikel yang cocok dengan kata kunci atau filter terpilih.</p>
+        </div>
+        <?php endif; ?>
     </div>
     
-    <!-- Pagination & Empty State (Tetap seperti kode awal Anda) -->
-    <?php if(mysqli_num_rows($result) == 0): ?>
-    <div class="bg-white rounded-2xl shadow-lg p-12 text-center mt-6">
-        <i class="fas fa-newspaper text-6xl text-gray-300 mb-4"></i>
-        <h3 class="text-xl font-semibold text-gray-600 mb-2">Belum Ada Artikel</h3>
-        <p class="text-gray-500">Silakan tambahkan artikel baru</p>
+    <?php if($total_pages > 1): ?>
+    <div class="mt-8">
+        <?php echo paginate($page, $total_pages, 'list_artikel.php', ['search' => $search, 'kategori' => $kategori_id]); ?>
     </div>
     <?php endif; ?>
 </div>

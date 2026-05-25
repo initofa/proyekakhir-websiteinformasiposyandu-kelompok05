@@ -5,7 +5,7 @@ $title = 'Kategori Artikel';
 include __DIR__ . '/../../templates/sidebar.php';
 
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = 15;
+$limit = 12;
 $offset = ($page - 1) * $limit;
 $total = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM kategori_artikel"))['total'];
 $total_pages = ceil($total / $limit);

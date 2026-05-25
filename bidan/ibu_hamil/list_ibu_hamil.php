@@ -7,7 +7,7 @@ include __DIR__ . '/../../templates/sidebar.php';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $tab = isset($_GET['tab']) ? $_GET['tab'] : 'semua';
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
-$limit = 15;
+$limit = 6;
 $offset = ($page - 1) * $limit;
 
 $search_condition = "";
@@ -97,8 +97,6 @@ function cekLamaTidakPeriksa($tgl_periksa_terakhir) {
     return $bulan_selisih >= 2;
 }
 
-// PERUBAHAN: Fungsi untuk mendapatkan warna card berdasarkan status
-// Warna pink untuk peringatan diubah menjadi garis tepi (border) seperti yang lain
 function getCardColor($status, $need_attention) {
     // Jika butuh perhatian (2 bulan tidak periksa) dan status aktif, tambahkan border pink
     if($need_attention && $status == 'aktif') {
@@ -133,6 +131,10 @@ function getStatusBadge($status) {
         default:
             return '<span class="px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-700">-</span>';
     }
+}
+if (!isset($_SESSION["nik"])) {
+    header('Location: index.php');
+    exit;
 }
 ?>
 
@@ -206,10 +208,10 @@ function getStatusBadge($status) {
                 $wa_message .= "Kami mengingatkan untuk melakukan pemeriksaan kehamilan rutin.\n\n";
                 $wa_message .= "*Usia Kehamilan:* " . $usia_display . "\n";
                 $wa_message .= "*HPL:* " . formatTanggalIndonesia($row['hpl']) . " (Sisa *$sisa* hari lagi)\n\n";
-                $wa_message .= "Silakan datang ke SIPANDA untuk melakukan pemeriksaan berkala.\n\n";
+                $wa_message .= "Silakan datang ke Posyandu untuk melakukan pemeriksaan berkala.\n\n";
             } else {
                 $wa_message .= "Bagaimana kondisi kesehatan Anda saat ini?\n\n";
-                $wa_message .= "Jika ada keluhan pasca melahirkan atau keluhan lainnya, silakan melakukan konsultasi ke SIPANDA.\n\n";
+                $wa_message .= "Jika ada keluhan pasca melahirkan atau keluhan lainnya, silakan melakukan konsultasi ke Posyandu.\n\n";
             }
             $wa_message .= "Terima kasih.\n\n-Bidan SIPANDA-";
             

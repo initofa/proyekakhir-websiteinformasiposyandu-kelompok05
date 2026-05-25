@@ -4,7 +4,7 @@ require_once __DIR__ . '/../../auth/cek_admin.php';
 
 $tab = isset($_GET['tab']) ? $_GET['tab'] : 'ibu';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = 15;
+$limit = 12;
 $offset = ($page - 1) * $limit;
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 

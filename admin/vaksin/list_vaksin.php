@@ -1,10 +1,31 @@
 <?php
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../auth/cek_admin.php';
+
+// Fitur Pencarian & Pagination (Diadopsi dari file Bidan)
+$search = isset($_GET['search']) ? mysqli_real_escape_string($conn, trim($_GET['search'])) : '';
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = 9;
+$offset = ($page - 1) * $limit;
+
 $title = 'Data Vaksin';
 include __DIR__ . '/../../templates/sidebar.php';
 
-$result = mysqli_query($conn, "SELECT * FROM vaksin ORDER BY usia_rekomendasi ASC");
+// Filter kondisi pencarian
+$search_condition = "";
+if($search) {
+    $search_condition = "WHERE nama_vaksin LIKE '%$search%' OR deskripsi LIKE '%$search%'";
+}
+
+// 1. Hitung total data berdasarkan kriteria pencarian
+$total = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM vaksin $search_condition"))['total'];
+$total_pages = ceil($total / $limit);
+
+// 2. Ambil data dengan limit, offset, dan filter pencarian
+$result = mysqli_query($conn, "SELECT * FROM vaksin 
+                               $search_condition 
+                               ORDER BY usia_rekomendasi ASC 
+                               LIMIT $offset, $limit");
 
 // Fungsi untuk mengkonversi bulan ke format tahun dan bulan
 function formatUsia($bulan) {
@@ -25,7 +46,6 @@ function formatUsia($bulan) {
 }
 ?>
 
-<!-- Form Tersembunyi Global untuk Mengirim ID Vaksin via POST ke Halaman Edit -->
 <form id="formEditVaksinPost" action="edit_vaksin.php" method="POST" style="display:none;">
     <input type="hidden" name="id_vaksin" id="idVaksinEditPost">
 </form>
@@ -33,9 +53,28 @@ function formatUsia($bulan) {
 <div class="fade-in">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-green-800">Data Vaksin</h1>
-        <a href="tambah_vaksin.php" class="bg-gradient-to-r from-green-600 to-emerald-500 text-white px-4 py-2 rounded-xl hover:shadow-lg transition">
+        <a href="tambah_vaksin.php" class="bg-gradient-to-r from-green-600 to-emerald-500 text-white px-4 py-2 rounded-xl hover:shadow-lg transition text-sm font-semibold">
             <i class="fas fa-plus mr-2"></i>Vaksin
         </a>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg p-4 mb-6">
+        <form method="GET" class="flex flex-col sm:flex-row gap-3">
+            <div class="flex-1 relative">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" 
+                       placeholder="Cari vaksin (nama atau deskripsi)..." 
+                       class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 text-sm">
+            </div>
+            <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-xl hover:bg-green-700 transition flex items-center justify-center gap-2 text-sm font-semibold shadow-sm">
+                <i class="fas fa-search"></i> Cari
+            </button>
+            <?php if($search): ?>
+            <a href="?" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition flex items-center justify-center gap-2 text-sm font-semibold shadow-sm">
+                <i class="fas fa-times"></i> Reset
+            </a>
+            <?php endif; ?>
+        </form>
     </div>
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -69,7 +108,6 @@ function formatUsia($bulan) {
                     </div>
                 </div>
                 
-                <!-- Deskripsi Singkat (3 baris) -->
                 <div class="mt-3">
                     <?php 
                     $deskripsi_singkat = strip_tags($row['deskripsi'] ?? '');
@@ -81,9 +119,7 @@ function formatUsia($bulan) {
                 </div>
             </div>
             
-            <!-- Tombol Detail (Modal) -->
             <div class="mt-4 pt-3 border-t border-gray-100">
-                <!-- Taruh data formatTanggalIndonesia langsung ke parameter data attribute agar dibaca JS modal -->
                 <button onclick='openDetailModal(<?php echo json_encode($row); ?>, "<?php echo formatTanggalIndonesia($row['created_at']); ?>")' 
                         class="text-green-600 hover:text-green-700 text-sm font-medium flex items-center gap-1 transition w-full text-left">
                     <i class="fas fa-info-circle"></i> Lihat Detail
@@ -92,18 +128,30 @@ function formatUsia($bulan) {
             </div>
         </div>
         <?php endwhile; ?>
-        <?php else: ?>
-        <div class="col-span-full bg-white rounded-2xl shadow-lg p-12 text-center">
-            <i class="fas fa-folder-open text-5xl mb-3 text-gray-300"></i>
-            <p class="text-gray-500 font-medium">Belum ada data vaksin</p>
-        </div>
+    </div>
+
+    <?php if($total_pages > 1): ?>
+    <div class="mt-8">
+        <?php echo paginate($page, $total_pages, '', ['search' => $search]); ?>
+    </div>
+    <?php endif; ?>
+
+    <?php else: ?>
+    <div class="col-span-full bg-white rounded-2xl shadow-lg p-12 text-center">
+        <i class="fas fa-syringe text-6xl text-gray-300 mb-4"></i>
+        <h3 class="text-xl font-semibold text-gray-600 mb-2">Tidak Ada Data Vaksin</h3>
+        <p class="text-gray-500">Tidak ada data vaksin dengan kriteria pencarian "<?php echo htmlspecialchars($search); ?>"</p>
+        <?php if($search): ?>
+        <a href="?" class="inline-block mt-4 text-sm font-bold text-green-600 hover:text-green-700 bg-green-50 px-4 py-2 rounded-xl transition">
+            <i class="fas fa-arrow-left mr-1"></i> Lihat semua vaksin
+        </a>
         <?php endif; ?>
     </div>
+    <?php endif; ?>
 </div>
 
-<!-- Modal Detail Vaksin -->
 <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4" onclick="closeDetailModal(event)">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-popup" onclick="event.stopPropagation()">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
         <div class="sticky top-0 bg-gradient-to-r from-green-600 to-emerald-500 p-4 rounded-t-2xl flex justify-between items-center shadow-sm">
             <h3 class="text-xl font-bold text-white shadow-sm" id="modalTitle"></h3>
             <button onclick="closeDetailModal()" class="text-white hover:text-gray-200 transition p-1">
@@ -167,20 +215,28 @@ function openDetailModal(vaksin, tanggalFormatted) {
     document.getElementById('modalUsia').innerHTML = '<i class="fas fa-child mr-1 text-green-500"></i> ' + usiaText;
     document.getElementById('modalDeskripsi').innerText = vaksin.deskripsi || 'Tidak ada deskripsi lengkap.';
     
-    // PERUBAHAN: Menggunakan string formatTanggalIndonesia yang dilempar langsung dari PHP
+    // Menggunakan string formatTanggalIndonesia yang dilempar langsung dari PHP
     document.getElementById('modalCreatedAt').innerHTML = '<i class="far fa-calendar-alt mr-1 text-gray-400"></i> ' + tanggalFormatted;
     
     document.getElementById('detailModal').classList.remove('hidden');
     document.getElementById('detailModal').classList.add('flex');
+    document.body.style.overflow = 'hidden';
 }
 
 function closeDetailModal(event) {
     if (event && event.target !== event.currentTarget && event.target.closest('.bg-white')) return;
     document.getElementById('detailModal').classList.add('hidden');
     document.getElementById('detailModal').classList.remove('flex');
+    document.body.style.overflow = 'auto';
 }
 
 // Konfirmasi hapus SweetAlert terintegrasi ke link GET
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeDetailModal();
+    }
+});
+
 function confirmDelete(event, url) {
     event.preventDefault();
     Swal.fire({

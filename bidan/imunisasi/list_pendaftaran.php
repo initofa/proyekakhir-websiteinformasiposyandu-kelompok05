@@ -4,12 +4,30 @@ require_once __DIR__ . '/../../auth/cek_bidan.php';
 
 $nik = $_SESSION['nik'];
 
+// Fitur Pencarian & Pagination
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, trim($_GET['search'])) : '';
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = 6; // Menampilkan 6 kartu per halaman agar pas dengan grid 3 kolom
+$offset = ($page - 1) * $limit;
 
 $title = 'Jadwal Imunisasi';
 include __DIR__ . '/../../templates/sidebar.php';
 
-// Query SQL dengan filter penugasan bidan aktif + filter pencarian LIKE (nama vaksin atau lokasi)
+// Kondisi filter query SQL
+$search_condition = "";
+if ($search !== '') {
+    $search_condition = " AND (v.nama_vaksin LIKE '%$search%' OR j.lokasi LIKE '%$search%')";
+}
+
+// 1. HITUNG TOTAL DATA JADWAL (Untuk Pagination)
+$total_query = "SELECT COUNT(*) as total 
+                FROM jadwal_imunisasi j 
+                JOIN vaksin v ON j.id_vaksin=v.id_vaksin 
+                WHERE j.petugas_nik = '$nik' $search_condition";
+$total_data = mysqli_fetch_assoc(mysqli_query($conn, $total_query))['total'];
+$total_pages = ceil($total_data / $limit);
+
+// 2. QUERY UTAMA DENGAN LIMIT DAN OFFSET
 $query_base = "SELECT j.*, v.nama_vaksin, u.nama_lengkap as nama_bidan,
     (SELECT COUNT(*) FROM pendaftaran_imunisasi WHERE id_jadwal=j.id_jadwal AND STATUS != 'batal') as total_daftar,
     (SELECT COUNT(*) FROM pendaftaran_imunisasi WHERE id_jadwal=j.id_jadwal AND STATUS='pending') as total_pending,
@@ -18,15 +36,11 @@ $query_base = "SELECT j.*, v.nama_vaksin, u.nama_lengkap as nama_bidan,
     FROM jadwal_imunisasi j 
     JOIN vaksin v ON j.id_vaksin=v.id_vaksin 
     LEFT JOIN users u ON j.petugas_nik = u.nik
-    WHERE j.petugas_nik = '$nik'";
-
-if ($search !== '') {
-    $query_base .= " AND (v.nama_vaksin LIKE '%$search%' OR j.lokasi LIKE '%$search%')";
-}
-
-$query_base .= " ORDER BY 
+    WHERE j.petugas_nik = '$nik' $search_condition
+    ORDER BY 
         CASE WHEN j.tanggal = CURDATE() THEN 0 ELSE 1 END,
-        j.tanggal ASC";
+        j.tanggal ASC
+    LIMIT $offset, $limit";
 
 $result = mysqli_query($conn, $query_base);
 ?>
@@ -54,15 +68,15 @@ $result = mysqli_query($conn, $query_base);
                 <i class="fas fa-search text-xs"></i> Cari
             </button>
             <?php if($search): ?>
-            <a href="list_pendaftaran.php" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition flex items-center justify-center gap-2 text-sm font-semibold shadow-sm">
+            <a href="?" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition flex items-center justify-center gap-2 text-sm font-semibold shadow-sm">
                 <i class="fas fa-times text-xs"></i> Reset
             </a>
             <?php endif; ?>
         </form>
     </div>
     
+    <?php if(mysqli_num_rows($result) > 0): ?>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <?php if(mysqli_num_rows($result) > 0): ?>
         <?php while($row = mysqli_fetch_assoc($result)): 
             $tanggal_eval = new DateTime($row['tanggal']);
             $hari_ini = new DateTime(date('Y-m-d'));
@@ -149,14 +163,26 @@ $result = mysqli_query($conn, $query_base);
             </div>
         </div>
         <?php endwhile; ?>
-        <?php else: ?>
-        <div class="col-span-full bg-white rounded-2xl shadow-lg p-12 text-center">
-            <i class="fas fa-calendar-times text-6xl text-gray-300 mb-3"></i>
-            <h3 class="text-xl font-bold text-gray-600 mb-1">Data Tidak Ditemukan</h3>
-            <p class="text-gray-400 text-sm">Tidak ada jadwal yang cocok dengan kata kunci pencarian Anda.</p>
-        </div>
+    </div>
+
+    <?php if($total_pages > 1): ?>
+    <div class="mt-8">
+        <?php echo paginate($page, $total_pages, '', ['search' => $search]); ?>
+    </div>
+    <?php endif; ?>
+
+    <?php else: ?>
+    <div class="bg-white rounded-2xl shadow-lg p-12 text-center">
+        <i class="fas fa-calendar-times text-6xl text-gray-300 mb-3"></i>
+        <h3 class="text-xl font-bold text-gray-600 mb-1">Data Tidak Ditemukan</h3>
+        <p class="text-gray-400 text-sm">Tidak ada jadwal yang cocok dengan kriteria atau pencarian Anda.</p>
+        <?php if($search): ?>
+        <a href="?" class="inline-block mt-4 text-sm font-bold text-green-600 hover:text-green-700 bg-green-50 px-4 py-2 rounded-xl transition">
+            <i class="fas fa-arrow-left mr-1"></i> Kembali ke Semua Jadwal
+        </a>
         <?php endif; ?>
     </div>
+    <?php endif; ?>
 </div>
 
 <div id="masterPesertaModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4" onclick="closeMasterModal(event)">
@@ -268,7 +294,6 @@ function konfirmasiBatalManual(idPendaftaran, idJadwal) {
     });
 }
 
-// Tutup modal dengan ESC
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         if (!document.getElementById('masterPesertaModal').classList.contains('hidden')) {

@@ -4,10 +4,10 @@ require_once __DIR__ . '/../../auth/cek_bidan.php';
 $title = 'Data Vaksin';
 include __DIR__ . '/../../templates/sidebar.php';
 
-// Fitur Pencarian
+// Fitur Pencarian & Pagination
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = 12;
+$limit = 9;
 $offset = ($page - 1) * $limit;
 
 // Filter pencarian
@@ -44,34 +44,6 @@ function formatUsia($bulan) {
     }
 }
 
-// Fungsi paginate sendiri (karena fungsi global bermasalah)
-function myPaginate($current_page, $total_pages, $search) {
-    $html = '<div class="flex justify-between items-center mt-4 px-4 py-3 border-t border-gray-200">';
-    $html .= '<div class="text-sm text-gray-600">Halaman ' . $current_page . ' dari ' . $total_pages . '</div>';
-    $html .= '<div class="flex gap-2">';
-    
-    if ($current_page > 1) {
-        $prev_url = "list_vaksin.php?page=" . ($current_page - 1);
-        if($search) $prev_url .= "&search=" . urlencode($search);
-        $html .= '<a href="' . $prev_url . '" class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 transition">« Prev</a>';
-    }
-    
-    for ($i = max(1, $current_page - 2); $i <= min($total_pages, $current_page + 2); $i++) {
-        $active = ($i == $current_page) ? 'bg-green-600 text-white' : 'bg-gray-200 hover:bg-gray-300';
-        $page_url = "list_vaksin.php?page=" . $i;
-        if($search) $page_url .= "&search=" . urlencode($search);
-        $html .= '<a href="' . $page_url . '" class="px-3 py-1 ' . $active . ' rounded-lg transition">' . $i . '</a>';
-    }
-    
-    if ($current_page < $total_pages) {
-        $next_url = "list_vaksin.php?page=" . ($current_page + 1);
-        if($search) $next_url .= "&search=" . urlencode($search);
-        $html .= '<a href="' . $next_url . '" class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 transition">Next »</a>';
-    }
-    
-    $html .= '</div></div>';
-    return $html;
-}
 ?>
 
 <div class="fade-in">
@@ -79,7 +51,6 @@ function myPaginate($current_page, $total_pages, $search) {
         <h1 class="text-2xl font-bold text-green-800">Data Vaksin</h1>
     </div>
     
-    <!-- Search Bar -->
     <div class="bg-white rounded-2xl shadow-lg p-4 mb-6">
         <form method="GET" class="flex flex-col sm:flex-row gap-3">
             <div class="flex-1 relative">
@@ -118,7 +89,6 @@ function myPaginate($current_page, $total_pages, $search) {
                 </div>
             </div>
             
-            <!-- Deskripsi Singkat (3 baris) -->
             <div class="mt-3 flex-1">
                 <?php 
                 $deskripsi_singkat = strip_tags($row['deskripsi']);
@@ -129,7 +99,6 @@ function myPaginate($current_page, $total_pages, $search) {
                 <p class="text-gray-600 text-sm leading-relaxed"><?php echo nl2br(htmlspecialchars($deskripsi_singkat)); ?></p>
             </div>
             
-            <!-- Tombol Detail (Modal) -->
             <div class="mt-4 pt-3 border-t border-gray-100">
                 <button onclick='openDetailModal(<?php echo json_encode($row); ?>)' 
                         class="text-green-600 hover:text-green-700 text-sm font-medium flex items-center gap-1 transition">
@@ -141,12 +110,9 @@ function myPaginate($current_page, $total_pages, $search) {
         <?php endwhile; ?>
     </div>
     
-    <!-- Pagination -->
-    <?php if($total_pages > 1): ?>
     <div class="mt-6">
-        <?php echo myPaginate($page, $total_pages, $search); ?>
+        <?php echo paginate($page, $total_pages, 'list_vaksin.php', ['search' => $search]); ?>
     </div>
-    <?php endif; ?>
     
     <?php else: ?>
     <div class="bg-white rounded-2xl shadow-lg p-12 text-center">
@@ -162,7 +128,6 @@ function myPaginate($current_page, $total_pages, $search) {
     <?php endif; ?>
 </div>
 
-<!-- Modal Detail Vaksin -->
 <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4" onclick="closeDetailModal(event)">
     <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
         <div class="sticky top-0 bg-gradient-to-r from-green-600 to-emerald-500 p-4 rounded-t-2xl flex justify-between items-center">
