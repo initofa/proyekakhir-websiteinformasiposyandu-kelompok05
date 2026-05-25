@@ -19,9 +19,6 @@ function hitungUsia($tanggal_lahir) {
     }
 }
 
-// ============================================
-// TAB 1: MENUNGGU (PENDING)
-// ============================================
 if($type == 'peserta') {
     $query = "SELECT pi.*, a.nama_anak, a.tanggal_lahir, u.nama_lengkap as nama_ibu, u.no_wa, 
                      j.tanggal, j.lokasi, v.nama_vaksin,
@@ -61,11 +58,28 @@ if($type == 'peserta') {
             <tbody class="divide-y divide-gray-100 text-gray-700">
                 <?php 
                 $no = 1;
-                while($row = mysqli_fetch_assoc($result)):
-                    $usia_anak = hitungUsia($row['tanggal_lahir']);
-                    $wa_message = "Halo Ibu " . $row['nama_ibu'] . ",\n\n Kami mengingatkan jadwal imunisasi anak Anda:\n\n Nama Anak: " . $row['nama_anak'] . "\n Vaksin: " . $row['nama_vaksin'] . "\n Tanggal: " . date('d F Y', strtotime($row['tanggal'])) . "\n Lokasi: " . ($row['lokasi'] ?? 'Posyandu') . "\n\n Mohon segera datang ke Posyandu. Terima kasih.";
-                    $wa_url = "https://wa.me/" . preg_replace('/[^0-9]/', '', $row['no_wa']) . "?text=" . urlencode($wa_message);
-                ?>
+                    while($row = mysqli_fetch_assoc($result)):
+                        $usia_anak = hitungUsia($row['tanggal_lahir']);
+                        $lokasi = $row['lokasi'] ?? 'Posyandu';
+                        $nama_petugas = $row['nama_petugas'] ?? 'Petugas Posyandu';
+                        
+                        $wa_message = "Halo Ibu " . $row['nama_ibu'] . ",\n\n";
+                        $wa_message .= "Kami mengingatkan jadwal imunisasi anak Anda:\n\n";
+                        $wa_message .= "*Nama Anak:* " . $row['nama_anak'] . "\n";
+                        $wa_message .= "*Vaksin:* " . $row['nama_vaksin'] . "\n";
+                        $wa_message .= "*Tanggal:* " . formatTanggalIndonesia($row['tanggal']) . "\n";
+                        $wa_message .= "*Lokasi:* " . $lokasi . "\n";
+                        $wa_message .= "*Petugas:* " . $nama_petugas . "\n\n";
+                        $wa_message .= "Mohon datang tepat waktu ke lokasi untuk pelaksanaan imunisasi.\n\n";
+                        $wa_message .= "Terima kasih.\n\n";
+                        
+                        $no_wa = preg_replace('/[^0-9]/', '', $row['no_wa']);
+                        if (strpos($no_wa, '08') === 0) {
+                            $no_wa = '628' . substr($no_wa, 2);
+                        }
+                        
+                        $wa_url = "https://wa.me/" . $no_wa . "?text=" . urlencode($wa_message);
+                    ?>
                 <tr class="hover:bg-gray-50/80 transition">
                     <td class="p-3 text-gray-500"><?php echo $no++; ?></td>
                     <td class="p-3 font-bold text-gray-800"><?php echo htmlspecialchars($row['nama_anak']); ?></td>
@@ -102,9 +116,7 @@ if($type == 'peserta') {
     <?php
 }
 
-// ============================================
-// TAB 2: SELESAI
-// ============================================
+
 elseif($type == 'selesai') {
     $query = "SELECT pi.*, a.nama_anak, u.nama_lengkap as nama_ibu,
                      hi.berat_badan, hi.tinggi_badan, hi.lingkar_kepala, hi.status_gizi, hi.tgl_imunisasi,
@@ -172,9 +184,7 @@ elseif($type == 'selesai') {
     <?php
 }
 
-// ============================================
-// TAB 3: DIBATALKAN
-// ============================================
+
 elseif($type == 'batal') {
     $query = "SELECT pi.*, a.nama_anak, u.nama_lengkap as nama_ibu,
                      v.nama_vaksin, j.tanggal

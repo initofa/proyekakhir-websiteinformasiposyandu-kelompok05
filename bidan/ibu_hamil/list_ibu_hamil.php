@@ -10,7 +10,6 @@ $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['searc
 $limit = 15;
 $offset = ($page - 1) * $limit;
 
-// HITUNG TOTAL SEMUA STATUS (dengan pencarian)
 $search_condition = "";
 if($search) {
     $search_condition = "AND (u.nama_lengkap LIKE '%$search%' OR u.nik LIKE '%$search%' OR u.alamat LIKE '%$search%')";
@@ -189,7 +188,7 @@ function getStatusBadge($status) {
     </div>
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <?php while($row = mysqli_fetch_assoc($result)): 
+      <?php while($row = mysqli_fetch_assoc($result)): 
             $hpl = new DateTime($row['hpl']);
             $today = new DateTime();
             $sisa = $hpl > $today ? $today->diff($hpl)->days : 0;
@@ -205,16 +204,21 @@ function getStatusBadge($status) {
             $wa_message = "Halo Ibu " . $row['nama_lengkap'] . ",\n\n";
             if($row['status_kehamilan'] == 'aktif'){
                 $wa_message .= "Kami mengingatkan untuk melakukan pemeriksaan kehamilan rutin.\n\n";
-                $wa_message .= "Usia Kehamilan: " . $usia_display . "\n";
-                $wa_message .= "HPL: " . date('d/m/Y', strtotime($row['hpl'])) . " (sisa $sisa hari)\n\n";
-                $wa_message .= "Silakan datang ke Posyandu Ceria untuk pemeriksaan.\n\n";
+                $wa_message .= "*Usia Kehamilan:* " . $usia_display . "\n";
+                $wa_message .= "*HPL:* " . formatTanggalIndonesia($row['hpl']) . " (Sisa *$sisa* hari lagi)\n\n";
+                $wa_message .= "Silakan datang ke SIPANDA untuk melakukan pemeriksaan berkala.\n\n";
             } else {
-                $wa_message .= "Bagaimana kondisi kesehatan Anda?\n\n";
-                $wa_message .= "Jika ada keluhan, silakan konsultasi ke Posyandu Ceria.\n\n";
+                $wa_message .= "Bagaimana kondisi kesehatan Anda saat ini?\n\n";
+                $wa_message .= "Jika ada keluhan pasca melahirkan atau keluhan lainnya, silakan melakukan konsultasi ke SIPANDA.\n\n";
             }
-            $wa_message .= "Terima kasih.\n\n- Petugas Posyandu Ceria";
+            $wa_message .= "Terima kasih.\n\n-Bidan SIPANDA-";
             
-            $wa_url = "https://wa.me/" . preg_replace('/[^0-9]/', '', $row['no_wa']) . "?text=" . urlencode($wa_message);
+            $no_wa = preg_replace('/[^0-9]/', '', $row['no_wa']);
+            if (strpos($no_wa, '08') === 0) {
+                $no_wa = '628' . substr($no_wa, 2);
+            }
+            
+            $wa_url = "https://wa.me/" . $no_wa . "?text=" . urlencode($wa_message);
         ?>
         <div class="<?php echo $card_color; ?> rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition">
             <div class="bg-gradient-to-r from-green-500 to-emerald-500 p-4 text-white">
