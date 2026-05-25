@@ -57,12 +57,10 @@ function formatUsia($bulan) {
                         </div>
                     </div>
                     <div class="flex items-center gap-1 flex-shrink-0">
-                        <!-- PERUBAHAN: Tombol edit menggunakan trigger javascript POST -->
                         <button type="button" onclick="kirimEditVaksinPost('<?php echo $row['id_vaksin']; ?>')" 
                                 class="text-blue-500 hover:text-blue-700 p-1 transition" title="Edit">
                             <i class="fas fa-edit text-lg"></i>
                         </button>
-                        <!-- Hapus tetap menggunakan GET dengan alert sesuai instruksi sistem Anda -->
                         <a href="hapus_vaksin.php?id=<?php echo $row['id_vaksin']; ?>" 
                            class="text-red-500 hover:text-red-700 p-1 transition" title="Hapus" 
                            onclick="confirmDelete(event, this.href)">
