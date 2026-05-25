@@ -13,11 +13,11 @@ if($query_total_anak) {
     $total_anak = mysqli_fetch_assoc($query_total_anak)['total'];
 }
 
-// Jadwal aktif (pending dan confirmed)
+// Jadwal aktif (pending saja, karena tidak ada confirmed)
 $jadwal_aktif = 0;
 $query_jadwal_aktif = mysqli_query($conn, "SELECT COUNT(*) as total FROM pendaftaran_imunisasi pi 
     JOIN anak a ON pi.id_anak = a.id_anak 
-    WHERE a.nik_ibu='$nik' AND pi.status IN ('pending', 'confirmed')");
+    WHERE a.nik_ibu='$nik' AND pi.status = 'pending'");
 if($query_jadwal_aktif) {
     $jadwal_aktif = mysqli_fetch_assoc($query_jadwal_aktif)['total'];
 }
@@ -45,13 +45,13 @@ if($query_kehamilan) {
 // Anak terbaru
 $anak_terbaru = mysqli_query($conn, "SELECT * FROM anak WHERE nik_ibu='$nik' ORDER BY created_at DESC LIMIT 3");
 
-// Jadwal terdekat (perbaiki query)
+// Jadwal terdekat (hanya pending)
 $jadwal_terdekat = mysqli_query($conn, "SELECT pi.*, a.nama_anak, v.nama_vaksin, j.tanggal 
     FROM pendaftaran_imunisasi pi 
     JOIN anak a ON pi.id_anak = a.id_anak 
     JOIN jadwal_imunisasi j ON pi.id_jadwal = j.id_jadwal 
     JOIN vaksin v ON j.id_vaksin = v.id_vaksin 
-    WHERE a.nik_ibu='$nik' AND pi.status IN ('pending', 'confirmed') 
+    WHERE a.nik_ibu='$nik' AND pi.status = 'pending' 
     ORDER BY j.tanggal ASC LIMIT 5");
 
 // Cek apakah ada jadwal yang sudah lewat
@@ -59,12 +59,12 @@ $jadwal_lewat = 0;
 $query_jadwal_lewat = mysqli_query($conn, "SELECT COUNT(*) as total FROM pendaftaran_imunisasi pi 
     JOIN anak a ON pi.id_anak = a.id_anak 
     JOIN jadwal_imunisasi j ON pi.id_jadwal = j.id_jadwal 
-    WHERE a.nik_ibu='$nik' AND pi.status IN ('pending', 'confirmed') AND j.tanggal < CURDATE()");
+    WHERE a.nik_ibu='$nik' AND pi.status = 'pending' AND j.tanggal < CURDATE()");
 if($query_jadwal_lewat) {
     $jadwal_lewat = mysqli_fetch_assoc($query_jadwal_lewat)['total'];
 }
 
-// Artikel terbaru (opsional)
+// Artikel terbaru
 $artikel_terbaru = mysqli_query($conn, "SELECT * FROM artikel ORDER BY created_at DESC LIMIT 3");
 ?>
 
@@ -75,6 +75,10 @@ $artikel_terbaru = mysqli_query($conn, "SELECT * FROM artikel ORDER BY created_a
             <div>
                 <h1 class="text-2xl font-bold mb-2">Selamat Datang, <?php echo htmlspecialchars($_SESSION['nama_lengkap']); ?>! 👋</h1>
                 <p class="text-green-100">Pantau tumbuh kembang buah hati Anda di sipanda</p>
+                <div class="mt-2 flex items-center gap-2 text-sm text-green-100">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span><?php echo formatTanggalIndonesia(date('Y-m-d')); ?></span>
+                </div>
             </div>
         </div>
     </div>
@@ -86,7 +90,7 @@ $artikel_terbaru = mysqli_query($conn, "SELECT * FROM artikel ORDER BY created_a
             <i class="fas fa-exclamation-triangle text-red-500 text-xl"></i>
             <div>
                 <p class="font-semibold">Perhatian!</p>
-                <p class="text-sm">Anda memiliki <?php echo $jadwal_lewat; ?> jadwal imunisasi yang sudah lewat. Segera konfirmasi ke bidan!</p>
+                <p class="text-sm">Anda memiliki <?php echo $jadwal_lewat; ?> jadwal imunisasi yang sudah lewat. Segera hubungi bidan!</p>
             </div>
             <a href="imunisasi/riwayat_imunisasi.php" class="ml-auto bg-red-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600">
                 Lihat
@@ -260,9 +264,13 @@ $artikel_terbaru = mysqli_query($conn, "SELECT * FROM artikel ORDER BY created_a
                             </p>
                         </div>
                     </div>
-                    <a href="perkembangan/detail_perkembangan.php?anak_id=<?php echo $a['id_anak']; ?>" class="text-blue-600 text-sm hover:text-blue-700">
-                        Detail <i class="fas fa-arrow-right ml-1"></i>
-                    </a>
+                    <!-- Menggunakan form POST untuk detail perkembangan -->
+                    <form action="perkembangan/detail_perkembangan.php" method="POST" class="inline">
+                        <input type="hidden" name="anak_id" value="<?php echo $a['id_anak']; ?>">
+                        <button type="submit" class="text-blue-600 text-sm hover:text-blue-700">
+                            Detail <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </form>
                 </div>
                 <?php endwhile; ?>
             <?php else: ?>
@@ -343,7 +351,7 @@ $artikel_terbaru = mysqli_query($conn, "SELECT * FROM artikel ORDER BY created_a
                     <i class="fas fa-newspaper text-orange-500 mr-2"></i> 
                     Artikel Terbaru
                 </h3>
-                <a href="artikel.php" class="text-sm text-orange-600 hover:text-orange-700">
+                <a href="/posyandu/artikel.php" class="text-sm text-orange-600 hover:text-orange-700">
                     Baca Semua <i class="fas fa-arrow-right ml-1"></i>
                 </a>
             </div>
@@ -351,10 +359,10 @@ $artikel_terbaru = mysqli_query($conn, "SELECT * FROM artikel ORDER BY created_a
             <?php if(mysqli_num_rows($artikel_terbaru) > 0): ?>
                 <div class="space-y-3">
                     <?php while($artikel = mysqli_fetch_assoc($artikel_terbaru)): ?>
-                    <a href="artikel_detail.php?id=<?php echo $artikel['id_artikel']; ?>" class="block p-3 border rounded-xl hover:bg-gray-50 transition">
+                    <a href="/posyandu/artikel_detail.php?id=<?php echo $artikel['id_artikel']; ?>" class="block p-3 border rounded-xl hover:bg-gray-50 transition">
                         <h4 class="font-semibold text-gray-800"><?php echo htmlspecialchars($artikel['judul']); ?></h4>
                         <p class="text-xs text-gray-500 mt-1">
-                            <i class="far fa-calendar-alt"></i> <?php echo date('d/m/Y', strtotime($artikel['created_at'])); ?>
+                            <i class="far fa-calendar-alt"></i> <?php echo formatTanggalIndonesia($artikel['created_at']); ?>
                         </p>
                     </a>
                     <?php endwhile; ?>
