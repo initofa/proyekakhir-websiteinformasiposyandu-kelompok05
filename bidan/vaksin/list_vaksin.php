@@ -4,7 +4,27 @@ require_once __DIR__ . '/../../auth/cek_bidan.php';
 $title = 'Data Vaksin';
 include __DIR__ . '/../../templates/sidebar.php';
 
-$result = mysqli_query($conn, "SELECT v.* FROM vaksin v ORDER BY v.usia_rekomendasi ASC");
+// Fitur Pencarian
+$search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = 12;
+$offset = ($page - 1) * $limit;
+
+// Filter pencarian
+$search_condition = "";
+if($search) {
+    $search_condition = "WHERE nama_vaksin LIKE '%$search%' OR deskripsi LIKE '%$search%'";
+}
+
+// Hitung total data dengan pencarian
+$total = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM vaksin $search_condition"))['total'];
+$total_pages = ceil($total / $limit);
+
+// Ambil data dengan pencarian dan pagination
+$result = mysqli_query($conn, "SELECT v.* FROM vaksin v 
+                               $search_condition 
+                               ORDER BY v.usia_rekomendasi ASC 
+                               LIMIT $offset, $limit");
 
 // Fungsi untuk mengkonversi bulan ke format tahun dan bulan
 function formatUsia($bulan) {
@@ -23,6 +43,35 @@ function formatUsia($bulan) {
         return $sisa_bulan . ' bulan';
     }
 }
+
+// Fungsi paginate sendiri (karena fungsi global bermasalah)
+function myPaginate($current_page, $total_pages, $search) {
+    $html = '<div class="flex justify-between items-center mt-4 px-4 py-3 border-t border-gray-200">';
+    $html .= '<div class="text-sm text-gray-600">Halaman ' . $current_page . ' dari ' . $total_pages . '</div>';
+    $html .= '<div class="flex gap-2">';
+    
+    if ($current_page > 1) {
+        $prev_url = "list_vaksin.php?page=" . ($current_page - 1);
+        if($search) $prev_url .= "&search=" . urlencode($search);
+        $html .= '<a href="' . $prev_url . '" class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 transition">« Prev</a>';
+    }
+    
+    for ($i = max(1, $current_page - 2); $i <= min($total_pages, $current_page + 2); $i++) {
+        $active = ($i == $current_page) ? 'bg-green-600 text-white' : 'bg-gray-200 hover:bg-gray-300';
+        $page_url = "list_vaksin.php?page=" . $i;
+        if($search) $page_url .= "&search=" . urlencode($search);
+        $html .= '<a href="' . $page_url . '" class="px-3 py-1 ' . $active . ' rounded-lg transition">' . $i . '</a>';
+    }
+    
+    if ($current_page < $total_pages) {
+        $next_url = "list_vaksin.php?page=" . ($current_page + 1);
+        if($search) $next_url .= "&search=" . urlencode($search);
+        $html .= '<a href="' . $next_url . '" class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 transition">Next »</a>';
+    }
+    
+    $html .= '</div></div>';
+    return $html;
+}
 ?>
 
 <div class="fade-in">
@@ -30,6 +79,27 @@ function formatUsia($bulan) {
         <h1 class="text-2xl font-bold text-green-800">Data Vaksin</h1>
     </div>
     
+    <!-- Search Bar -->
+    <div class="bg-white rounded-2xl shadow-lg p-4 mb-6">
+        <form method="GET" class="flex flex-col sm:flex-row gap-3">
+            <div class="flex-1 relative">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" 
+                       placeholder="Cari vaksin (nama atau deskripsi)..." 
+                       class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200">
+            </div>
+            <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-xl hover:bg-green-700 transition flex items-center justify-center gap-2">
+                <i class="fas fa-search"></i> Cari
+            </button>
+            <?php if($search): ?>
+            <a href="list_vaksin.php" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition flex items-center justify-center gap-2">
+                <i class="fas fa-times"></i> Reset
+            </a>
+            <?php endif; ?>
+        </form>
+    </div>
+    
+    <?php if(mysqli_num_rows($result) > 0): ?>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <?php while($row = mysqli_fetch_assoc($result)): ?>
         <div class="bg-white rounded-2xl shadow-lg p-4 hover:shadow-xl transition flex flex-col h-full">
@@ -70,6 +140,26 @@ function formatUsia($bulan) {
         </div>
         <?php endwhile; ?>
     </div>
+    
+    <!-- Pagination -->
+    <?php if($total_pages > 1): ?>
+    <div class="mt-6">
+        <?php echo myPaginate($page, $total_pages, $search); ?>
+    </div>
+    <?php endif; ?>
+    
+    <?php else: ?>
+    <div class="bg-white rounded-2xl shadow-lg p-12 text-center">
+        <i class="fas fa-syringe text-6xl text-gray-300 mb-4"></i>
+        <h3 class="text-xl font-semibold text-gray-600 mb-2">Tidak Ada Data Vaksin</h3>
+        <p class="text-gray-500">Tidak ada data vaksin dengan kriteria pencarian "<?php echo htmlspecialchars($search); ?>"</p>
+        <?php if($search): ?>
+        <a href="list_vaksin.php" class="inline-block mt-4 text-green-600 hover:text-green-700">
+            <i class="fas fa-arrow-left mr-1"></i> Lihat semua vaksin
+        </a>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
 </div>
 
 <!-- Modal Detail Vaksin -->
@@ -109,7 +199,6 @@ function formatUsia($bulan) {
 
 <script>
 function openDetailModal(vaksin) {
-    // Format usia untuk modal
     let usiaBulan = vaksin.usia_rekomendasi;
     let usiaText = '';
     
@@ -133,7 +222,6 @@ function openDetailModal(vaksin) {
     document.getElementById('modalUsia').innerHTML = '<i class="fas fa-child mr-1 text-green-500"></i> ' + usiaText;
     document.getElementById('modalDeskripsi').innerHTML = vaksin.deskripsi || '<span class="text-gray-400">Tidak ada deskripsi</span>';
     
-    // Format tanggal
     if (vaksin.created_at) {
         let date = new Date(vaksin.created_at);
         let formattedDate = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -144,13 +232,21 @@ function openDetailModal(vaksin) {
     
     document.getElementById('detailModal').classList.remove('hidden');
     document.getElementById('detailModal').classList.add('flex');
+    document.body.style.overflow = 'hidden';
 }
 
 function closeDetailModal(event) {
     if (event && event.target !== event.currentTarget && event.target.closest('.bg-white')) return;
     document.getElementById('detailModal').classList.add('hidden');
     document.getElementById('detailModal').classList.remove('flex');
+    document.body.style.overflow = 'auto';
 }
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeDetailModal();
+    }
+});
 </script>
 
 <?php include __DIR__ . '/../../templates/footer.php'; ?>
