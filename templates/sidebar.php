@@ -13,21 +13,11 @@ $base_url = "/posyandu";
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>SIPANDA - <?php echo $title ?? 'Sistem Informasi Posyandu'; ?></title>
-
     <link rel="icon" type="image/png" href="/posyandu/img/sipanda.png">
-
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-    <!-- SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <!-- Chart -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -39,11 +29,12 @@ $base_url = "/posyandu";
             transition: all 0.35s ease-in-out;
         }
 
-        .line-clamp-2 {
+       .line-clamp-2 {
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            line-clamp: 2;
         }
 
         .line-clamp-3 {
@@ -51,6 +42,7 @@ $base_url = "/posyandu";
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            line-clamp: 3;
         }
 
         @keyframes fadeIn {
@@ -68,9 +60,6 @@ $base_url = "/posyandu";
             animation: fadeIn 0.5s ease-out;
         }
 
-        /* ============================================ */
-        /* DESKTOP STYLES (min-width: 1024px) */
-        /* ============================================ */
         @media (min-width: 1024px) {
             body {
                 position: relative;
@@ -133,9 +122,6 @@ $base_url = "/posyandu";
             }
         }
 
-        /* ============================================ */
-        /* MOBILE STYLES (max-width: 1023px) */
-        /* ============================================ */
         @media (max-width: 1023px) {
             #sidebar {
                 position: fixed;
@@ -202,25 +188,18 @@ $base_url = "/posyandu";
 </head>
 
 <body class="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 overflow-x-hidden">
-
-<!-- OVERLAY MOBILE -->
 <div id="overlay" class="fixed inset-0 bg-black/50 z-45 hidden"></div>
 
-<!-- BUTTON HAMBURGER MOBILE -->
 <button id="mobileMenuBtn"
     class="fixed top-4 left-4 z-55 hidden bg-gradient-to-r from-green-600 to-green-500 text-white w-12 h-12 rounded-xl shadow-lg flex items-center justify-center hover:scale-105 transition-transform">
     <i class="fas fa-bars text-xl"></i>
 </button>
 
-<!-- WRAPPER FLEX UNTUK DESKTOP -->
 <div class="desktop-wrapper" style="display: flex; min-height: 100vh;">
-
-    <!-- SIDEBAR -->
     <div id="sidebar"
         class="bg-gradient-to-b from-green-800 via-green-700 to-green-600 shadow-xl"
         style="width: 80px; border-radius: 0 20px 20px 0;">
 
-        <!-- LOGO -->
         <div class="text-white text-center mb-3 mt-4 px-2">
             <div class="w-14 h-14 mx-auto mb-2 bg-white bg-opacity-20 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
                 <img src="<?= $base_url ?>/img/sipanda.png" 
@@ -228,7 +207,6 @@ $base_url = "/posyandu";
                      class="w-full h-full object-cover">
             </div>
 
-            <!-- Nama user -->
             <h2 class="text-sm font-bold sidebar-text hidden">
                 <?php 
                     if ($role == 'admin') {
@@ -245,9 +223,7 @@ $base_url = "/posyandu";
         </div>
 
         <!-- MENU -->
-        <!-- Jarak antar list dirapatkan menggunakan space-y-1 -->
         <ul class="space-y-1 px-2">
-
             <!-- ADMIN -->
             <?php if ($role == 'admin'): ?>
 
@@ -414,14 +390,6 @@ $base_url = "/posyandu";
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-chart-line text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Perkembangan</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="<?= $base_url ?>/ibu/artikel/list_artikel.php"
-                    class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-book text-lg w-6 text-center"></i>
-                    <span class="sidebar-text hidden">Artikel</span>
                 </a>
             </li>
 

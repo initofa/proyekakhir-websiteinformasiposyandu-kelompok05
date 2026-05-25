@@ -1,6 +1,5 @@
-<!-- templates/footer.php -->
-    </div> <!-- Penutup mainContent -->
-</div> <!-- Penutup desktop-wrapper -->
+    </div> 
+</div> 
 
 <script>
 const sidebar = document.getElementById('sidebar');
@@ -15,16 +14,10 @@ const logoutBtn = document.getElementById('logoutBtn');
 let isOpen = false;
 let isHovering = false;
 
-// ============================
-// CEK MOBILE
-// ============================
 function isMobile() {
     return window.innerWidth < 1024;
 }
 
-// ============================
-// DESKTOP: OPEN SIDEBAR (expand)
-// ============================
 function openSidebarDesktop() {
     if (isMobile()) return;
     if (isOpen) return;
@@ -37,9 +30,7 @@ function openSidebarDesktop() {
     isOpen = true;
 }
 
-// ============================
-// DESKTOP: CLOSE SIDEBAR (collapse)
-// ============================
+
 function closeSidebarDesktop() {
     if (isMobile()) return;
     if (!isOpen) return;
@@ -52,9 +43,7 @@ function closeSidebarDesktop() {
     isOpen = false;
 }
 
-// ============================
-// MOBILE: OPEN SIDEBAR
-// ============================
+
 function openSidebarMobile() {
     if (!isMobile()) return;
     sidebar.classList.add('mobile-open');
@@ -62,9 +51,7 @@ function openSidebarMobile() {
     document.body.style.overflow = 'hidden';
 }
 
-// ============================
-// MOBILE: CLOSE SIDEBAR
-// ============================
+
 function closeSidebarMobile() {
     if (!isMobile()) return;
     sidebar.classList.remove('mobile-open');
@@ -72,9 +59,7 @@ function closeSidebarMobile() {
     document.body.style.overflow = '';
 }
 
-// ============================
-// DESKTOP HOVER EVENTS
-// ============================
+
 if (!isMobile()) {
     sidebar.addEventListener('mouseenter', () => {
         isHovering = true;
@@ -83,7 +68,6 @@ if (!isMobile()) {
     
     sidebar.addEventListener('mouseleave', () => {
         isHovering = false;
-        // Delay close to prevent flicker
         setTimeout(() => {
             if (!isHovering && !isMobile()) {
                 closeSidebarDesktop();
@@ -98,9 +82,7 @@ if (!isMobile()) {
     });
 }
 
-// ============================
-// MOBILE BUTTON
-// ============================
+
 if (mobileMenuBtn) {
     mobileMenuBtn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -112,18 +94,14 @@ if (mobileMenuBtn) {
     });
 }
 
-// ============================
-// OVERLAY CLICK (mobile)
-// ============================
+
 if (overlay) {
     overlay.addEventListener('click', () => {
         closeSidebarMobile();
     });
 }
 
-// ============================
-// LOGOUT CONFIRMATION
-// ============================
+
 if (logoutBtn) {
     logoutBtn.addEventListener('click', function(e) {
         e.preventDefault();
@@ -145,9 +123,7 @@ if (logoutBtn) {
     });
 }
 
-// ============================
-// MENU CLICK - tutup sidebar di mobile
-// ============================
+
 menuItems.forEach(item => {
     item.addEventListener('click', function() {
         if (this.id === 'logoutBtn') return;
@@ -160,28 +136,21 @@ menuItems.forEach(item => {
     });
 });
 
-// ============================
-// WINDOW RESIZE
-// ============================
+
 window.addEventListener('resize', () => {
     if (!isMobile()) {
-        // Reset mobile state
         sidebar.classList.remove('mobile-open');
         if (overlay) overlay.classList.add('hidden');
         document.body.style.overflow = '';
         
-        // Reset desktop sidebar to mini
         closeSidebarDesktop();
         sidebar.style.width = '80px';
     } else {
-        // Reset desktop state
         closeSidebarDesktop();
     }
 });
 
-// ============================================
-// SWEETALERT NOTIFICATIONS
-// ============================================
+
 <?php if (isset($_SESSION['success'])): ?>
 Swal.fire({
     icon: 'success',
@@ -222,9 +191,7 @@ Swal.fire({
 });
 <?php unset($_SESSION['info']); endif; ?>
 
-// ============================================
-// CONFIRM DELETE
-// ============================================
+
 function confirmDelete(event, url, message = 'Data akan dihapus permanen!') {
     event.preventDefault();
     Swal.fire({
