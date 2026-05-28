@@ -245,7 +245,7 @@ const statusCtx = document.getElementById('statusChart').getContext('2d');
 new Chart(statusCtx, {
     type: 'doughnut',
     data: {
-        labels: ['Pending', 'Selesai', 'Batal'],
+        labels: ['Menunggu', 'Selesai', 'dibatalkan'],
         datasets: [{
             data: [<?php echo $pending; ?>, <?php echo $selesai; ?>, <?php echo $batal; ?>],
             backgroundColor: ['#eab308', '#10b981', '#ef4444'],
@@ -261,7 +261,9 @@ new Chart(statusCtx, {
             tooltip: { 
                 callbacks: { 
                     label: function(context) { 
-                        return context.label + ': ' + context.raw + ' data'; 
+                        const total = <?php echo $pending + $selesai + $batal; ?>;
+                        const persen = ((context.raw / total) * 100).toFixed(1);
+                        return context.label + ': ' + context.raw + ' data (' + persen + '%)'; 
                     } 
                 } 
             }

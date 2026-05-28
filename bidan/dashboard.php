@@ -207,7 +207,7 @@ const statusCtx = document.getElementById('statusChart').getContext('2d');
 new Chart(statusCtx, {
     type: 'doughnut',
     data: {
-        labels: ['Pending', 'Selesai', 'Batal'],
+        labels: ['Menunggu', 'Selesai', 'dibatalkan'],
         datasets: [{
             data: [<?php echo $pending; ?>, <?php echo $selesai; ?>, <?php echo $batal; ?>],
             backgroundColor: ['#eab308', '#10b981', '#ef4444'],
