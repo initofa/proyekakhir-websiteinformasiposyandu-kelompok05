@@ -52,7 +52,6 @@ while($row = mysqli_fetch_assoc($chart_query)){
     $chart_tinggi[] = (float)$row['tinggi_badan'];
 }
 
-// 4. Ambil arsip data seluruh pendaftaran sesi imunisasi lengkap (pending, selesai, batal)
 $riwayat_imunisasi = mysqli_query($conn, "SELECT pi.*, pi.STATUS AS status_pendaftaran, v.nama_vaksin, j.tanggal, 
     hi.berat_badan, hi.tinggi_badan, hi.status_gizi, hi.tgl_imunisasi as tgl_hasil
     FROM pendaftaran_imunisasi pi 
@@ -72,7 +71,6 @@ $riwayat_imunisasi = mysqli_query($conn, "SELECT pi.*, pi.STATUS AS status_penda
     <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
         <h1 class="text-2xl font-bold text-green-800 mb-6">Detail Perkembangan Anak</h1>
         
-        <!-- Kartu Informasi Identitas Utama Anak -->
         <div class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-100 rounded-xl p-4 mb-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
@@ -96,15 +94,14 @@ $riwayat_imunisasi = mysqli_query($conn, "SELECT pi.*, pi.STATUS AS status_penda
             </div>
         </div>
         
-        <!-- Blok Pemetaan Grafik Pertumbuhan (Chart.js) -->
         <?php if(!empty($chart_berat) && !empty($chart_tinggi)): ?>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-                <h3 class="text-sm font-bold text-gray-700 mb-4"><i class="fas fa-weight-scale text-green-600 mr-2"></i> Grafik Berat Badan (Klinik Admin)</h3>
+                <h3 class="text-sm font-bold text-gray-700 mb-4"><i class="fas fa-weight-scale text-green-600 mr-2"></i> Grafik Berat Badan</h3>
                 <canvas id="beratChart" height="250"></canvas>
             </div>
             <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-                <h3 class="text-sm font-bold text-gray-700 mb-4"><i class="fas fa-ruler text-blue-600 mr-2"></i> Grafik Tinggi Badan (Klinik Admin)</h3>
+                <h3 class="text-sm font-bold text-gray-700 mb-4"><i class="fas fa-ruler text-blue-600 mr-2"></i> Grafik Tinggi Badan</h3>
                 <canvas id="tinggiChart" height="250"></canvas>
             </div>
         </div>
@@ -115,7 +112,7 @@ $riwayat_imunisasi = mysqli_query($conn, "SELECT pi.*, pi.STATUS AS status_penda
         </div>
         <?php endif; ?>
         
-        <h3 class="text-base font-bold text-gray-800 mb-3"><i class="fas fa-table text-green-600 mr-2"></i> Data Rekam Antropometri (Hasil Imunisasi)</h3>
+        <h3 class="text-base font-bold text-gray-800 mb-3"><i class="fas fa-table text-green-600 mr-2"></i> Data Perkembangan (Hasil Imunisasi)</h3>
         <?php if(mysqli_num_rows($perkembangan) > 0): ?>
         <div class="overflow-x-auto mb-8 border border-gray-100 rounded-xl shadow-sm">
             <table class="w-full text-left border-collapse">
@@ -156,8 +153,7 @@ $riwayat_imunisasi = mysqli_query($conn, "SELECT pi.*, pi.STATUS AS status_penda
         </div>
         <?php endif; ?>
         
-        <!-- Riwayat Pendaftaran Jadwal Sesi -->
-        <h3 class="text-base font-bold text-gray-800 mb-3"><i class="fas fa-history text-blue-600 mr-2"></i> Riwayat Registrasi Kunjungan Imunisasi</h3>
+        <h3 class="text-base font-bold text-gray-800 mb-3"><i class="fas fa-history text-blue-600 mr-2"></i>Riwayat Sesi Imunisasi</h3>
         <?php if(mysqli_num_rows($riwayat_imunisasi) > 0): ?>
         <div class="overflow-x-auto border border-gray-100 rounded-xl shadow-sm">
             <table class="w-full text-left border-collapse">
@@ -197,7 +193,6 @@ $riwayat_imunisasi = mysqli_query($conn, "SELECT pi.*, pi.STATUS AS status_penda
                             <?php else: ?>-<?php endif; ?>
                         </td>
                         <td class="p-3 text-center">
-                            <!-- PERUBAHAN: Tombol memicu POST tersembunyi ke detail_imunisasi.php milik admin -->
                             <button type="button" onclick="bukaDetailImunisasiPost('<?php echo $row['id_pendaftaran']; ?>')" 
                                     class="text-blue-600 hover:text-blue-800 font-bold inline-flex items-center gap-1 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg transition shadow-sm">
                                 <i class="fas fa-eye text-[11px]"></i> Detail
@@ -211,7 +206,7 @@ $riwayat_imunisasi = mysqli_query($conn, "SELECT pi.*, pi.STATUS AS status_penda
         <?php else: ?>
         <div class="text-center py-8 text-gray-400 bg-gray-50/50 border border-dashed rounded-xl text-sm">
             <i class="fas fa-calendar-times text-4xl mb-2 text-gray-300 block"></i>
-            <p>Belum ada riwayat pendaftaran kunjungan imunisasi untuk anak balita ini.</p>
+            <p>Belum ada riwayat pendaftaran imunisasi untuk anak ini.</p>
         </div>
         <?php endif; ?>
         
@@ -226,7 +221,6 @@ $riwayat_imunisasi = mysqli_query($conn, "SELECT pi.*, pi.STATUS AS status_penda
 <?php if($id_anak > 0 && !empty($chart_berat) && !empty($chart_tinggi)): ?>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Peta Grafik Timbang Berat Badan
 const beratCtx = document.getElementById('beratChart').getContext('2d');
 new Chart(beratCtx, {
     type: 'line',
@@ -254,7 +248,6 @@ new Chart(beratCtx, {
     }
 });
 
-// Peta Grafik Ukur Tinggi Badan
 const tinggiCtx = document.getElementById('tinggiChart').getContext('2d');
 new Chart(tinggiCtx, {
     type: 'line',
@@ -285,7 +278,6 @@ new Chart(tinggiCtx, {
 <?php endif; ?>
 
 <script>
-// Fungsi pemicu manipulasi DOM Form POST tersembunyi ke detail_imunisasi.php milik admin
 function bukaDetailImunisasiPost(idPendaftaran) {
     document.getElementById('idPendaftaranPost').value = idPendaftaran;
     document.getElementById('formDetailImunisasiPost').submit();

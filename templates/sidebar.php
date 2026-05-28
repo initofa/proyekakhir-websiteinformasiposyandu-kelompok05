@@ -268,18 +268,18 @@ $base_url = "/posyandu";
             </li>
 
             <li>
-                <a href="<?= $base_url ?>/admin/artikel/list_artikel.php"
-                    class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
-                    <i class="fas fa-newspaper text-lg w-6 text-center"></i>
-                    <span class="sidebar-text hidden">Artikel</span>
-                </a>
-            </li>
-
-            <li>
                 <a href="<?= $base_url ?>/admin/kategori/list_kategori.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-tags text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Kategori</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="<?= $base_url ?>/admin/artikel/list_artikel.php"
+                    class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
+                    <i class="fas fa-newspaper text-lg w-6 text-center"></i>
+                    <span class="sidebar-text hidden">Artikel</span>
                 </a>
             </li>
 
