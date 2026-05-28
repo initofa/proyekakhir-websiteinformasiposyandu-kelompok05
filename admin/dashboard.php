@@ -5,7 +5,6 @@ $title = 'Dashboard Admin';
 include __DIR__ . '/../templates/sidebar.php';
 
 
-// Data Utama
 $total_ibu = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM users WHERE role='ibu'"))['total'];
 $total_anak = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM anak"))['total'];
 $total_bidan_aktif = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM users WHERE role='bidan' AND status='active'"))['total'];
@@ -15,12 +14,10 @@ $total_artikel = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as tota
 $total_vaksin = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM vaksin"))['total'];
 $total_kategori = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM kategori_artikel"))['total'];
 
-// Data untuk chart (7 hari terakhir)
 $labels = [];
 $data_imunisasi = [];
 for ($i = 6; $i >= 0; $i--) {
     $tanggal = date('Y-m-d', strtotime("-$i days"));
-    // Gunakan formatTanggalIndonesia untuk label
     $labels[] = formatTanggalIndonesia($tanggal);
     $count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM pendaftaran_imunisasi WHERE DATE(created_at) = '$tanggal'"))['total'];
     $data_imunisasi[] = $count;
@@ -32,7 +29,6 @@ $batal = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM p
 ?>
 
 <div class="fade-in">
-    <!-- Welcome Banner -->
     <div class="bg-gradient-to-r from-green-600 to-emerald-500 rounded-2xl p-6 mb-8 text-white">
         <div class="flex items-center justify-between">
             <div>
@@ -46,9 +42,7 @@ $batal = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM p
         </div>
     </div>
     
-    <!-- Stats Cards - Baris 1 -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-         <!-- Ibu Hamil Aktif -->
         <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition group">
             <div class="p-4">
                 <div class="flex items-center justify-between mb-2">
@@ -65,7 +59,6 @@ $batal = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM p
             <div class="h-1 bg-rose-500 w-full"></div>
         </div>
         
-        <!-- Total Anak -->
         <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition group">
             <div class="p-4">
                 <div class="flex items-center justify-between mb-2">
@@ -82,7 +75,6 @@ $batal = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM p
             <div class="h-1 bg-blue-500 w-full"></div>
         </div>
         
-        <!-- Total Bidan Aktif -->
         <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition group">
             <div class="p-4">
                 <div class="flex items-center justify-between mb-2">
@@ -99,7 +91,6 @@ $batal = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM p
             <div class="h-1 bg-teal-500 w-full"></div>
         </div>
         
-        <!-- Jadwal Imunisasi -->
         <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition group">
             <div class="p-4">
                 <div class="flex items-center justify-between mb-2">
@@ -117,9 +108,7 @@ $batal = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM p
         </div>
     </div>
     
-    <!-- Stats Cards - Baris 2 -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-         <!-- Total Ibu -->
         <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition group">
             <div class="p-4">
                 <div class="flex items-center justify-between mb-2">
@@ -136,7 +125,6 @@ $batal = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM p
             <div class="h-1 bg-pink-500 w-full"></div>
         </div>
         
-        <!-- Total Vaksin -->
         <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition group">
             <div class="p-4">
                 <div class="flex items-center justify-between mb-2">
@@ -153,7 +141,6 @@ $batal = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM p
             <div class="h-1 bg-green-500 w-full"></div>
         </div>
         
-        <!-- Total Artikel -->
         <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition group">
             <div class="p-4">
                 <div class="flex items-center justify-between mb-2">
@@ -170,7 +157,6 @@ $batal = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM p
             <div class="h-1 bg-orange-500 w-full"></div>
         </div>
         
-        <!-- Total Kategori -->
         <div class="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition group">
             <div class="p-4">
                 <div class="flex items-center justify-between mb-2">
@@ -188,13 +174,11 @@ $batal = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM p
         </div>
     </div>
     
-    <!-- Charts dengan ukuran yang sama -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Grafik Pendaftaran 7 Hari Terakhir -->
         <div class="bg-white rounded-2xl shadow-md p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-gray-700">
-                    <i class="fas fa-chart-line text-green-500 mr-2"></i> Pendaftaran Imunisasi
+                    <i class="fas fa-chart-line text-green-500 mr-2"></i> Pendaftar Imunisasi
                 </h3>
                 <span class="text-xs text-gray-400">7 hari terakhir</span>
             </div>
@@ -203,7 +187,6 @@ $batal = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM p
             </div>
         </div>
         
-        <!-- Grafik Status Imunisasi -->
         <div class="bg-white rounded-2xl shadow-md p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-gray-700">
@@ -219,14 +202,13 @@ $batal = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM p
 </div>
 
 <script>
-// Grafik 7 Hari Terakhir
 const weeklyCtx = document.getElementById('weeklyChart').getContext('2d');
 new Chart(weeklyCtx, {
     type: 'bar',
     data: {
         labels: <?php echo json_encode($labels); ?>,
         datasets: [{
-            label: 'Jumlah Pendaftaran',
+            label: 'Jumlah Pendaftar',
             data: <?php echo json_encode($data_imunisasi); ?>,
             backgroundColor: 'rgba(16, 185, 129, 0.7)',
             borderColor: '#10b981',
@@ -243,7 +225,7 @@ new Chart(weeklyCtx, {
             tooltip: { 
                 callbacks: { 
                     label: function(context) { 
-                        return context.raw + ' pendaftaran'; 
+                        return context.raw + ' pendaftar'; 
                     } 
                 } 
             }
@@ -259,7 +241,6 @@ new Chart(weeklyCtx, {
     }
 });
 
-// Grafik Status Imunisasi (Doughnut)
 const statusCtx = document.getElementById('statusChart').getContext('2d');
 new Chart(statusCtx, {
     type: 'doughnut',
