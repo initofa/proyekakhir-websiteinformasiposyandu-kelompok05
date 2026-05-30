@@ -10,7 +10,6 @@ if ($id === 0) {
     exit();
 }
 
-// Ambil data artikel lama
 $artikel = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM artikel WHERE id_artikel=$id"));
 
 if(!$artikel){
@@ -45,7 +44,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['ac
         } elseif($file['size'] > 5000000){
             $error_upload = "Ukuran gambar terlalu besar! Maksimal 5MB.";
         } else {
-            // Hapus berkas thumbnail lama jika ada berkas baru yang sukses tervalidasi
             if($artikel['thumbnail'] && file_exists("../../uploads/artikel/" . $artikel['thumbnail'])){
                 unlink("../../uploads/artikel/" . $artikel['thumbnail']);
             }
@@ -69,7 +67,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['ac
     }
     
     if(empty($error_upload)){
-        // PERUBAHAN DI SINI: Query disesuaikan dengan struktur tabel baru tanpa log rekam jejak
         $query = "UPDATE artikel SET id_kategori='$id_kategori', judul='$judul', konten='$konten' $thumbnail_query WHERE id_artikel=$id";
         
         if(mysqli_query($conn, $query)){
@@ -105,7 +102,6 @@ $kategori = mysqli_query($conn, "SELECT * FROM kategori_artikel");
     <?php endif; ?>
     
     <form method="POST" enctype="multipart/form-data">
-        <!-- PERUBAHAN UTAMA: Menyisipkan ID Artikel dan Action penanda submit via POST -->
         <input type="hidden" name="id_artikel" value="<?php echo $id; ?>">
         <input type="hidden" name="action" value="update">
 

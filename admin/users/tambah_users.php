@@ -201,7 +201,6 @@ if(waInput) {
         if(this.value.startsWith('0')) {
             this.value = this.value.substring(1);
         }
-        // Batasi maksimal 13 digit
         if(this.value.length > 13) {
             this.value = this.value.substring(0, 13);
         }

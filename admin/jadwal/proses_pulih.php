@@ -6,7 +6,6 @@ $id_pendaftaran = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $jadwal_id = isset($_GET['jadwal_id']) ? (int)$_GET['jadwal_id'] : 0;
 
 if ($id_pendaftaran > 0) {
-    // Kembalikan status dari 'batal' menjadi 'pending' agar masuk antrean lagi
     $update = mysqli_query($conn, "UPDATE pendaftaran_imunisasi SET STATUS='pending', updated_at=NOW() WHERE id_pendaftaran='$id_pendaftaran' AND STATUS='batal'");
     
     if ($update) {

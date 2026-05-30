@@ -61,7 +61,6 @@ $result = mysqli_query($conn, "SELECT * FROM kategori_artikel ORDER BY created_a
         <?php endif; ?>
     </div>
 
-    <!-- Pagination -->
     <?php if($total_pages > 1): ?>
     <div class="mt-6">
         <?php echo paginate($page, $total_pages, "list_kategori.php?"); ?>
@@ -70,7 +69,6 @@ $result = mysqli_query($conn, "SELECT * FROM kategori_artikel ORDER BY created_a
 </div>
 
 <script>
-// Fungsi pemicu kirim data edit via POST
 function kirimEditKategoriPost(idKategori) {
     document.getElementById('idKategoriEditPost').value = idKategori;
     document.getElementById('formEditKategoriPost').submit();

@@ -12,7 +12,6 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 15;
 $offset = ($page - 1) * $limit;
 
-// Menyusun klausa WHERE dinamis
 $where = "WHERE 1=1";
 if (!empty($search)) {
     $where .= " AND (a.nama_anak LIKE '%$search%' OR u.nama_lengkap LIKE '%$search%')";
@@ -21,12 +20,10 @@ if (!empty($jk_filter)) {
     $where .= " AND a.jenis_kelamin = '$jk_filter'";
 }
 
-// Menghitung total data untuk pagination
 $total_query = "SELECT COUNT(*) as total FROM anak a LEFT JOIN users u ON a.nik_ibu = u.nik $where";
 $total = mysqli_fetch_assoc(mysqli_query($conn, $total_query))['total'];
 $total_pages = ceil($total / $limit);
 
-// Mengambil data anak beserta nama ibunya
 $query_anak = "SELECT a.*, u.nama_lengkap as nama_ibu 
                FROM anak a 
                LEFT JOIN users u ON a.nik_ibu = u.nik 
@@ -45,24 +42,20 @@ $result = mysqli_query($conn, $query_anak);
         <h1 class="text-2xl font-bold text-green-800">Data Anak</h1>
     </div>
     
-    <!-- Search & Filter Bar -->
     <div class="bg-white rounded-2xl shadow-lg p-4 mb-6">
         <form method="GET" class="flex flex-col md:flex-row gap-3">
-            <!-- Input Pencarian -->
             <div class="flex-1 relative">
                 <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                 <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Cari nama anak atau nama ibu..." 
                        class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200">
             </div>
             
-            <!-- Filter Jenis Kelamin -->
             <select name="jk" class="px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 bg-white">
                 <option value="">Semua Jenis Kelamin</option>
                 <option value="L" <?php echo $jk_filter == 'L' ? 'selected' : ''; ?>>Laki-laki (L)</option>
                 <option value="P" <?php echo $jk_filter == 'P' ? 'selected' : ''; ?>>Perempuan (P)</option>
             </select>
             
-            <!-- Tombol Aksi -->
             <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-xl hover:bg-green-700 transition flex items-center justify-center gap-2">
                 <i class="fas fa-filter"></i> Filter
             </button>
@@ -75,7 +68,6 @@ $result = mysqli_query($conn, $query_anak);
         </form>
     </div>
     
-    <!-- Tabel Data Anak -->
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full">
@@ -109,7 +101,6 @@ $result = mysqli_query($conn, $query_anak);
                         <td class="p-4 text-sm text-gray-600"><?php echo formatTanggalIndonesia($row['tanggal_lahir']); ?></td>
                         <td class="p-4 text-sm font-medium text-gray-700"><?php echo htmlspecialchars($row['nama_ibu']); ?></td>
                         <td class="p-4 text-center">
-                            <!-- Pemicu fungsi POST JavaScript -->
                             <button type="button" onclick="kirimDetailAnakPost('<?php echo $row['id_anak']; ?>')" 
                                     class="bg-green-500 hover:bg-green-600 text-white px-4 py-1.5 rounded-xl text-xs font-medium transition inline-flex items-center gap-1 shadow-sm">
                                 <i class="fas fa-chart-line"></i> Perkembangan
@@ -130,7 +121,6 @@ $result = mysqli_query($conn, $query_anak);
         </div>
     </div>
     
-    <!-- Pagination -->
     <?php if($total_pages > 1): ?>
     <div class="mt-6">
         <?php echo paginate($page, $total_pages, "list_anak.php?search=" . urlencode($search) . "&jk=" . $jk_filter); ?>

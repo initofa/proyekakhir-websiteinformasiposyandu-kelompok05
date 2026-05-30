@@ -25,7 +25,7 @@ $pemeriksaan = mysqli_query($conn, "SELECT * FROM pemeriksaan_kehamilan WHERE id
                 <div class="col-span-2"><label class="text-gray-500 text-sm">Alamat</label><p><?php echo $ibu['alamat']; ?></p></div>
             </div>
             
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">📋 Riwayat Pemeriksaan</h3>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Riwayat Pemeriksaan</h3>
             <div class="space-y-3">
                 <?php while($row = mysqli_fetch_assoc($pemeriksaan)): ?>
                 <div class="border rounded-xl p-3 hover:shadow-md transition">

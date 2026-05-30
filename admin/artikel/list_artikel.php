@@ -145,7 +145,6 @@ $kategori = mysqli_query($conn, "SELECT * FROM kategori_artikel");
 </div>
 
 <script>
-// Fungsi dinamis untuk menangani redirect form POST baik ke Edit maupun ke Detail
 function kirimAksiArtikelPost(urlTujuan, idArtikel) {
     const form = document.getElementById('formAksiArtikelPost');
     form.action = urlTujuan;

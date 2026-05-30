@@ -2,18 +2,15 @@
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../auth/cek_admin.php';
 
-// Tangkap kata kunci pencarian jika ada
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, trim($_GET['search'])) : '';
 
-// Fitur Pagination
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = 6; // Menampilkan 6 kartu per halaman agar pas dengan grid 3 kolom
+$limit = 6; 
 $offset = ($page - 1) * $limit;
 
 $title = 'Jadwal Imunisasi';
 include __DIR__ . '/../../templates/sidebar.php';
 
-// Kondisi filter query SQL
 $search_condition = "";
 if ($search !== '') {
     $search_condition = " WHERE v.nama_vaksin LIKE '%$search%' 
@@ -21,7 +18,6 @@ if ($search !== '') {
                           OR u.nama_lengkap LIKE '%$search%'";
 }
 
-// 1. HITUNG TOTAL DATA JADWAL (Untuk Pagination Admin)
 $total_query = "SELECT COUNT(*) as total 
                 FROM jadwal_imunisasi j 
                 JOIN vaksin v ON j.id_vaksin=v.id_vaksin 
@@ -30,7 +26,6 @@ $total_query = "SELECT COUNT(*) as total
 $total_data = mysqli_fetch_assoc(mysqli_query($conn, $total_query))['total'];
 $total_pages = ceil($total_data / $limit);
 
-// 2. QUERY UTAMA DENGAN SUBQUERY + LIMIT & OFFSET
 $query_base = "SELECT j.*, v.nama_vaksin, u.nama_lengkap as nama_bidan,
     (SELECT COUNT(*) FROM pendaftaran_imunisasi WHERE id_jadwal=j.id_jadwal AND STATUS != 'batal') as total_daftar,
     (SELECT COUNT(*) FROM pendaftaran_imunisasi WHERE id_jadwal=j.id_jadwal AND STATUS='pending') as total_pending,
@@ -244,7 +239,7 @@ function openPesertaMasterModal(jadwalId, v_nama, tgl_txt) {
     document.getElementById('masterPesertaModal').classList.remove('hidden');
     document.getElementById('masterPesertaModal').classList.add('flex');
     switchSubTab(defaultTabTarget);
-    defaultTabTarget = 'peserta'; // reset ke default
+    defaultTabTarget = 'peserta'; 
 }
 
 function switchSubTab(type) {

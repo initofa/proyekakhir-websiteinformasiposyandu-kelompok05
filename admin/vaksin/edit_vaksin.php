@@ -10,17 +10,14 @@ if ($id === 0) {
     exit();
 }
 
-// Ambil data vaksin lama
 $vaksin = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM vaksin WHERE id_vaksin=$id"));
 
-// Redirect jika data tidak ditemukan
 if(!$vaksin){
     $_SESSION['error'] = "Vaksin tidak ditemukan!";
     header("Location: list_vaksin.php");
     exit();
 }
 
-// Konversi usia dari bulan ke tahun untuk tampilan form default jika kelipatan 12
 $usia_bulan = $vaksin['usia_rekomendasi'];
 $usia_nilai = $usia_bulan;
 $satuan = 'bulan';
@@ -30,14 +27,12 @@ if($usia_bulan >= 12 && $usia_bulan % 12 == 0){
     $satuan = 'tahun';
 }
 
-// Proses update data ketika form dikirim
 if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'update'){
     $nama = mysqli_real_escape_string($conn, trim($_POST['nama_vaksin']));
     $deskripsi = mysqli_real_escape_string($conn, trim($_POST['deskripsi']));
     $usia = (int)$_POST['usia_rekomendasi'];
     $satuan_waktu = $_POST['satuan_waktu'];
     
-    // Konversi kembali ke bulan jika admin memilih opsi tahun
     if($satuan_waktu == 'tahun'){
         $usia_bulan_baru = $usia * 12;
     } else {
@@ -47,7 +42,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['ac
     if ($usia_bulan_baru < 0) {
         $_SESSION['error'] = "Usia rekomendasi tidak boleh bernilai negatif!";
     } else {
-        // PERUBAHAN: Query disederhanakan tanpa kolom 'updated_by' sesuai skema DB baru
         $query = "UPDATE vaksin SET nama_vaksin='$nama', deskripsi='$deskripsi', usia_rekomendasi='$usia_bulan_baru' WHERE id_vaksin=$id";
         
         if(mysqli_query($conn, $query)){
@@ -69,7 +63,6 @@ include __DIR__ . '/../../templates/sidebar.php';
 <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-6 fade-in">
     <h1 class="text-2xl font-bold text-green-800 mb-6">Edit Vaksin</h1>
     
-    <!-- Pop-up Pesan Error Server-side via SweetAlert -->
     <?php if(isset($_SESSION['error'])): ?>
     <script>
     Swal.fire({
@@ -82,7 +75,6 @@ include __DIR__ . '/../../templates/sidebar.php';
     <?php endif; ?>
 
     <form method="POST">
-        <!-- Mengunci ID Vaksin dan Penanda Aksi via Input Tersembunyi -->
         <input type="hidden" name="id_vaksin" value="<?php echo $id; ?>">
         <input type="hidden" name="action" value="update">
 

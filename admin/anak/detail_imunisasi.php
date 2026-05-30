@@ -2,18 +2,15 @@
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../auth/cek_admin.php';
 
-// Tangkap ID menggunakan POST sesuai kiriman dari detail_perkembangan.php admin
 $id = isset($_POST['id_pendaftaran']) ? (int)$_POST['id_pendaftaran'] : 0;
 $id_anak_asal = isset($_POST['id_anak_asal']) ? (int)$_POST['id_anak_asal'] : 0;
 
-// Jika tidak ada data POST (misal di-refresh paksa), kembalikan ke daftar anak utama
 if($id === 0){
     $_SESSION['error'] = "Data detail imunisasi tidak ditemukan!";
     header("Location: list_anak.php");
     exit();
 }
 
-// PERUBAHAN QUERY: Menghapus filter nik_ibu agar admin bebas mengakses data medis seluruh balita
 $query = "SELECT pi.*, pi.STATUS as status_pendaftaran, a.nama_anak, a.tanggal_lahir, a.jenis_kelamin, a.berat_lahir, a.panjang_lahir, a.id_anak,
           v.nama_vaksin, j.tanggal, j.lokasi,
           hi.berat_badan, hi.tinggi_badan, hi.lingkar_kepala, hi.status_gizi, hi.nafsu_makan, hi.catatan_kesehatan, hi.tgl_imunisasi,
@@ -34,7 +31,6 @@ if(!$data){
     exit();
 }
 
-// Hitung usia anak saat tindakan berdasarkan tanggal rekam medis tindakan
 $usia = date_diff(date_create($data['tanggal_lahir']), date_create('today'));
 
 $title = 'Detail Imunisasi Balita';

@@ -2,7 +2,6 @@
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../auth/cek_admin.php';
 
-// Fitur Pencarian & Pagination (Diadopsi dari file Bidan)
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, trim($_GET['search'])) : '';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 9;
@@ -11,23 +10,19 @@ $offset = ($page - 1) * $limit;
 $title = 'Data Vaksin';
 include __DIR__ . '/../../templates/sidebar.php';
 
-// Filter kondisi pencarian
 $search_condition = "";
 if($search) {
     $search_condition = "WHERE nama_vaksin LIKE '%$search%' OR deskripsi LIKE '%$search%'";
 }
 
-// 1. Hitung total data berdasarkan kriteria pencarian
 $total = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM vaksin $search_condition"))['total'];
 $total_pages = ceil($total / $limit);
 
-// 2. Ambil data dengan limit, offset, dan filter pencarian
 $result = mysqli_query($conn, "SELECT * FROM vaksin 
                                $search_condition 
                                ORDER BY usia_rekomendasi ASC 
                                LIMIT $offset, $limit");
 
-// Fungsi untuk mengkonversi bulan ke format tahun dan bulan
 function formatUsia($bulan) {
     if($bulan == 0) {
         return '0 bulan (baru lahir)';
@@ -185,7 +180,6 @@ function formatUsia($bulan) {
 </div>
 
 <script>
-// Fungsi pemicu kirim data edit via POST
 function kirimEditVaksinPost(idVaksin) {
     document.getElementById('idVaksinEditPost').value = idVaksin;
     document.getElementById('formEditVaksinPost').submit();
@@ -215,7 +209,6 @@ function openDetailModal(vaksin, tanggalFormatted) {
     document.getElementById('modalUsia').innerHTML = '<i class="fas fa-child mr-1 text-green-500"></i> ' + usiaText;
     document.getElementById('modalDeskripsi').innerText = vaksin.deskripsi || 'Tidak ada deskripsi lengkap.';
     
-    // Menggunakan string formatTanggalIndonesia yang dilempar langsung dari PHP
     document.getElementById('modalCreatedAt').innerHTML = '<i class="far fa-calendar-alt mr-1 text-gray-400"></i> ' + tanggalFormatted;
     
     document.getElementById('detailModal').classList.remove('hidden');
@@ -230,7 +223,6 @@ function closeDetailModal(event) {
     document.body.style.overflow = 'auto';
 }
 
-// Konfirmasi hapus SweetAlert terintegrasi ke link GET
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         closeDetailModal();

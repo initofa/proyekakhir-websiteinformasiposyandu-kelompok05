@@ -10,7 +10,6 @@ if (empty($nik)) {
     exit();
 }
 
-// Cari data user berdasarkan NIK
 $user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE nik='$nik'"));
 
 if(!$user) {
@@ -19,7 +18,6 @@ if(!$user) {
     exit();
 }
 
-// PROSES UPDATE MENGGUNAKAN POST
 if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'update'){
     $no_wa = $_POST['no_wa'];
     if(!str_starts_with($no_wa, '+62')) {
@@ -36,7 +34,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['ac
         $password_query = ", PASSWORD='".md5($_POST['password'])."'";
     }
     
-    // Keamanan ekstra: Query tetap menggunakan $nik yang divalidasi aman
     $query = "UPDATE users SET no_wa='$no_wa', nama_lengkap='$nama_lengkap', alamat='$alamat', ROLE='$role', STATUS='$status', updated_by='$updated_by' $password_query WHERE nik='$nik'";
     
     if(mysqli_query($conn, $query)) {
@@ -78,7 +75,6 @@ include __DIR__ . '/../../templates/sidebar.php';
                 <label class="block text-gray-700 font-semibold mb-2">NIK</label>
                 <div class="relative">
                     <i class="fas fa-id-card absolute left-3 top-1/2 -translate-y-1/2 text-green-400"></i>
-                    <!-- Input text dibuat disabled agar user tidak bisa ketik manual, data asli dikirim via hidden input di atas -->
                     <input type="text" value="<?php echo htmlspecialchars($user['nik']); ?>" disabled 
                            class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl bg-gray-100 text-gray-500">
                 </div>
@@ -133,7 +129,6 @@ include __DIR__ . '/../../templates/sidebar.php';
                 </div>
             </div>
             
-            <!-- WhatsApp -->
             <div>
                 <label class="block text-gray-700 font-semibold mb-2">No. WhatsApp</label>
                 <div class="flex">
@@ -268,7 +263,6 @@ document.querySelector('form').addEventListener('submit', function(e) {
         }
     }
     
-    // Validasi penambahan kode +62 otomatis sesaat sebelum submit
     let no_wa = document.getElementById('no_wa').value;
     if(no_wa && !no_wa.startsWith('+62')) {
        

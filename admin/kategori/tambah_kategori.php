@@ -22,7 +22,6 @@ include __DIR__ . '/../../templates/sidebar.php';
 <div class="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-6 fade-in">
     <h1 class="text-2xl font-bold text-green-800 mb-6">Tambah Kategori</h1>
     
-    <!-- Integrasi Alert Error Server-side via SweetAlert -->
     <?php if(isset($_SESSION['error'])): ?>
     <script>
     Swal.fire({

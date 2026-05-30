@@ -8,7 +8,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $usia = (int)$_POST['usia_rekomendasi'];
     $satuan = $_POST['satuan_waktu'];
     
-    // Konversi ke bulan jika satuan tahun
     if($satuan == 'tahun'){
         $usia_bulan = $usia * 12;
     } else {
@@ -18,7 +17,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     if ($usia_bulan < 0) {
         $_SESSION['error'] = "Usia rekomendasi tidak boleh bernilai negatif!";
     } else {
-        // PERUBAHAN: Query disederhanakan tanpa kolom 'created_by' sesuai skema DB baru
         $query = "INSERT INTO vaksin (nama_vaksin, deskripsi, usia_rekomendasi) VALUES ('$nama', '$deskripsi', '$usia_bulan')";
         
         if(mysqli_query($conn, $query)){
@@ -38,7 +36,6 @@ include __DIR__ . '/../../templates/sidebar.php';
 <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-6 fade-in">
     <h1 class="text-2xl font-bold text-green-800 mb-6">Tambah Vaksin</h1>
     
-    <!-- Integrasi Pop-up Pesan Error Server-side via SweetAlert -->
     <?php if(isset($_SESSION['error'])): ?>
     <script>
     Swal.fire({

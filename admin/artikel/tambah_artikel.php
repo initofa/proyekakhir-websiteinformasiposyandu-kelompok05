@@ -13,7 +13,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     
     $thumbnail = '';
     
-    // Fungsi untuk membuat slug dari judul
     function createSlug($text) {
         $text = strtolower($text);
         $text = preg_replace('/[^a-z0-9\s-]/', '', $text);
@@ -22,7 +21,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         return $text;
     }
     
-    // Validasi upload file
     if(isset($_FILES['thumbnail']['name']) && $_FILES['thumbnail']['name']){
         $file = $_FILES['thumbnail'];
         $file_tmp = $file['tmp_name'];
@@ -67,9 +65,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         }
     }
     
-    // Jika tidak ada error upload, simpan artikel
     if(empty($error_upload)){
-        // PERUBAHAN: Query disederhanakan hanya mengisi kolom yang tersedia di tabel baru
         $query = "INSERT INTO artikel (id_kategori, judul, konten, thumbnail, penulis_nik) 
                   VALUES ('$id_kategori', '$judul', '$konten', '$thumbnail', '$penulis_nik')";
                   
@@ -98,7 +94,6 @@ $kategori = mysqli_query($conn, "SELECT * FROM kategori_artikel");
 <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-6 fade-in">
     <h1 class="text-2xl font-bold text-green-800 mb-6">Tambah Artikel</h1>
     
-    <!-- PERUBAHAN: Menampilkan Error handling Server-side menggunakan komponen SweetAlert pop-up -->
     <?php if(isset($_SESSION['error'])): ?>
     <script>
     Swal.fire({
@@ -112,7 +107,6 @@ $kategori = mysqli_query($conn, "SELECT * FROM kategori_artikel");
     
     <form method="POST" enctype="multipart/form-data" id="formArtikel">
         <div class="space-y-4">
-            <!-- Kategori -->
             <div>
                 <label class="block font-semibold text-gray-700 mb-2">Kategori</label>
                 <select name="id_kategori" required class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200">
@@ -123,7 +117,6 @@ $kategori = mysqli_query($conn, "SELECT * FROM kategori_artikel");
                 </select>
             </div>
             
-            <!-- Judul Artikel -->
             <div>
                 <label class="block font-semibold text-gray-700 mb-2">Judul Artikel</label>
                 <input type="text" name="judul" id="judul" required 
@@ -131,7 +124,6 @@ $kategori = mysqli_query($conn, "SELECT * FROM kategori_artikel");
                        placeholder="Masukkan judul artikel">
             </div>
             
-            <!-- Konten -->
             <div>
                 <label class="block font-semibold text-gray-700 mb-2">Konten</label>
                 <textarea name="konten" rows="10" required 
@@ -139,7 +131,6 @@ $kategori = mysqli_query($conn, "SELECT * FROM kategori_artikel");
                           placeholder="Tulis konten artikel di sini..."></textarea>
             </div>
             
-            <!-- Thumbnail -->
             <div>
                 <label class="block font-semibold text-gray-700 mb-2">Thumbnail</label>
                 <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-green-400 transition cursor-pointer" id="dropzone">
@@ -168,7 +159,6 @@ $kategori = mysqli_query($conn, "SELECT * FROM kategori_artikel");
 </div>
 
 <script>
-// Drag & drop upload
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('thumbnail');
 const preview = document.getElementById('preview');

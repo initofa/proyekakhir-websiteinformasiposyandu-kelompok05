@@ -4,9 +4,7 @@ require_once __DIR__ . '/../../config/database.php';
 $jadwal_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $type = isset($_GET['type']) ? $_GET['type'] : 'peserta';
 
-// ============================================
-// TAB 1: MENUNGGU (PENDING)
-// ============================================
+
 if ($type == 'peserta') {
     $query = "SELECT pi.*, a.nama_anak, a.jenis_kelamin, u.nama_lengkap as nama_ibu, u.no_wa 
               FROM pendaftaran_imunisasi pi 
@@ -63,9 +61,7 @@ if ($type == 'peserta') {
     <?php
 } 
 
-// ============================================
-// TAB 2: SELESAI
-// ============================================
+
 elseif ($type == 'selesai') {
     $query = "SELECT pi.*, a.nama_anak, a.jenis_kelamin, u.nama_lengkap as nama_ibu, 
                      hi.berat_badan, hi.tinggi_badan, hi.lingkar_kepala, hi.status_gizi, hi.tgl_imunisasi
@@ -124,9 +120,7 @@ elseif ($type == 'selesai') {
     <?php
 }
 
-// ============================================
-// TAB 3: DIBATALKAN (DENGAN AKSI PULIHKAN/DAFTAR LAGI)
-// ============================================
+
 elseif ($type == 'batal') {
     $query = "SELECT pi.*, a.nama_anak, a.jenis_kelamin, u.nama_lengkap as nama_ibu, j.tanggal
               FROM pendaftaran_imunisasi pi 

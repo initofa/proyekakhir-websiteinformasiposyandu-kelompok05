@@ -8,7 +8,6 @@ $limit = 12;
 $offset = ($page - 1) * $limit;
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 
-// Handle konfirmasi bidan / ibu (terima / aktifkan)
 if (isset($_GET['confirm'])) {
     $nik = $_GET['confirm'];
     mysqli_query($conn, "UPDATE users SET STATUS='active', updated_by='{$_SESSION['nik']}' WHERE nik='$nik'");
@@ -17,7 +16,6 @@ if (isset($_GET['confirm'])) {
     exit();
 }
 
-// Handle tolak
 if (isset($_GET['reject'])) {
     $nik = $_GET['reject'];
     mysqli_query($conn, "UPDATE users SET STATUS='inactive', updated_by='{$_SESSION['nik']}' WHERE nik='$nik'");
@@ -26,7 +24,6 @@ if (isset($_GET['reject'])) {
     exit();
 }
 
-// Handle aktifkan kembali bidan atau ibu
 if (isset($_GET['activate'])) {
     $nik = $_GET['activate'];
     mysqli_query($conn, "UPDATE users SET STATUS='active', updated_by='{$_SESSION['nik']}' WHERE nik='$nik'");
@@ -35,7 +32,6 @@ if (isset($_GET['activate'])) {
     exit();
 }
 
-// Handle nonaktifkan bidan atau ibu
 if (isset($_GET['deactivate'])) {
     $nik = $_GET['deactivate'];
     mysqli_query($conn, "UPDATE users SET STATUS='inactive', updated_by='{$_SESSION['nik']}' WHERE nik='$nik'");
@@ -50,7 +46,6 @@ $total_bidan = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total 
 $title = 'Manajemen Users';
 include __DIR__ . '/../../templates/sidebar.php';
 
-// Query untuk Ibu
 if ($tab == 'ibu') {
     $where = "WHERE ROLE='ibu'";
     if ($search) $where .= " AND (nama_lengkap LIKE '%$search%' OR nik LIKE '%$search%')";
@@ -58,7 +53,7 @@ if ($tab == 'ibu') {
     $total_pages = ceil($total / $limit);
     $result = mysqli_query($conn, "SELECT * FROM users $where ORDER BY CASE STATUS WHEN 'active' THEN 0 ELSE 1 END, created_at DESC LIMIT $offset, $limit");
 } 
-// Query untuk Bidan
+
 else {
     $where = "WHERE ROLE='bidan'";
     if ($search) $where .= " AND (nama_lengkap LIKE '%$search%' OR nik LIKE '%$search%')";
@@ -74,7 +69,6 @@ else {
 }
 ?>
 
-<!-- Form Tersembunyi Global untuk Mengirim NIK via POST ke Halaman Edit -->
 <form id="formEditPost" action="edit_users.php" method="POST" style="display:none;">
     <input type="hidden" name="nik" id="nikEditPost">
 </form>
@@ -87,7 +81,6 @@ else {
         </a>
     </div>
     
-    <!-- Tab Navigation dengan Total Terpisah -->
     <div class="flex gap-2 mb-6">
         <a href="?tab=ibu&page=1<?php echo $search ? '&search='.$search : ''; ?>" 
            class="px-6 py-2 rounded-xl font-medium transition-all duration-300 <?php echo $tab == 'ibu' ? 'bg-green-600 text-white shadow-lg' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'; ?>">
@@ -101,7 +94,6 @@ else {
         </a>
     </div>
     
-    <!-- Search Bar -->
     <div class="bg-white rounded-2xl shadow-lg p-4 mb-6">
         <form method="GET" class="flex flex-col sm:flex-row gap-3">
             <input type="hidden" name="tab" value="<?php echo $tab; ?>">
@@ -120,7 +112,6 @@ else {
         </form>
     </div>
     
-    <!-- ==================== TABEL IBU ==================== -->
     <?php if ($tab == 'ibu'): ?>
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
         <div class="overflow-x-auto">
@@ -169,7 +160,6 @@ else {
                             </div>
                             <?php else: ?>
                             <div class="flex justify-center gap-2">
-                                <!-- PERUBAHAN DI SINI: Menggunakan kirimEditPost() via JavaScript untuk metode POST -->
                                 <button type="button" onclick="kirimEditPost('<?php echo $row['nik']; ?>')" class="text-blue-500 hover:text-blue-700 transition p-1" title="Edit">
                                     <i class="fas fa-edit text-lg"></i>
                                 </button>
@@ -197,14 +187,12 @@ else {
         </div>
     </div>
     
-    <!-- Pagination Ibu -->
     <?php if($total_pages > 1): ?>
     <div class="mt-6">
         <?php echo paginate($page, $total_pages, "list_users.php?tab=ibu&search=" . urlencode($search)); ?>
     </div>
     <?php endif; ?>
     
-    <!-- ==================== TABEL BIDAN ==================== -->
     <?php else: ?>
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
         <div class="overflow-x-auto">
@@ -265,7 +253,6 @@ else {
                             </div>
                             <?php else: ?>
                             <div class="flex justify-center gap-2">
-                                <!-- PERUBAHAN DI SINI: Menggunakan kirimEditPost() via JavaScript untuk metode POST -->
                                 <button type="button" onclick="kirimEditPost('<?php echo $row['nik']; ?>')" class="text-blue-500 hover:text-blue-700 p-1" title="Edit">
                                     <i class="fas fa-edit text-lg"></i>
                                 </button>
@@ -293,7 +280,6 @@ else {
         </div>
     </div>
     
-    <!-- Pagination Bidan -->
     <?php if($total_pages > 1): ?>
     <div class="mt-6">
         <?php echo paginate($page, $total_pages, "list_users.php?tab=bidan&search=" . urlencode($search)); ?>
@@ -303,7 +289,6 @@ else {
 </div>
 
 <script>
-// PERUBAHAN DI SINI: Fungsi JavaScript untuk mengisi form hidden lalu men-submit-nya secara POST
 function kirimEditPost(nik) {
     document.getElementById('nikEditPost').value = nik;
     document.getElementById('formEditPost').submit();

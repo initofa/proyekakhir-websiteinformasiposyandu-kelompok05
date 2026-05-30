@@ -10,7 +10,6 @@ if ($id === 0) {
     exit();
 }
 
-// Ambil data kategori lama
 $kategori = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM kategori_artikel WHERE id_kategori=$id"));
 
 if (!$kategori) {
@@ -19,7 +18,6 @@ if (!$kategori) {
     exit();
 }
 
-// Proses pembaruan data ketika form dikirim
 if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'update'){
     $nama = mysqli_real_escape_string($conn, trim($_POST['nama_kategori']));
     
@@ -41,7 +39,6 @@ include __DIR__ . '/../../templates/sidebar.php';
 <div class="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-6 fade-in">
     <h1 class="text-2xl font-bold text-green-800 mb-6">Edit Kategori</h1>
     
-    <!-- Integrasi Pop-up Pesan Error via SweetAlert -->
     <?php if(isset($_SESSION['error'])): ?>
     <script>
     Swal.fire({
@@ -54,7 +51,6 @@ include __DIR__ . '/../../templates/sidebar.php';
     <?php endif; ?>
 
     <form method="POST">
-        <!-- Mengunci ID Kategori dan Penanda Aksi via Input Tersembunyi -->
         <input type="hidden" name="id_kategori" value="<?php echo $id; ?>">
         <input type="hidden" name="action" value="update">
 
