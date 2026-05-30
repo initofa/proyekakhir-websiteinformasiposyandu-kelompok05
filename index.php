@@ -1,8 +1,6 @@
 <?php
-// index.php - Landing Page SIPANDA
 require_once __DIR__ . '/config/database.php';
 
-// Ambil 4 artikel terbaru
 $query_artikel = "SELECT a.*, k.nama_kategori, u.nama_lengkap as penulis 
     FROM artikel a 
     LEFT JOIN kategori_artikel k ON a.id_kategori = k.id_kategori 
@@ -15,19 +13,15 @@ $title = 'SIPANDA - Solusi Kesehatan Ibu dan Anak';
 include __DIR__ . '/templates/header_public.php';
 ?>
 
-<!-- ========== HERO SECTION MODERN & KECIL ========== -->
 <section class="relative py-16 lg:py-20 overflow-hidden">
-    <!-- Background Soft Gradient -->
     <div class="absolute inset-0 bg-gradient-to-br from-green-50 via-white to-pink-50"></div>
     
-    <!-- Dekorasi Simple -->
     <div class="absolute top-10 right-10 w-40 h-40 bg-green-200 rounded-full opacity-20 blur-2xl"></div>
     <div class="absolute bottom-10 left-10 w-40 h-40 bg-pink-200 rounded-full opacity-20 blur-2xl"></div>
     
     <div class="container mx-auto px-4 relative z-10">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
             
-            <!-- Left Content - Lebih Ringkas -->
             <div class="text-center lg:text-left fade-in">
                 <div class="inline-flex items-center gap-2 bg-white shadow-sm px-4 py-2 rounded-full text-sm mb-5 mx-auto lg:mx-auto xl:mx-0">
                     <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
@@ -38,7 +32,6 @@ include __DIR__ . '/templates/header_public.php';
                     <span class="bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">SIPANDA</span>
                 </h1>
                 
-                <!-- Kepanjangan SIPANDA -->
                 <div class="text-sm text-gray-500 mb-3 font-medium">
                     Sistem Informasi Posyandu <span class="text-green-600">Anak</span> & <span class="text-pink-500">Bunda</span>
                 </div>
@@ -59,7 +52,6 @@ include __DIR__ . '/templates/header_public.php';
                     </a>
                 </div>
                 
-                <!-- Trust Badge -->
                 <div class="flex items-center gap-4 justify-center lg:justify-start mt-6">
                     <div class="flex -space-x-2">
                         <div class="w-7 h-7 bg-green-100 rounded-full flex items-center justify-center text-xs font-bold text-green-600 border-2 border-white">S</div>
@@ -70,10 +62,8 @@ include __DIR__ . '/templates/header_public.php';
                 </div>
             </div>
             
-            <!-- Right Content - Card Ringkas & Manis -->
             <div class="relative">
                 <div class="bg-white rounded-2xl shadow-xl p-5 border border-gray-100">
-                    <!-- Header dengan kepanjangan -->
                     <div class="flex items-center gap-3 mb-4">
                         <div>
                             <p class="font-bold text-gray-800 text-sm">Ada Apa aja sih di SIPANDA?</p>
@@ -81,9 +71,7 @@ include __DIR__ . '/templates/header_public.php';
                         </div>
                     </div>
                     
-                    <!-- Fitur Grid 2x2 -->
                     <div class="grid grid-cols-2 gap-3">
-                        <!-- Fitur 1 -->
                         <div class="bg-green-50 rounded-xl p-3 text-center group hover:bg-green-100 transition cursor-pointer">
                             <div class="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition">
                                 <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,7 +82,6 @@ include __DIR__ . '/templates/header_public.php';
                             <p class="text-gray-500 text-xs">Jadwal lengkap</p>
                         </div>
                         
-                        <!-- Fitur 2 -->
                         <div class="bg-pink-50 rounded-xl p-3 text-center group hover:bg-pink-100 transition cursor-pointer">
                             <div class="w-10 h-10 bg-pink-200 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition">
                                 <svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,7 +92,6 @@ include __DIR__ . '/templates/header_public.php';
                             <p class="text-gray-500 text-xs">Pantau HPL</p>
                         </div>
                         
-                        <!-- Fitur 3 -->
                         <div class="bg-blue-50 rounded-xl p-3 text-center group hover:bg-blue-100 transition cursor-pointer">
                             <div class="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition">
                                 <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,7 +102,6 @@ include __DIR__ . '/templates/header_public.php';
                             <p class="text-gray-500 text-xs">Notifikasi WA</p>
                         </div>
                         
-                        <!-- Fitur 4 -->
                         <div class="bg-purple-50 rounded-xl p-3 text-center group hover:bg-purple-100 transition cursor-pointer">
                             <div class="w-10 h-10 bg-purple-200 rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition">
                                 <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -128,13 +113,11 @@ include __DIR__ . '/templates/header_public.php';
                         </div>
                     </div>
                     
-                    <!-- Call to Action Card -->
                     <div class="mt-4 bg-gradient-to-r from-green-600 to-green-500 rounded-xl p-3 text-center">
                         <p class="text-white font-semibold text-sm">👋 Yuk daftar sekarang, gratis!</p>
                     </div>
                 </div>
                 
-                <!-- Floating Badge -->
                 <div class="absolute -top-3 -right-3 bg-white rounded-full shadow-lg px-3 py-1.5 flex items-center gap-2 animate-bounce">
                     <span class="w-2 h-2 bg-green-500 rounded-full"></span>
                     <span class="text-xs font-semibold text-gray-700">⭐ Baru!</span>
@@ -144,7 +127,6 @@ include __DIR__ . '/templates/header_public.php';
     </div>
 </section>
 
-<!-- ========== PROFIL SECTION ========== -->
 <section id="profil" class="py-24 bg-white">
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
@@ -155,7 +137,6 @@ include __DIR__ . '/templates/header_public.php';
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <!-- Card 1 -->
             <div class="group bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
                 <div class="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition">
                     <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,7 +147,6 @@ include __DIR__ . '/templates/header_public.php';
                 <p class="text-gray-500 leading-relaxed">Jadwal imunisasi lengkap untuk anak usia 0-24 bulan dengan sistem pengingat otomatis.</p>
             </div>
             
-            <!-- Card 2 -->
             <div class="group bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
                 <div class="w-16 h-16 bg-gradient-to-br from-pink-100 to-pink-200 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition">
                     <svg class="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,7 +157,6 @@ include __DIR__ . '/templates/header_public.php';
                 <p class="text-gray-500 leading-relaxed">Pantau usia kehamilan, HPL, dan riwayat pemeriksaan ke bidan dengan mudah.</p>
             </div>
             
-            <!-- Card 3 -->
             <div class="group bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
                 <div class="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition">
                     <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -189,7 +168,6 @@ include __DIR__ . '/templates/header_public.php';
             </div>
         </div>
         
-        <!-- ========== GALERI KEGIATAN DENGAN ANIMASI SLIDE INFINITE ========== -->
         <div class="mt-20">
             <div class="text-center mb-10">
                 <h3 class="text-2xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-2">
@@ -201,16 +179,12 @@ include __DIR__ . '/templates/header_public.php';
                 <p class="text-gray-500">Dokumentasi kegiatan di SIPANDA</p>
             </div>
             
-            <!-- Slider Infinite dari Kanan ke Kiri dengan Efek Fade -->
             <div class="relative">
-                <!-- Efek Fade Kiri dan Kanan -->
                 <div class="absolute left-0 top-0 bottom-0 w-20 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
                 <div class="absolute right-0 top-0 bottom-0 w-20 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
                 
-                <!-- Slider Container -->
                 <div class="overflow-hidden">
                     <div class="slider-infinite flex gap-5 py-4">
-                        <!-- Slide 1 -->
                         <div class="flex-shrink-0 w-72 md:w-80 group">
                             <div class="relative overflow-hidden rounded-2xl shadow-lg bg-white">
                                 <img src="img/foto1.jpg" alt="Imunisasi" class="w-full h-56 object-cover transition duration-500 group-hover:scale-110">
@@ -226,7 +200,6 @@ include __DIR__ . '/templates/header_public.php';
                             </div>
                         </div>
                         
-                        <!-- Slide 2 -->
                         <div class="flex-shrink-0 w-72 md:w-80 group">
                             <div class="relative overflow-hidden rounded-2xl shadow-lg bg-white">
                                 <img src="img/foto4.jpg" alt="Pemeriksaan Kehamilan" class="w-full h-56 object-cover transition duration-500 group-hover:scale-110">
@@ -242,7 +215,6 @@ include __DIR__ . '/templates/header_public.php';
                             </div>
                         </div>
                         
-                        <!-- Slide 3 -->
                         <div class="flex-shrink-0 w-72 md:w-80 group">
                             <div class="relative overflow-hidden rounded-2xl shadow-lg bg-white">
                                 <img src="img/foto3.jpg" alt="Penyuluhan Gizi" class="w-full h-56 object-cover transition duration-500 group-hover:scale-110">
@@ -258,7 +230,6 @@ include __DIR__ . '/templates/header_public.php';
                             </div>
                         </div>
                         
-                        <!-- Slide 4 -->
                         <div class="flex-shrink-0 w-72 md:w-80 group">
                             <div class="relative overflow-hidden rounded-2xl shadow-lg bg-white">
                                 <img src="img/foto2.jpeg" alt="Suasana Posyandu" class="w-full h-56 object-cover transition duration-500 group-hover:scale-110">
@@ -274,7 +245,6 @@ include __DIR__ . '/templates/header_public.php';
                             </div>
                         </div>
                         
-                        <!-- Slide 5 -->
                         <div class="flex-shrink-0 w-72 md:w-80 group">
                             <div class="relative overflow-hidden rounded-2xl shadow-lg bg-white">
                                 <img src="img/foto5.jpg" alt="Timbang Berat Badan" class="w-full h-56 object-cover transition duration-500 group-hover:scale-110">
@@ -290,7 +260,6 @@ include __DIR__ . '/templates/header_public.php';
                             </div>
                         </div>
                         
-                        <!-- DUPLIKAT untuk efek infinite seamless -->
                         <div class="flex-shrink-0 w-72 md:w-80 group">
                             <div class="relative overflow-hidden rounded-2xl shadow-lg bg-white">
                                 <img src="img/foto1.jpg" alt="Imunisasi" class="w-full h-56 object-cover transition duration-500 group-hover:scale-110">
@@ -327,7 +296,6 @@ include __DIR__ . '/templates/header_public.php';
     </div>
 </section>
 
-<!-- ========== LAYANAN SECTION ========== -->
 <section id="layanan" class="py-24 bg-gradient-to-b from-gray-50 to-white">
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
@@ -338,7 +306,6 @@ include __DIR__ . '/templates/header_public.php';
         </div>
         
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-5xl mx-auto">
-            <!-- Imunisasi -->
             <div class="group bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-green-100">
                 <div class="bg-gradient-to-r from-green-600 to-green-500 p-6 text-white">
                     <div class="flex items-center gap-4">
@@ -366,7 +333,6 @@ include __DIR__ . '/templates/header_public.php';
                 </div>
             </div>
             
-            <!-- Kehamilan -->
             <div class="group bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-pink-100">
                 <div class="bg-gradient-to-r from-pink-600 to-pink-500 p-6 text-white">
                     <div class="flex items-center gap-4">
@@ -397,7 +363,6 @@ include __DIR__ . '/templates/header_public.php';
     </div>
 </section>
 
-<!-- ========== ARTIKEL SECTION DENGAN GAMBAR ========== -->
 <section id="artikel" class="py-24 bg-white">
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
@@ -411,7 +376,6 @@ include __DIR__ . '/templates/header_public.php';
             <?php if(mysqli_num_rows($artikel_terbaru) > 0): ?>
                 <?php while($artikel = mysqli_fetch_assoc($artikel_terbaru)): ?>
                 <div class="group bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
-                    <!-- Thumbnail dengan Gambar -->
                     <div class="relative h-48 overflow-hidden cursor-pointer" onclick="window.location.href='artikel_detail.php?id=<?php echo $artikel['id_artikel']; ?>'">
                         <?php if($artikel['thumbnail'] && file_exists("uploads/artikel/" . $artikel['thumbnail'])): ?>
                         <img src="uploads/artikel/<?php echo $artikel['thumbnail']; ?>" 
@@ -425,14 +389,12 @@ include __DIR__ . '/templates/header_public.php';
                         </div>
                         <?php endif; ?>
                         
-                        <!-- Badge Kategori -->
                         <div class="absolute top-3 left-3">
                             <span class="text-xs bg-white/90 backdrop-blur-sm text-green-700 px-2.5 py-1 rounded-full font-medium shadow-sm">
                                 <?php echo htmlspecialchars($artikel['nama_kategori'] ?? 'Kesehatan'); ?>
                             </span>
                         </div>
                         
-                        <!-- Overlay saat hover -->
                         <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
                     </div>
                     
@@ -487,7 +449,6 @@ include __DIR__ . '/templates/header_public.php';
     </div>
 </section>
 
-<!-- ========== TESTIMONIAL SECTION ========== -->
 <section class="py-24 bg-gradient-to-r from-green-50 to-pink-50">
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
@@ -533,7 +494,6 @@ include __DIR__ . '/templates/header_public.php';
 </section>
 
 <style>
-/* Animasi slide infinite dari kanan ke kiri */
 .slider-infinite {
     animation: slideRightToLeft 25s linear infinite;
     width: fit-content;

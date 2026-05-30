@@ -97,7 +97,6 @@ if (!isset($title)) {
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
         }
         
-        /* Navbar link style */
         .nav-link {
             position: relative;
             transition: all 0.3s ease;
@@ -129,7 +128,6 @@ if (!isset($title)) {
             width: 70%;
         }
         
-        /* Login button style */
         .btn-login {
             background: linear-gradient(135deg, #16a34a, #22c55e);
             transition: all 0.3s ease;
@@ -155,7 +153,6 @@ if (!isset($title)) {
                 </div>
             </a>
             
-            <!-- Desktop Menu -->
             <div class="hidden md:flex items-center space-x-8">
                 <a href="index.php#profil" class="nav-link text-gray-700 hover:text-green-600 font-medium py-2 transition-all duration-200">
                     Profil
@@ -174,7 +171,6 @@ if (!isset($title)) {
                 </a>
             </div>
             
-            <!-- Mobile Menu Button -->
             <button id="mobileMenuBtn" class="md:hidden w-10 h-10 rounded-xl bg-gray-100 text-gray-600 hover:bg-green-100 hover:text-green-600 transition-all duration-200 flex items-center justify-center">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -182,7 +178,6 @@ if (!isset($title)) {
             </button>
         </div>
         
-        <!-- Mobile Menu Dropdown -->
         <div id="mobileMenu" class="hidden md:hidden pb-5 border-t border-gray-100">
             <div class="flex flex-col space-y-1 pt-3">
                 <a href="index.php#profil" class="px-4 py-3 text-gray-700 hover:text-green-600 font-medium rounded-xl hover:bg-green-50 transition-all duration-200">

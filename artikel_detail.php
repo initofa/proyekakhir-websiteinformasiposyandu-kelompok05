@@ -217,7 +217,6 @@ include __DIR__ . '/templates/header_public.php';
 </div>
 
 <script>
-// Copy to clipboard function
 function copyToClipboard() {
     const url = window.location.href;
     navigator.clipboard.writeText(url).then(() => {
@@ -239,7 +238,6 @@ function copyToClipboard() {
     });
 }
 
-// Image Modal
 let currentZoom = 1;
 let modalImg = null;
 
@@ -278,7 +276,6 @@ function resetZoom() {
     }
 }
 
-// Escape key
 document.addEventListener('keydown', function(e) {
     if(e.key === 'Escape') {
         const modal = document.getElementById('imageModal');

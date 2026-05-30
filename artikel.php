@@ -19,12 +19,10 @@ if($search_keyword != '') {
     }
 }
 
-// Menghitung total data hasil filter/pencarian untuk pagination
 $total_query = mysqli_query($conn, "SELECT COUNT(*) as total FROM artikel a $where");
 $total_data = mysqli_fetch_assoc($total_query)['total'];
 $total_pages = ceil($total_data / $limit);
 
-// PERUBAHAN OPTIMASI: Hitung total semua artikel mutlak (untuk angka di sidebar menu "Semua Artikel")
 $total_mutlak_query = mysqli_query($conn, "SELECT COUNT(*) as total FROM artikel");
 $total_mutlak = mysqli_fetch_assoc($total_mutlak_query)['total'];
 
@@ -74,7 +72,6 @@ include __DIR__ . '/templates/header_public.php';
 <div class="container mx-auto px-4 py-10">
     <div class="flex flex-col lg:flex-row gap-8">
         
-        <!-- Sidebar Kategori -->
         <div class="w-full lg:w-72 flex-shrink-0">
             <div class="bg-white rounded-2xl shadow-md p-5 sticky top-24 border border-gray-100">
                 <div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100">
@@ -90,7 +87,6 @@ include __DIR__ . '/templates/header_public.php';
                             <span class="flex items-center gap-2">
                                 <i class="fas fa-globe-asia text-[13px] opacity-70"></i> Semua Artikel
                             </span>
-                            <!-- TAMPILAN FIXED: Menggunakan total_mutlak agar tidak berubah saat input cari diisi -->
                             <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-semibold"><?php echo $total_mutlak; ?></span>
                         </a>
                     </li>
@@ -122,14 +118,12 @@ include __DIR__ . '/templates/header_public.php';
             </div>
         </div>
         
-        <!-- Grid Konten Artikel -->
         <div class="flex-1">    
             <?php if(mysqli_num_rows($artikel) > 0): ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     <?php while($row = mysqli_fetch_assoc($artikel)): ?>
                     <div class="group bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 border border-gray-100 flex flex-col justify-between">
                         <div>
-                            <!-- Bagian Thumbnail Img -->
                             <div class="relative h-48 overflow-hidden cursor-pointer" onclick="window.location.href='artikel_detail.php?id=<?php echo $row['id_artikel']; ?>'">
                                 <?php if($row['thumbnail'] && file_exists("uploads/artikel/" . $row['thumbnail'])): ?>
                                 <img src="uploads/artikel/<?php echo $row['thumbnail']; ?>" 
@@ -148,14 +142,12 @@ include __DIR__ . '/templates/header_public.php';
                                 </div>
                                 
                                 <div class="absolute bottom-3 right-3">
-                                    <!-- PERUBAHAN UTAMA: Mengganti fungsi date bawaan ke format Indonesia -->
                                     <span class="text-[10px] bg-black/60 backdrop-blur-sm text-white px-2.5 py-1 rounded-md font-medium tracking-wide">
                                         <?php echo formatTanggalIndonesia($row['created_at']); ?>
                                     </span>
                                 </div>
                             </div>
                             
-                            <!-- Konten Info Deskripsi Teks -->
                             <div class="p-5">
                                 <h3 class="font-bold text-base text-gray-800 mb-2 line-clamp-2 group-hover:text-green-600 transition duration-200 leading-snug cursor-pointer" onclick="window.location.href='artikel_detail.php?id=<?php echo $row['id_artikel']; ?>'">
                                     <?php echo htmlspecialchars($row['judul']); ?>
@@ -180,7 +172,6 @@ include __DIR__ . '/templates/header_public.php';
                             </div>
                         </div>
                         
-                        <!-- Tombol Aksi Anchor -->
                         <div class="px-5 pb-5 pt-1">
                             <a href="artikel_detail.php?id=<?php echo $row['id_artikel']; ?>" class="inline-flex items-center gap-1.5 text-green-600 font-bold text-xs group-hover:gap-2.5 transition-all duration-200">
                                 <span>Baca Selengkapnya</span>
@@ -191,7 +182,6 @@ include __DIR__ . '/templates/header_public.php';
                     <?php endwhile; ?>
                 </div>
                 
-                <!-- Blok Pagination -->
                 <?php if($total_pages > 1): ?>
                 <div class="flex justify-center gap-1.5 mt-10">
                     <?php if($page > 1): ?>
@@ -219,7 +209,6 @@ include __DIR__ . '/templates/header_public.php';
                 <?php endif; ?>
                 
             <?php else: ?>
-                <!-- State Data Kosong -->
                 <div class="text-center py-16 bg-white rounded-2xl shadow-md border border-gray-100">
                     <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-300">
                         <i class="fas fa-newspaper text-3xl"></i>
