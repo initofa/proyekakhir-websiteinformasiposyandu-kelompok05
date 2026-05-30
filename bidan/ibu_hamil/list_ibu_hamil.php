@@ -21,7 +21,6 @@ $total_keguguran = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as to
 $total_pindah = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM ibu_hamil ih JOIN users u ON ih.nik_ibu=u.nik WHERE ih.status_kehamilan='pindah' $search_condition"))['total'];
 $total_semua = $total_aktif + $total_melahirkan + $total_keguguran + $total_pindah;
 
-// Filter berdasarkan tab
 if($tab == 'aktif') {
     $where = "WHERE ih.status_kehamilan='aktif'";
 } elseif($tab == 'melahirkan') {
@@ -34,7 +33,6 @@ if($tab == 'aktif') {
     $where = "";
 }
 
-// Tambahkan kondisi pencarian
 if($search) {
     if($where) {
         $where .= " AND (u.nama_lengkap LIKE '%$search%' OR u.nik LIKE '%$search%' OR u.alamat LIKE '%$search%')";
@@ -43,7 +41,6 @@ if($search) {
     }
 }
 
-// Hitung total data untuk pagination
 if($tab == 'semua') {
     $total_data = $total_semua;
 } elseif($tab == 'aktif') {
@@ -57,7 +54,6 @@ if($tab == 'semua') {
 }
 $total_pages = ceil($total_data / $limit);
 
-// AMBIL DATA (ditambahkan total_pemeriksaan)
 $result = mysqli_query($conn, "SELECT ih.*, u.nama_lengkap, u.no_wa, u.alamat, u.nik,
     (SELECT MAX(tanggal_pemeriksaan) FROM pemeriksaan_kehamilan WHERE id_kehamilan=ih.id_kehamilan) as tgl_periksa_terakhir,
     (SELECT COUNT(*) FROM pemeriksaan_kehamilan WHERE id_kehamilan=ih.id_kehamilan) as total_pemeriksaan
@@ -74,7 +70,6 @@ $result = mysqli_query($conn, "SELECT ih.*, u.nama_lengkap, u.no_wa, u.alamat, u
         ih.hpl ASC 
     LIMIT $offset, $limit");
 
-// Fungsi konversi minggu ke bulan
 function mingguKeBulan($minggu) {
     $bulan = floor($minggu / 4);
     $sisa_minggu = $minggu % 4;
@@ -87,7 +82,6 @@ function mingguKeBulan($minggu) {
     }
 }
 
-// Fungsi cek lama tidak periksa (lebih dari 2 bulan)
 function cekLamaTidakPeriksa($tgl_periksa_terakhir) {
     if(empty($tgl_periksa_terakhir)) return true;
     $last_periksa = new DateTime($tgl_periksa_terakhir);
@@ -98,7 +92,6 @@ function cekLamaTidakPeriksa($tgl_periksa_terakhir) {
 }
 
 function getCardColor($status, $need_attention) {
-    // Jika butuh perhatian (2 bulan tidak periksa) dan status aktif, tambahkan border pink
     if($need_attention && $status == 'aktif') {
         return 'bg-white border-l-4 border-pink-500 border-2 border-pink-300';
     }
@@ -117,7 +110,6 @@ function getCardColor($status, $need_attention) {
     }
 }
 
-// Fungsi untuk mendapatkan badge status
 function getStatusBadge($status) {
     switch($status) {
         case 'aktif':
@@ -139,12 +131,10 @@ if (!isset($_SESSION["nik"])) {
 ?>
 
 <div class="fade-in">
-    <!-- Header -->
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-bold text-green-800">Data Ibu Hamil</h1>
     </div>
     
-    <!-- Search Bar -->
     <div class="bg-white rounded-2xl shadow-lg p-4 mb-6">
         <form method="GET" class="flex flex-col sm:flex-row gap-3">
             <input type="hidden" name="tab" value="<?php echo $tab; ?>">
@@ -165,7 +155,6 @@ if (!isset($_SESSION["nik"])) {
         </form>
     </div>
     
-    <!-- Tab Navigation -->
     <div class="flex flex-wrap gap-2 mb-6 border-b border-gray-200 pb-2">
         <a href="?tab=semua&page=1<?php echo $search ? '&search='.urlencode($search) : ''; ?>" 
            class="px-4 py-2 rounded-t-lg text-sm font-medium transition-all duration-300 <?php echo $tab == 'semua' ? 'bg-green-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'; ?>">
@@ -244,7 +233,6 @@ if (!isset($_SESSION["nik"])) {
                 <p><i class="fas fa-heartbeat w-4 text-gray-500"></i> TD: <?php echo $row['tekanan_darah']; ?></p>
                 <p><i class="fas fa-clock w-4 text-gray-500"></i> Usia: <?php echo $usia_display; ?></p>
                 
-                <!-- TAMBAHAN: Total Pemeriksaan -->
                 <p class="mt-1"><i class="fas fa-stethoscope w-4 text-gray-500"></i> Pemeriksaan: <?php echo $row['total_pemeriksaan']; ?> kali</p>
                 
                 <?php if($need_attention): ?>

@@ -30,7 +30,6 @@ $query_artikel = "SELECT a.*, k.nama_kategori, u.nama_lengkap AS nama_penulis
 
 $result = mysqli_query($conn, $query_artikel);
 
-// Tampung dulu kategori ke dalam array agar tidak crash saat rendering dropdown di bawah
 $kategori_query = mysqli_query($conn, "SELECT * FROM kategori_artikel");
 $list_kategori = [];
 while($cat = mysqli_fetch_assoc($kategori_query)) {

@@ -5,7 +5,6 @@ require_once __DIR__ . '/../../auth/cek_bidan.php';
 $id_kehamilan = $_GET['id'];
 $ibu = mysqli_fetch_assoc(mysqli_query($conn, "SELECT ih.*, u.nama_lengkap FROM ibu_hamil ih JOIN users u ON ih.nik_ibu=u.nik WHERE ih.id_kehamilan=$id_kehamilan"));
 
-// Validasi jika data tidak ditemukan
 if(!$ibu){
     $_SESSION['error'] = "Data kehamilan tidak ditemukan!";
     header("Location: list_ibu_hamil.php");
@@ -16,7 +15,6 @@ $error = '';
 $success = '';
 
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
-    // Ambil data
     $usia = trim($_POST['usia_kehamilan']);
     $tanggal = $_POST['tanggal_pemeriksaan'];
     $berat = trim($_POST['berat_badan']);
@@ -27,7 +25,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $keluhan = trim($_POST['keluhan']);
     $tindakan = trim($_POST['tindakan']);
     
-    // Validasi
     if(empty($usia) || $usia < 0){
         $error = "Usia kehamilan tidak valid!";
     } elseif(empty($tanggal)){
@@ -172,7 +169,6 @@ include __DIR__ . '/../../templates/sidebar.php';
 </div>
 
 <script>
-// Validasi client-side
 document.getElementById('formPemeriksaan').addEventListener('submit', function(e) {
     let usia = document.getElementById('usia').value;
     let berat = document.getElementById('berat').value;
@@ -226,7 +222,6 @@ document.getElementById('formPemeriksaan').addEventListener('submit', function(e
     return true;
 });
 
-// Format tekanan darah otomatis
 document.getElementById('tekanan').addEventListener('input', function(e) {
     let value = this.value.replace(/[^0-9]/g, '');
     if(value.length >= 3) {

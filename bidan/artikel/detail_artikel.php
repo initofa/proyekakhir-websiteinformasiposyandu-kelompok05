@@ -12,7 +12,6 @@ if($id === 0) {
     exit();
 }
 
-// Query mengambil data artikel beserta nama kategori dan penulisnya
 $artikel = mysqli_fetch_assoc(mysqli_query($conn, "SELECT a.*, k.nama_kategori, u.nama_lengkap as penulis 
                                                     FROM artikel a 
                                                     LEFT JOIN kategori_artikel k ON a.id_kategori = k.id_kategori 
@@ -27,16 +26,13 @@ if(!$artikel) {
 ?>
 
 <div class="max-w-4xl mx-auto fade-in">
-    <!-- Tombol Kembali Atas -->
     <div class="mb-4">
         <a href="list_artikel.php" class="inline-flex items-center gap-2 text-green-600 hover:text-green-700 transition">
             <i class="fas fa-arrow-left"></i> Kembali ke Daftar Artikel
         </a>
     </div>
     
-    <!-- Card Detail Artikel -->
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-        <!-- Thumbnail -->
         <div class="h-80 bg-gradient-to-r from-green-400 to-emerald-400 flex items-center justify-center overflow-hidden">
             <?php if($artikel['thumbnail'] && file_exists("../../uploads/artikel/" . $artikel['thumbnail'])): ?>
             <img src="../../uploads/artikel/<?php echo $artikel['thumbnail']; ?>" 
@@ -49,29 +45,23 @@ if(!$artikel) {
             <?php endif; ?>
         </div>
         
-        <!-- Content -->
         <div class="p-8">
-            <!-- Kategori & Meta -->
             <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
                 <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
                     <i class="fas fa-tag mr-1"></i> <?php echo htmlspecialchars($artikel['nama_kategori'] ?? 'Tanpa Kategori'); ?>
                 </span>
                 <div class="flex flex-wrap gap-3 text-sm text-gray-500">
                     <span><i class="fas fa-user mr-1"></i> <?php echo htmlspecialchars($artikel['penulis'] ?? 'Anonim'); ?></span>
-                    <!-- PERUBAHAN: Menggunakan fungsi penanggalan terpusat dari database.php -->
                     <span><i class="far fa-calendar-alt mr-1"></i> <?php echo formatTanggalIndonesia($artikel['created_at']); ?></span>
                 </div>
             </div>
             
-            <!-- Judul -->
             <h1 class="text-3xl font-bold text-gray-800 mb-6"><?php echo htmlspecialchars($artikel['judul']); ?></h1>
             
-            <!-- Konten -->
             <div class="prose max-w-none text-gray-700 leading-relaxed whitespace-pre-line mb-8">
                 <?php echo nl2br(htmlspecialchars($artikel['konten'])); ?>
             </div>
             
-            <!-- Informasi Tambahan -->
             <div class="mt-8 pt-4 border-t border-gray-200">
                 <div class="bg-gray-50 rounded-xl p-4">
                     <div class="text-sm text-gray-600">

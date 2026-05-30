@@ -34,7 +34,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         WHERE id_pendaftaran='$id_pendaftaran'");
     
     $_SESSION['success'] = "Hasil imunisasi berhasil diupdate!";
-    header("Location: detail_hasil.php?id=$id_pendaftaran");
+    header("Location: list_pendaftaran.php");
     exit();
 }
 
@@ -90,7 +90,7 @@ include __DIR__ . '/../../templates/sidebar.php';
             </div>
             <div class="flex gap-3 mt-6">
                 <button type="submit" class="flex-1 bg-gradient-to-r from-green-600 to-emerald-500 text-white py-2 rounded-xl font-semibold hover:shadow-lg transition">Update</button>
-                <a href="detail_hasil.php?id=<?php echo $id_pendaftaran; ?>" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl font-semibold hover:bg-gray-300 transition">Batal</a>
+                <a href="list_pendaftaran.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl font-semibold hover:bg-gray-300 transition">Batal</a>
             </div>
         </form>
     </div>

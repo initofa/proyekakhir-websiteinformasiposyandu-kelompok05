@@ -4,29 +4,24 @@ require_once __DIR__ . '/../../auth/cek_bidan.php';
 $title = 'Data Vaksin';
 include __DIR__ . '/../../templates/sidebar.php';
 
-// Fitur Pencarian & Pagination
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 9;
 $offset = ($page - 1) * $limit;
 
-// Filter pencarian
 $search_condition = "";
 if($search) {
     $search_condition = "WHERE nama_vaksin LIKE '%$search%' OR deskripsi LIKE '%$search%'";
 }
 
-// Hitung total data dengan pencarian
 $total = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM vaksin $search_condition"))['total'];
 $total_pages = ceil($total / $limit);
 
-// Ambil data dengan pencarian dan pagination
 $result = mysqli_query($conn, "SELECT v.* FROM vaksin v 
                                $search_condition 
                                ORDER BY v.usia_rekomendasi ASC 
                                LIMIT $offset, $limit");
 
-// Fungsi untuk mengkonversi bulan ke format tahun dan bulan
 function formatUsia($bulan) {
     if($bulan == 0) {
         return '0 bulan (baru lahir)';

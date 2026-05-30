@@ -4,22 +4,19 @@ require_once __DIR__ . '/../../auth/cek_bidan.php';
 
 $nik = $_SESSION['nik'];
 
-// Fitur Pencarian & Pagination
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, trim($_GET['search'])) : '';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = 6; // Menampilkan 6 kartu per halaman agar pas dengan grid 3 kolom
+$limit = 6; 
 $offset = ($page - 1) * $limit;
 
 $title = 'Jadwal Imunisasi';
 include __DIR__ . '/../../templates/sidebar.php';
 
-// Kondisi filter query SQL
 $search_condition = "";
 if ($search !== '') {
     $search_condition = " AND (v.nama_vaksin LIKE '%$search%' OR j.lokasi LIKE '%$search%')";
 }
 
-// 1. HITUNG TOTAL DATA JADWAL (Untuk Pagination)
 $total_query = "SELECT COUNT(*) as total 
                 FROM jadwal_imunisasi j 
                 JOIN vaksin v ON j.id_vaksin=v.id_vaksin 
@@ -27,7 +24,6 @@ $total_query = "SELECT COUNT(*) as total
 $total_data = mysqli_fetch_assoc(mysqli_query($conn, $total_query))['total'];
 $total_pages = ceil($total_data / $limit);
 
-// 2. QUERY UTAMA DENGAN LIMIT DAN OFFSET
 $query_base = "SELECT j.*, v.nama_vaksin, u.nama_lengkap as nama_bidan,
     (SELECT COUNT(*) FROM pendaftaran_imunisasi WHERE id_jadwal=j.id_jadwal AND STATUS != 'batal') as total_daftar,
     (SELECT COUNT(*) FROM pendaftaran_imunisasi WHERE id_jadwal=j.id_jadwal AND STATUS='pending') as total_pending,

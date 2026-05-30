@@ -3,7 +3,6 @@ require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../auth/cek_bidan.php';
 $id = $_GET['id'];
 
-// PROSES UPDATE STATUS KEHAMILAN
 if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_status'])){
     $status_baru = $_POST['status_kehamilan'];
     $updated_by = $_SESSION['nik'];
@@ -24,7 +23,6 @@ $pemeriksaan = mysqli_query($conn, "SELECT * FROM pemeriksaan_kehamilan WHERE id
 $title = 'Detail Ibu Hamil';
 include __DIR__ . '/../../templates/sidebar.php';
 
-// Fungsi untuk mendapatkan warna badge status
 function getStatusColor($status) {
     switch($status) {
         case 'aktif':
@@ -40,7 +38,6 @@ function getStatusColor($status) {
     }
 }
 
-// Fungsi untuk mendapatkan icon status
 function getStatusIcon($status) {
     switch($status) {
         case 'aktif':
@@ -56,7 +53,6 @@ function getStatusIcon($status) {
     }
 }
 
-// Fungsi untuk mendapatkan teks status
 function getStatusText($status) {
     switch($status) {
         case 'aktif':
@@ -75,7 +71,6 @@ function getStatusText($status) {
 
 <div class="max-w-4xl mx-auto fade-in">
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-        <!-- Header dengan warna sesuai status -->
         <?php 
             $header_color = [
                 'aktif' => 'from-green-600 to-emerald-500',
@@ -101,7 +96,6 @@ function getStatusText($status) {
         </div>
         
         <div class="p-6">
-            <!-- Form Ubah Status Kehamilan -->
             <div class="bg-yellow-50 rounded-xl p-4 mb-6 border border-yellow-200">
                 <h3 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                     <i class="fas fa-exchange-alt text-yellow-600"></i> Ubah Status Kehamilan
@@ -125,7 +119,6 @@ function getStatusText($status) {
                 </p>
             </div>
             
-            <!-- Data Ibu -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div><label class="text-gray-500 text-sm">Usia Kehamilan</label><p class="font-semibold"><?php echo $ibu['usia_kehamilan']; ?> minggu</p></div>
                 <div><label class="text-gray-500 text-sm">HPL</label><p class="font-semibold"><?php echo date('d/m/Y', strtotime($ibu['hpl'])); ?></p></div>
@@ -135,8 +128,7 @@ function getStatusText($status) {
                 <div class="col-span-2"><label class="text-gray-500 text-sm">Alamat</label><p><?php echo $ibu['alamat']; ?></p></div>
             </div>
             
-            <!-- Riwayat Pemeriksaan -->
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">📋 Riwayat Pemeriksaan</h3>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Riwayat Pemeriksaan</h3>
             <div class="space-y-3">
                 <?php if(mysqli_num_rows($pemeriksaan) > 0): ?>
                     <?php while($row = mysqli_fetch_assoc($pemeriksaan)): ?>
