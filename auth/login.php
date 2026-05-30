@@ -19,12 +19,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password'];
     $old_nik = $nik;
     
-    // CEK APAKAH NIK TERDAFTAR
     $check_nik_query = "SELECT * FROM users WHERE nik = '$nik'";
     $check_nik_result = mysqli_query($conn, $check_nik_query);
     
     if (mysqli_num_rows($check_nik_result) == 0) {
-        // NIK tidak ditemukan
         if (!empty($password)) {
             $error = "NIK dan Password yang Anda masukkan salah!";
             $error_type = 'both_wrong';
@@ -33,12 +31,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error_type = 'nik_salah';
         }
     } else {
-        // NIK ditemukan, sekarang cek password
         $user = mysqli_fetch_assoc($check_nik_result);
         $hashed_password = md5($password);
         
-        // PERHATIAN: Kolom di database namanya "PASSWORD" (huruf besar)
-        // Jadi harus menggunakan $user['PASSWORD'] bukan $user['password']
+        
         if ($user['PASSWORD'] !== $hashed_password) {
             $error = "Password yang Anda masukkan salah!";
             $error_type = 'wrong_password';
@@ -85,7 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                  class="w-full h-full object-cover">
         </div>
 
-        <!-- SWEETALERT ERROR HANDLING -->
         <?php if ($error && $error_type == 'both_wrong'): ?>
         <script>
         Swal.fire({

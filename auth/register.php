@@ -16,18 +16,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $role = mysqli_real_escape_string($conn, $_POST['role']);
     $status = ($role == 'bidan') ? 'pending' : 'active';
 
-    // Validasi password
     if ($password_plain != $confirm_password) {
         $error = "Password tidak cocok!";
     } elseif (strlen($password_plain) < 6) {
         $error = "Password minimal 6 karakter!";
     } else {
-        // Cek NIK
         $check = mysqli_query($conn, "SELECT nik FROM users WHERE nik='$nik'");
         if (mysqli_num_rows($check) > 0) {
             $error = "NIK sudah terdaftar!";
         } else {
-            // PERUBAHAN: kolom menggunakan huruf KAPITAL: PASSWORD, ROLE, STATUS
             $insert = "INSERT INTO users (nik, PASSWORD, no_wa, nama_lengkap, alamat, ROLE, STATUS) 
                        VALUES ('$nik', '$password', '$no_wa', '$nama_lengkap', '$alamat', '$role', '$status')";
             
@@ -56,12 +53,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-2xl w-full">
         
-        <!-- Logo -->
         <div class="flex justify-center mb-6">
             <img src="<?= $base_url ?>/img/sipanda.png" alt="SIPANDA Logo" class="w-20 h-20 object-contain">
         </div>
         
-        <!-- Alert Success -->
         <?php if ($success): ?>
         <script>
             Swal.fire({
@@ -75,7 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </script>
         <?php endif; ?>
         
-        <!-- Alert Error -->
         <?php if ($error): ?>
         <script>
             Swal.fire({
@@ -87,11 +81,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </script>
         <?php endif; ?>
         
-        <!-- Form Register -->
         <form method="POST">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
-                <!-- NIK (Full Width) -->
                 <div class="md:col-span-2">
                     <label class="block text-gray-700 font-semibold mb-2">NIK</label>
                     <div class="relative">
@@ -103,7 +95,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                 </div>
                 
-                <!-- Nama Lengkap -->
                 <div>
                     <label class="block text-gray-700 font-semibold mb-2">Nama Lengkap</label>
                     <input type="text" name="nama_lengkap" required
@@ -111,7 +102,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition">
                 </div>
                 
-                <!-- Role -->
                 <div>
                     <label class="block text-gray-700 font-semibold mb-2">Daftar Sebagai</label>
                     <select name="role" required
@@ -121,7 +111,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </select>
                 </div>
                 
-                <!-- Password -->
                 <div>
                     <label class="block text-gray-700 font-semibold mb-2">Password</label>
                     <div class="relative">
@@ -136,7 +125,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                 </div>
                 
-                <!-- Konfirmasi Password -->
                 <div>
                     <label class="block text-gray-700 font-semibold mb-2">Konfirmasi Password</label>
                     <div class="relative">
@@ -151,7 +139,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                 </div>
                 
-                <!-- WhatsApp -->
                 <div>
                     <label class="block text-gray-700 font-semibold mb-2">No. WhatsApp</label>
                     <div class="flex">
@@ -164,7 +151,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                 </div>
                 
-                <!-- Alamat (Full Width) -->
                 <div class="md:col-span-2">
                     <label class="block text-gray-700 font-semibold mb-2">Alamat</label>
                     <textarea name="alamat" rows="3" placeholder="Masukkan alamat lengkap"
@@ -172,7 +158,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
             </div>
             
-            <!-- Tombol Submit -->
             <button type="submit"
                     class="w-full bg-gradient-to-r from-green-600 to-emerald-500 text-white py-3 rounded-xl font-semibold mt-6 hover:shadow-lg transition duration-300 transform hover:scale-105 flex items-center justify-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -181,14 +166,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 Daftar Sekarang
             </button>
 
-            <!-- Tombol Kembali -->
             <a href="/posyandu/index.php" 
                class="w-full flex items-center justify-center gap-2 mt-3 py-3 rounded-xl font-semibold text-green-600 border-2 border-green-500 hover:bg-green-600 hover:text-white hover:border-green-600 transition duration-300">
                 Kembali
             </a>
         </form>
         
-        <!-- Link Login -->
         <div class="mt-5 text-center">
             <a href="login.php" class="text-green-600 hover:text-green-700">
                 Sudah punya akun? Login
@@ -197,7 +180,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
 
     <script>
-        // NIK Counter
         const nikInput = document.getElementById('nik');
         const nikCounter = document.getElementById('nikCounter');
         
@@ -215,7 +197,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         });
         
-        // Format Nomor WhatsApp
         const waInput = document.getElementById('no_wa');
         waInput.addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9]/g, '');
@@ -227,7 +208,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         });
         
-        // Toggle Password Visibility
         function togglePassword(inputId, eyeId) {
             const input = document.getElementById(inputId);
             const eye = document.getElementById(eyeId);
