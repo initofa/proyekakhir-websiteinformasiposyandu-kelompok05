@@ -11,7 +11,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $berat_lahir = (float)$_POST['berat_lahir'];
     $panjang_lahir = (float)$_POST['panjang_lahir'];
     
-    // PERUBAHAN UTAMA: Kolom created_by dan variabelnya dihapus agar sesuai dengan struktur tabel asli milikmu
     $query = "INSERT INTO anak (nik_ibu, nama_anak, tempat_lahir, tanggal_lahir, jenis_kelamin, berat_lahir, panjang_lahir) 
               VALUES ('$nik_ibu', '$nama_anak', '$tempat_lahir', '$tanggal_lahir', '$jenis_kelamin', '$berat_lahir', '$panjang_lahir')";
     

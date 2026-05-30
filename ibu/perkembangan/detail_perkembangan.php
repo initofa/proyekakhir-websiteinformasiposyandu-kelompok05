@@ -6,26 +6,22 @@ include __DIR__ . '/../../templates/sidebar.php';
 
 $nik = $_SESSION['nik'];
 
-// PERUBAHAN UTAMA: Menampung kiriman ID baik dari metode GET maupun POST demi fleksibilitas redirect halaman
 $anak_id = isset($_POST['anak_id']) ? (int)$_POST['anak_id'] : (isset($_GET['anak_id']) ? (int)$_GET['anak_id'] : 0);
 
 $anak_list = mysqli_query($conn, "SELECT * FROM anak WHERE nik_ibu='$nik' ORDER BY created_at DESC");
 $jumlah_anak = mysqli_num_rows($anak_list);
 
-// Jika hanya 1 anak dan tidak ada parameter anak_id, otomatis pilih anak tersebut
 if($jumlah_anak == 1 && $anak_id == 0){
     $first_anak = mysqli_fetch_assoc($anak_list);
     $anak_id = $first_anak['id_anak'];
     mysqli_data_seek($anak_list, 0);
 }
 
-// Data anak terpilih
 $anak_data = null;
 if($anak_id > 0){
     $anak_data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM anak WHERE id_anak = $anak_id AND nik_ibu = '$nik'"));
 }
 
-// Data perkembangan (hasil imunisasi)
 $perkembangan = [];
 $chart_berat = [];
 $chart_tinggi = [];
@@ -40,7 +36,6 @@ if($anak_id > 0 && $anak_data){
         WHERE pi.id_anak = $anak_id 
         ORDER BY hi.tgl_imunisasi ASC");
     
-    // Data untuk chart
     $chart_query = mysqli_query($conn, "SELECT hi.tgl_imunisasi, hi.berat_badan, hi.tinggi_badan 
         FROM hasil_imunisasi hi 
         JOIN pendaftaran_imunisasi pi ON hi.id_pendaftaran = pi.id_pendaftaran 
@@ -54,10 +49,8 @@ if($anak_id > 0 && $anak_data){
     }
 }
 
-// Data riwayat imunisasi lengkap
 $riwayat_imunisasi = [];
 if($anak_id > 0 && $anak_data){
-    // PERUBAHAN UTAMA: Memberikan alias pi.STATUS AS status_pendaftaran untuk menghindari error Undefined index
     $riwayat_imunisasi = mysqli_query($conn, "SELECT pi.*, pi.STATUS AS status_pendaftaran, v.nama_vaksin, j.tanggal, 
         hi.berat_badan, hi.tinggi_badan, hi.status_gizi, hi.tgl_imunisasi as tgl_hasil
         FROM pendaftaran_imunisasi pi 
@@ -249,7 +242,6 @@ if($anak_id > 0 && $anak_data){
 <?php if($anak_id > 0 && !empty($chart_berat) && !empty($chart_tinggi)): ?>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Grafik Berat Badan
 const beratCtx = document.getElementById('beratChart').getContext('2d');
 new Chart(beratCtx, {
     type: 'line',
@@ -277,7 +269,6 @@ new Chart(beratCtx, {
     }
 });
 
-// Grafik Tinggi Badan
 const tinggiCtx = document.getElementById('tinggiChart').getContext('2d');
 new Chart(tinggiCtx, {
     type: 'line',
@@ -308,7 +299,6 @@ new Chart(tinggiCtx, {
 <?php endif; ?>
 
 <script>
-// Fungsi pemicu pengiriman form POST tersembunyi ke detail imunisasi
 function bukaDetailImunisasiPost(idPendaftaran) {
     document.getElementById('idPendaftaranPost').value = idPendaftaran;
     document.getElementById('formDetailImunisasiPost').submit();

@@ -6,7 +6,6 @@ include __DIR__ . '/../../templates/sidebar.php';
 
 $nik = $_SESSION['nik'];
 
-// Gunakan parameter 'id' atau 'kehamilan_id'
 $id_kehamilan = isset($_GET['kehamilan_id']) ? (int)$_GET['kehamilan_id'] : (isset($_GET['id']) ? (int)$_GET['id'] : 0);
 
 if($id_kehamilan == 0) {
@@ -15,7 +14,6 @@ if($id_kehamilan == 0) {
     exit();
 }
 
-// Ambil data kehamilan
 $query_kehamilan = "SELECT ih.* 
     FROM ibu_hamil ih 
     WHERE ih.id_kehamilan = $id_kehamilan AND ih.nik_ibu = '$nik'";
@@ -33,7 +31,6 @@ if(!$kehamilan){
     exit();
 }
 
-// PERBAIKAN: Ambil riwayat pemeriksaan diurutkan berdasarkan TANGGAL (ASC)
 $query_pemeriksaan = "SELECT p.*, u.nama_lengkap as nama_bidan 
     FROM pemeriksaan_kehamilan p 
     LEFT JOIN users u ON p.petugas_nik = u.nik 
@@ -41,18 +38,15 @@ $query_pemeriksaan = "SELECT p.*, u.nama_lengkap as nama_bidan
     ORDER BY p.tanggal_pemeriksaan ASC, p.id_pemeriksaan ASC";
 $pemeriksaan = mysqli_query($conn, $query_pemeriksaan);
 
-// Hitung usia kehamilan
 $usia_minggu = $kehamilan['usia_kehamilan'];
 $usia_bulan = floor($usia_minggu / 4);
 $sisa_minggu = $usia_minggu % 4;
 $usia_text = $usia_bulan . ' bulan ' . $sisa_minggu . ' minggu';
 
-// Hitung HPL
 $hpl = new DateTime($kehamilan['hpl']);
 $today = new DateTime();
 $sisa_hari = $hpl > $today ? $today->diff($hpl)->days : 0;
 
-// Fungsi badge status
 function getStatusBadge($status) {
     switch($status) {
         case 'aktif': return '<span class="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700"><i class="fas fa-check-circle mr-1"></i> Aktif</span>';
@@ -66,7 +60,6 @@ function getStatusBadge($status) {
 
 <div class="max-w-4xl mx-auto fade-in">
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-        <!-- Header -->
         <div class="bg-gradient-to-r from-green-600 to-emerald-500 p-6 text-white">
             <div class="flex justify-between items-center flex-wrap gap-4">
                 <div>
@@ -80,7 +73,6 @@ function getStatusBadge($status) {
         </div>
         
         <div class="p-6">
-            <!-- Informasi Kehamilan -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div class="bg-pink-50 rounded-xl p-4">
                     <h3 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
@@ -104,7 +96,6 @@ function getStatusBadge($status) {
                 </div>
             </div>
             
-            <!-- Catatan Kesehatan -->
             <?php if($kehamilan['catatan_kesehatan']): ?>
             <div class="bg-yellow-50 rounded-xl p-4 mb-8">
                 <h3 class="font-semibold text-gray-800 mb-2 flex items-center gap-2">
@@ -114,7 +105,6 @@ function getStatusBadge($status) {
             </div>
             <?php endif; ?>
             
-            <!-- Riwayat Pemeriksaan -->
             <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                 <i class="fas fa-stethoscope text-green-500"></i> Riwayat Pemeriksaan Kehamilan
             </h3>
@@ -168,7 +158,6 @@ function getStatusBadge($status) {
             </div>
             <?php endif; ?>
             
-            <!-- Tombol Kembali -->
             <div class="mt-6 flex gap-3">
                 <a href="riwayat_hamil.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl font-semibold hover:bg-gray-300 transition">
                 Kembali

@@ -4,7 +4,6 @@ require_once __DIR__ . '/../../auth/cek_ibu.php';
 
 $nik = $_SESSION['nik'];
 
-// ID ditangkap melalui metode POST saat halaman dialihkan dari list_anak.php
 $id = isset($_POST['id_anak']) ? (int)$_POST['id_anak'] : 0;
 
 if($id === 0) { 
@@ -15,7 +14,6 @@ if($id === 0) {
 $anak = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM anak WHERE id_anak=$id AND nik_ibu='$nik'"));
 if(!$anak){ header("Location: list_anak.php"); exit(); }
 
-// Membedakan tombol proses submit simpan form atau pemuatan awal halaman
 if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['proses_update'])){
     $nama_anak = mysqli_real_escape_string($conn, $_POST['nama_anak']);
     $tempat_lahir = mysqli_real_escape_string($conn, $_POST['tempat_lahir']);
@@ -24,7 +22,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['proses_update'])){
     $berat_lahir = (float)$_POST['berat_lahir'];
     $panjang_lahir = (float)$_POST['panjang_lahir'];
     
-    // PERUBAHAN UTAMA: Variabel updated_by dihapus agar sinkron dengan struktur tabel asli milikmu
     mysqli_query($conn, "UPDATE anak SET nama_anak='$nama_anak', tempat_lahir='$tempat_lahir', tanggal_lahir='$tanggal_lahir', jenis_kelamin='$jenis_kelamin', berat_lahir='$berat_lahir', panjang_lahir='$panjang_lahir' WHERE id_anak=$id");
     
     $_SESSION['success'] = "Data anak berhasil diupdate!";

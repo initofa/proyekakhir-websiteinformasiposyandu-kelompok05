@@ -6,14 +6,12 @@ include __DIR__ . '/../../templates/sidebar.php';
 
 $nik = $_SESSION['nik'];
 
-// Cek apakah sudah ada kehamilan aktif
 $cek_aktif = mysqli_query($conn, "SELECT id_kehamilan FROM ibu_hamil WHERE nik_ibu = '$nik' AND status_kehamilan = 'aktif'");
 $ada_kehamilan_aktif = mysqli_num_rows($cek_aktif) > 0;
 
 $error = '';
 $success = '';
 
-// Proses form
 if($_SERVER['REQUEST_METHOD'] == 'POST' && !$ada_kehamilan_aktif){
     $hpht = $_POST['hpht'];
     $usia_kehamilan = $_POST['usia_kehamilan'];
@@ -23,7 +21,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !$ada_kehamilan_aktif){
     $catatan = $_POST['catatan_kesehatan'];
     $created_by = $nik;
     
-    // Hitung HPL (Hari Perkiraan Lahir) = HPHT + 280 hari
     $hpl_date = date('Y-m-d', strtotime($hpht . ' + 280 days'));
     
     $query = "INSERT INTO ibu_hamil (nik_ibu, usia_kehamilan, hpht, hpl, berat_badan_ibu, tinggi_badan_ibu, tekanan_darah, status_kehamilan, catatan_kesehatan, created_by) 
@@ -160,7 +157,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !$ada_kehamilan_aktif){
 </div>
 
 <script>
-// Fungsi hitung usia kehamilan dan HPL
 function hitungUsiaKehamilan() {
     const hpht = document.getElementById('hpht').value;
     if(hpht) {
@@ -210,7 +206,6 @@ function hitungUsiaKehamilan() {
     }
 }
 
-// Popup penjelasan HPHT untuk ibu hamil
 document.getElementById('btnInfoHpht').addEventListener('click', function() {
     Swal.fire({
         title: '📅 Apa itu HPHT?',
@@ -232,7 +227,6 @@ document.getElementById('btnInfoHpht').addEventListener('click', function() {
     });
 });
 
-// Popup penjelasan HPL untuk ibu hamil
 document.getElementById('btnInfoHpl').addEventListener('click', function() {
     Swal.fire({
         title: '🤰 Apa itu HPL?',
@@ -255,7 +249,6 @@ document.getElementById('btnInfoHpl').addEventListener('click', function() {
     });
 });
 
-// Event listener untuk HPHT
 document.getElementById('hpht').addEventListener('change', function() {
     hitungUsiaKehamilan();
 });
@@ -266,7 +259,6 @@ document.getElementById('hpht').addEventListener('input', function() {
     }
 });
 
-// Format tekanan darah otomatis
 const tekananInput = document.getElementById('tekanan');
 tekananInput.addEventListener('input', function(e) {
     let value = this.value.replace(/[^0-9]/g, '');
@@ -275,7 +267,6 @@ tekananInput.addEventListener('input', function(e) {
     }
 });
 
-// Validasi form sebelum submit
 document.getElementById('formKehamilan').addEventListener('submit', function(e) {
     const hpht = document.getElementById('hpht').value;
     const usia = document.getElementById('usia_kehamilan').value;

@@ -12,7 +12,6 @@ if($id_pemeriksaan == 0) {
     exit();
 }
 
-// Ambil data pemeriksaan dengan JOIN yang benar
 $query_pemeriksaan = "SELECT p.*, ih.nik_ibu, u.nama_lengkap as nama_bidan 
     FROM pemeriksaan_kehamilan p 
     INNER JOIN ibu_hamil ih ON p.id_kehamilan = ih.id_kehamilan 
@@ -33,7 +32,6 @@ if(!$pemeriksaan){
     exit();
 }
 
-// PERBAIKAN: Hitung urutan pemeriksaan berdasarkan tanggal (diurutkan ASC)
 $query_urutan = "SELECT 
     (SELECT COUNT(*) FROM pemeriksaan_kehamilan 
      WHERE id_kehamilan = $kehamilan_id 
@@ -49,13 +47,11 @@ include __DIR__ . '/../../templates/sidebar.php';
 
 <div class="max-w-3xl mx-auto fade-in">
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-        <!-- Header -->
         <div class="bg-gradient-to-r from-blue-600 to-blue-500 p-6 text-white">
             <h1 class="text-2xl font-bold">Detail Pemeriksaan Kehamilan</h1>
         </div>
         
         <div class="p-6">
-            <!-- Badge nomor pemeriksaan -->
             <div class="flex justify-center mb-4">
                 <div class="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold">
                     <i class="fas fa-stethoscope mr-2"></i> 
@@ -63,14 +59,12 @@ include __DIR__ . '/../../templates/sidebar.php';
                 </div>
             </div>
             
-            <!-- Tanggal Pemeriksaan -->
             <div class="bg-blue-50 rounded-xl p-4 mb-6 text-center">
                 <p class="text-sm text-gray-500">Tanggal Pemeriksaan</p>
                 <p class="text-2xl font-bold text-blue-600"><?php echo date('d F Y', strtotime($pemeriksaan['tanggal_pemeriksaan'])); ?></p>
                 <p class="text-sm text-gray-500 mt-1">Usia kehamilan: <strong><?php echo $pemeriksaan['usia_kehamilan']; ?> minggu</strong></p>
             </div>
             
-            <!-- Hasil Pemeriksaan -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div class="bg-green-50 rounded-xl p-4">
                     <h3 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
@@ -99,8 +93,7 @@ include __DIR__ . '/../../templates/sidebar.php';
                 </div>
             </div>
             
-            <!-- Keluhan -->
-            <?php if($pemeriksaan['keluhan']): ?>
+             <?php if($pemeriksaan['keluhan']): ?>
             <div class="bg-yellow-50 rounded-xl p-4 mb-6">
                 <h3 class="font-semibold text-gray-800 mb-2 flex items-center gap-2">
                     <i class="fas fa-comment-dots text-yellow-500"></i> Keluhan
@@ -109,7 +102,6 @@ include __DIR__ . '/../../templates/sidebar.php';
             </div>
             <?php endif; ?>
             
-            <!-- Tindakan / Edukasi -->
             <?php if($pemeriksaan['tindakan']): ?>
             <div class="bg-green-50 rounded-xl p-4 mb-6">
                 <h3 class="font-semibold text-gray-800 mb-2 flex items-center gap-2">
@@ -119,7 +111,6 @@ include __DIR__ . '/../../templates/sidebar.php';
             </div>
             <?php endif; ?>
             
-            <!-- Informasi Tambahan -->
             <div class="bg-gray-50 rounded-xl p-4 mb-6">
                 <h3 class="font-semibold text-gray-800 mb-2 flex items-center gap-2">
                     <i class="fas fa-info-circle text-gray-500"></i> Informasi Tambahan
@@ -145,7 +136,6 @@ include __DIR__ . '/../../templates/sidebar.php';
                 </div>
             </div>
             
-            <!-- Tombol Aksi -->
             <div class="flex gap-3">
                 <a href="detail_hamil.php?id=<?php echo $kehamilan_id; ?>" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl font-semibold hover:bg-gray-300 transition">
                 Kembali

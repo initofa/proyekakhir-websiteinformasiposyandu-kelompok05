@@ -4,17 +4,14 @@ require_once __DIR__ . '/../../auth/cek_ibu.php';
 
 $nik = $_SESSION['nik'];
 
-// Tangkap ID menggunakan POST sesuai kiriman dari riwayat_imunisasi.php
 $id = isset($_POST['id_pendaftaran']) ? (int)$_POST['id_pendaftaran'] : 0;
 
-// Jika tidak ada data POST (misal di-refresh paksa), kembalikan ke halaman riwayat
 if($id === 0){
     $_SESSION['error'] = "Data detail imunisasi tidak ditemukan!";
     header("Location: riwayat_imunisasi.php");
     exit();
 }
 
-// PERUBAHAN QUERY: Menambahkan JOIN ke tabel users (u) untuk mengambil nama_lengkap bidan dari hasil_imunisasi
 $query = "SELECT pi.*, pi.STATUS as status_pendaftaran, a.nama_anak, a.tanggal_lahir, a.jenis_kelamin, a.berat_lahir, a.panjang_lahir, a.id_anak,
           v.nama_vaksin, j.tanggal, j.lokasi,
           hi.berat_badan, hi.tinggi_badan, hi.lingkar_kepala, hi.status_gizi, hi.nafsu_makan, hi.catatan_kesehatan, hi.tgl_imunisasi,
@@ -35,16 +32,13 @@ if(!$data){
     exit();
 }
 
-// Hitung usia anak
 $usia = date_diff(date_create($data['tanggal_lahir']), date_create('today'));
 
-// Ambil rekomendasi artikel berdasarkan kondisi
 $rekomendasi_artikel = [];
 $ada_masalah = false;
 
 if($data['status_gizi'] != 'Normal' && $data['status_gizi'] != ''){
     $ada_masalah = true;
-    // Artikel tentang gizi (id_kategori = 1)
     $gizi = mysqli_query($conn, "SELECT * FROM artikel WHERE id_kategori = 1 ORDER BY created_at DESC LIMIT 3");
     while($row = mysqli_fetch_assoc($gizi)){
         $rekomendasi_artikel[] = $row;
@@ -53,7 +47,6 @@ if($data['status_gizi'] != 'Normal' && $data['status_gizi'] != ''){
 
 if($data['nafsu_makan'] == 'kurang' || $data['nafsu_makan'] == 'buruk'){
     $ada_masalah = true;
-    // Artikel tentang MPASI (id_kategori = 5)
     $mpasi = mysqli_query($conn, "SELECT * FROM artikel WHERE id_kategori = 5 ORDER BY created_at DESC LIMIT 3");
     while($row = mysqli_fetch_assoc($mpasi)){
         $found = false;
@@ -69,21 +62,17 @@ if($data['nafsu_makan'] == 'kurang' || $data['nafsu_makan'] == 'buruk'){
     }
 }
 
-// Jika tidak ada masalah (normal), tampilkan artikel pilihan (imunisasi & perkembangan)
 if(!$ada_masalah){
-    // Artikel imunisasi (id_kategori = 2)
     $imunisasi = mysqli_query($conn, "SELECT * FROM artikel WHERE id_kategori = 2 ORDER BY created_at DESC LIMIT 2");
     while($row = mysqli_fetch_assoc($imunisasi)){
         $rekomendasi_artikel[] = $row;
     }
-    // Artikel perkembangan anak (id_kategori = 3)
     $perkembangan = mysqli_query($conn, "SELECT * FROM artikel WHERE id_kategori = 3 ORDER BY created_at DESC LIMIT 2");
     while($row = mysqli_fetch_assoc($perkembangan)){
         $rekomendasi_artikel[] = $row;
     }
 }
 
-// Batasi maksimal 4 artikel
 $rekomendasi_artikel = array_slice($rekomendasi_artikel, 0, 4);
 
 $title = 'Detail Imunisasi';

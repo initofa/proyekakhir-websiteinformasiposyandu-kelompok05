@@ -19,7 +19,6 @@ function hitungUsiaBulan($tanggal_lahir) {
     return ($diff->y * 12) + $diff->m;
 }
 
-// Proses pendaftaran
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $anak_id = (int)$_POST['anak_id'];
     
@@ -30,7 +29,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         $usia_anak_bulan = hitungUsiaBulan($anak_data['tanggal_lahir']);
         $usia_rekomendasi = (int)$jadwal_data['usia_rekomendasi'];
         
-        // Logika Mutlak: Tidak boleh lebih atau kurang dari 12 bulan (1 tahun)
         $batas_bawah = $usia_rekomendasi - 12;
         $batas_atas = $usia_rekomendasi + 12;
         
@@ -39,7 +37,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         } elseif($usia_anak_bulan > $batas_atas){
             $_SESSION['error'] = "Usia anak melebihi batas maksimal yang diperbolehkan (maksimal " . $batas_atas . " bulan).";
         } else {
-            // Cek apakah sudah terdaftar
             $check = mysqli_query($conn, "SELECT id_pendaftaran FROM pendaftaran_imunisasi WHERE id_jadwal = $jadwal_id AND id_anak = $anak_id AND STATUS != 'batal'");
             
             if(mysqli_num_rows($check) > 0){ 

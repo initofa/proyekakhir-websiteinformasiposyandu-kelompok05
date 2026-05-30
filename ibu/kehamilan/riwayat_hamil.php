@@ -6,11 +6,9 @@ include __DIR__ . '/../../templates/sidebar.php';
 
 $nik = $_SESSION['nik'];
 
-// Cek apakah ada kehamilan aktif
 $cek_aktif = mysqli_query($conn, "SELECT id_kehamilan FROM ibu_hamil WHERE nik_ibu = '$nik' AND status_kehamilan = 'aktif'");
 $ada_kehamilan_aktif = mysqli_num_rows($cek_aktif) > 0;
 
-// Ambil semua data kehamilan ibu
 $result = mysqli_query($conn, "SELECT ih.*, 
     (SELECT COUNT(*) FROM pemeriksaan_kehamilan WHERE id_kehamilan = ih.id_kehamilan) as total_pemeriksaan
     FROM ibu_hamil ih 
@@ -24,7 +22,6 @@ $result = mysqli_query($conn, "SELECT ih.*,
         END,
         ih.created_at DESC");
 
-// Fungsi untuk mendapatkan badge status
 function getStatusBadge($status) {
     switch($status) {
         case 'aktif':
@@ -40,7 +37,6 @@ function getStatusBadge($status) {
     }
 }
 
-// Fungsi untuk mendapatkan warna card berdasarkan status (tanpa background, hanya border kiri)
 function getCardColor($status) {
     switch($status) {
         case 'aktif':
@@ -61,7 +57,6 @@ function getCardColor($status) {
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-bold text-green-800">Riwayat Kehamilan</h1>
         
-        <!-- Tombol Daftar Kehamilan hanya muncul jika TIDAK ada kehamilan aktif -->
         <?php if(!$ada_kehamilan_aktif): ?>
         <a href="daftar_hamil.php" class="bg-gradient-to-r from-green-600 to-emerald-500 text-white px-4 py-2 rounded-xl hover:shadow-lg transition">
             <i class="fas fa-plus mr-2"></i>Kehamilan
@@ -83,7 +78,6 @@ function getCardColor($status) {
             
             $card_color = getCardColor($row['status_kehamilan']);
             
-            // Tentukan ikon status untuk header
             $status_icon = '';
             if($row['status_kehamilan'] == 'aktif') {
                 $status_icon = '❤️ Sehat';

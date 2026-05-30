@@ -10,7 +10,6 @@ $offset = ($page - 1) * $limit;
 $total = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM anak WHERE nik_ibu='$nik'"))['total'];
 $total_pages = ceil($total / $limit);
 
-// PERUBAHAN UTAMA: Tambahkan subquery untuk mengecek apakah anak sudah punya data di pendaftaran atau hasil imunisasi
 $query_anak = "SELECT a.*, 
     ((SELECT COUNT(*) FROM pendaftaran_imunisasi WHERE id_anak = a.id_anak) + 
      (SELECT COUNT(*) FROM hasil_imunisasi WHERE id_pendaftaran IN (SELECT id_pendaftaran FROM pendaftaran_imunisasi WHERE id_anak = a.id_anak))) AS total_riwayat_imunisasi
@@ -41,7 +40,6 @@ include __DIR__ . '/../../templates/sidebar.php';
         <?php while($anak = mysqli_fetch_assoc($result)): 
             $usia = date_diff(date_create($anak['tanggal_lahir']), date_create('today'));
             
-            // PERUBAHAN UTAMA: Kunci tombol jika total riwayat imunisasi lebih dari 0
             $punya_imunisasi = ((int)$anak['total_riwayat_imunisasi'] > 0);
         ?>
         <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition">

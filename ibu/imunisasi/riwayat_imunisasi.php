@@ -10,18 +10,15 @@ $anak_filter = isset($_GET['anak_id']) ? (int)$_GET['anak_id'] : 0;
 $limit = 6;
 $offset = ($page - 1) * $limit;
 
-// Ambil semua anak ibu
 $anak_list = mysqli_query($conn, "SELECT * FROM anak WHERE nik_ibu='$nik' ORDER BY created_at DESC");
 $jumlah_anak = mysqli_num_rows($anak_list);
 
-// Jika hanya 1 anak dan tidak ada filter, otomatis pilih anak tersebut
 if($jumlah_anak == 1 && $anak_filter == 0){
     $first_anak = mysqli_fetch_assoc($anak_list);
     $anak_filter = $first_anak['id_anak'];
     mysqli_data_seek($anak_list, 0);
 }
 
-// Query dengan filter anak
 $where_anak = "";
 if($anak_filter > 0){
     $where_anak = " AND a.id_anak = $anak_filter";
@@ -32,7 +29,6 @@ $total = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM p
     WHERE a.nik_ibu='$nik' $where_anak"))['total'];
 $total_pages = ceil($total / $limit);
 
-// PERUBAHAN: Memastikan pemanggilan pi.STATUS alias status_pendaftaran agar tidak rancu dan terhindar dari error Undefined index
 $result = mysqli_query($conn, "SELECT pi.*, pi.STATUS as status_pendaftaran, a.nama_anak, v.nama_vaksin, j.tanggal, hi.berat_badan, hi.tinggi_badan, hi.status_gizi, hi.nafsu_makan
     FROM pendaftaran_imunisasi pi 
     JOIN anak a ON pi.id_anak = a.id_anak 
@@ -80,7 +76,7 @@ $result = mysqli_query($conn, "SELECT pi.*, pi.STATUS as status_pendaftaran, a.n
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <?php if(mysqli_num_rows($result) > 0): ?>
         <?php while($row = mysqli_fetch_assoc($result)): 
-            $status_curr = $row['status_pendaftaran']; // Menggunakan alias hasil query baru
+            $status_curr = $row['status_pendaftaran']; 
 
             $status_color = [
                 'pending' => 'bg-yellow-100 text-yellow-700 border-l-4 border-yellow-500',
@@ -208,7 +204,6 @@ $result = mysqli_query($conn, "SELECT pi.*, pi.STATUS as status_pendaftaran, a.n
 </div>
 
 <script>
-// Fungsi pemicu form POST tersembunyi demi menjaga kebersihan url parameter
 function bukaDetailImunisasiPost(idPendaftaran) {
     document.getElementById('idPendaftaranPost').value = idPendaftaran;
     document.getElementById('formDetailImunisasiPost').submit();

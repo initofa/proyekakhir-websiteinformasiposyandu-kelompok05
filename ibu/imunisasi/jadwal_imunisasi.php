@@ -2,25 +2,21 @@
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../auth/cek_ibu.php';
 
-// Tangkap kata kunci pencarian jika ada
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, trim($_GET['search'])) : '';
 
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 6;
 $offset = ($page - 1) * $limit;
 
-// Klausa dasar: Hanya menampilkan jadwal yang hari ini atau masa depan
 $where_base = "WHERE j.tanggal >= CURDATE()";
 if ($search !== '') {
     $where_base .= " AND (v.nama_vaksin LIKE '%$search%' OR j.lokasi LIKE '%$search%' OR u.nama_lengkap LIKE '%$search%')";
 }
 
-// Hitung total data untuk pagination berdasarkan filter search
 $total_query = "SELECT COUNT(*) as total FROM jadwal_imunisasi j JOIN vaksin v ON j.id_vaksin=v.id_vaksin LEFT JOIN users u ON j.petugas_nik = u.nik $where_base";
 $total = mysqli_fetch_assoc(mysqli_query($conn, $total_query))['total'];
 $total_pages = ceil($total / $limit);
 
-// Query Utama: LEFT JOIN ke users untuk mengambil nama bidan pelaksana
 $query_jadwal = "SELECT j.*, v.nama_vaksin, v.deskripsi, u.nama_lengkap as nama_bidan 
     FROM jadwal_imunisasi j 
     JOIN vaksin v ON j.id_vaksin=v.id_vaksin 
@@ -69,7 +65,6 @@ include __DIR__ . '/../../templates/sidebar.php';
             $tanggal_eval = new DateTime($row['tanggal']);
             $is_today = $row['tanggal'] == date('Y-m-d');
             
-            // Set warna background header card agar sama dengan list_jadwal
             $status_color = 'bg-green-50/60 border-green-100';
         ?>
         <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition flex flex-col justify-between border border-gray-100 relative">
