@@ -1,11 +1,9 @@
 <?php
-// config/database.php
 $host = "localhost";
 $user = "root";
 $pass = "";
 $dbname = "db_posyandu";
 
-// Menggunakan mysqli object oriented
 $conn = new mysqli($host, $user, $pass, $dbname);
 
 if ($conn->connect_error) {
@@ -18,11 +16,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// ============================================
-// CONSTANTS
-// ============================================
-define('BASE_URL', 'http://localhost/db_posyandu/');  // Sesuaikan dengan folder Anda
-define('UPLOAD_PATH', $_SERVER['DOCUMENT_ROOT'] . '/db_posyandu/uploads/');
+define('BASE_URL', 'http://localhost/posyandu/');
+define('UPLOAD_PATH', $_SERVER['DOCUMENT_ROOT'] . '/posyandu/uploads/');
 
 // Buat folder uploads jika belum ada
 if (!file_exists(UPLOAD_PATH)) {
@@ -30,9 +25,7 @@ if (!file_exists(UPLOAD_PATH)) {
     mkdir(UPLOAD_PATH . 'artikel/', 0777, true);
 }
 
-// ============================================
-// AUTH FUNCTIONS
-// ============================================
+
 function isLoggedIn() {
     return isset($_SESSION['nik']);
 }
@@ -52,7 +45,6 @@ function getCurrentUser() {
 
 function hasRole($role) {
     $user = getCurrentUser();
-    // PERUBAHAN: menggunakan 'ROLE' (kapital) sesuai database
     return $user && isset($user['ROLE']) && $user['ROLE'] == $role;
 }
 
@@ -67,9 +59,7 @@ function redirectIfRole($role) {
     $user = getCurrentUser();
     $current_page = basename($_SERVER['PHP_SELF']);
     
-    // PERUBAHAN: menggunakan 'ROLE' (kapital) sesuai database
     if ($user && isset($user['ROLE']) && $user['ROLE'] == $role) {
-        // Hindari redirect loop
         if ($current_page != 'dashboard.php' && !strpos($current_page, 'dashboard')) {
             if ($role == 'admin') {
                 header("Location: " . BASE_URL . "admin/dashboard.php");
@@ -98,7 +88,6 @@ function getUserNameByNik($nik) {
     return getUserName($nik);
 }
 
-// PERUBAHAN: fungsi baru untuk mendapatkan role user dengan format kapital
 function getUserRole($nik) {
     global $conn;
     if (empty($nik)) return '-';
@@ -110,7 +99,6 @@ function getUserRole($nik) {
     return $data ? $data['ROLE'] : '-';
 }
 
-// PERUBAHAN: fungsi untuk cek status user (menggunakan STATUS kapital)
 function getUserStatus($nik) {
     global $conn;
     if (empty($nik)) return '-';
@@ -125,7 +113,6 @@ function getUserStatus($nik) {
 function paginate($current_page, $total_pages, $base_url, $additional_params = []) {
     if ($total_pages <= 1) return '';
 
-    // Bangun string untuk parameter tambahan (seperti search, kategori, dll)
     $query_string = '';
     if (!empty($additional_params)) {
         foreach ($additional_params as $key => $value) {
@@ -135,20 +122,17 @@ function paginate($current_page, $total_pages, $base_url, $additional_params = [
         }
     }
 
-    // Deteksi apakah base_url sudah memiliki tanda tanya (?) atau belum
     $connector = (strpos($base_url, '?') === false) ? '?' : '&';
 
     $html = '<div class="flex justify-between items-center mt-4 px-4 py-3 border-t border-gray-200">';
     $html .= '<div class="text-sm text-gray-600">Halaman ' . $current_page . ' dari ' . $total_pages . '</div>';
     $html .= '<div class="flex gap-2">';
     
-    // Tombol Previous
     if ($current_page > 1) {
         $prev_url = $base_url . $connector . 'page=' . ($current_page - 1) . $query_string;
         $html .= '<a href="' . $prev_url . '" class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 transition text-sm font-medium text-gray-700">« Prev</a>';
     }
     
-    // Nomor Halaman (Rentang Aktif)
     $start = max(1, $current_page - 2);
     $end = min($total_pages, $current_page + 2);
     
@@ -158,7 +142,6 @@ function paginate($current_page, $total_pages, $base_url, $additional_params = [
         $html .= '<a href="' . $page_url . '" class="px-3 py-1 ' . $active . ' rounded-lg transition text-sm">' . $i . '</a>';
     }
     
-    // Tombol Next
     if ($current_page < $total_pages) {
         $next_url = $base_url . $connector . 'page=' . ($current_page + 1) . $query_string;
         $html .= '<a href="' . $next_url . '" class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 transition text-sm font-medium text-gray-700">Next »</a>';
@@ -168,9 +151,7 @@ function paginate($current_page, $total_pages, $base_url, $additional_params = [
     return $html;
 }
 
-// ============================================
-// FORMATTING FUNCTIONS
-// ============================================
+
 function formatTanggal($tanggal) {
     if (empty($tanggal) || $tanggal == '0000-00-00') return '-';
     $timestamp = strtotime($tanggal);
@@ -206,18 +187,13 @@ function hitungUsiaKehamilan($hpht) {
     return floor($diff->days / 7);
 }
 
-// ============================================
-// VALIDATION FUNCTIONS
-// ============================================
+
 function validateNIK($nik) {
-    // NIK harus 16 digit angka
     return preg_match('/^[0-9]{16}$/', $nik);
 }
 
 function validatePhoneNumber($phone) {
-    // Nomor HP minimal 10 digit, maksimal 15 digit
     return preg_match('/^[0-9]{10,15}$/', $phone);
 }
-
 
 ?>
