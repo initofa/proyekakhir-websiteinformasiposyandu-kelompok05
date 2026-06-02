@@ -63,7 +63,7 @@ $result = mysqli_query($conn, "SELECT * FROM kategori_artikel ORDER BY created_a
 
     <?php if($total_pages > 1): ?>
     <div class="mt-6">
-        <?php echo paginate($page, $total_pages, "list_kategori.php?"); ?>
+        <?php echo paginate($page, $total_pages, "index.php?"); ?>
     </div>
     <?php endif; ?>
 </div>

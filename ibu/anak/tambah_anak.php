@@ -16,7 +16,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     
     if(mysqli_query($conn, $query)){
         $_SESSION['success'] = "Data anak berhasil ditambahkan!";
-        header("Location: list_anak.php");
+        header("Location: index.php");
         exit();
     } else {
         echo "Gagal menambahkan data: " . mysqli_error($conn);
@@ -60,7 +60,7 @@ include __DIR__ . '/../../templates/sidebar.php';
         </div>
         <div class="flex gap-3 mt-6">
             <button type="submit" class="flex-1 bg-gradient-to-r from-green-600 to-emerald-500 text-white py-2 rounded-xl font-semibold hover:shadow-lg transition">Simpan</button>
-            <a href="list_anak.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl font-semibold hover:bg-gray-300 transition">Batal</a>
+            <a href="index.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl font-semibold hover:bg-gray-300 transition">Batal</a>
         </div>
     </form>
 </div>

@@ -42,7 +42,7 @@ $pemeriksaan = mysqli_query($conn, "SELECT * FROM pemeriksaan_kehamilan WHERE id
                 </div>
                 <?php endwhile; ?>
             </div>
-            <a href="list_ibu_hamil.php" class="mt-6 w-full text-center inline-block bg-gray-200 text-gray-700 px-6 py-2 rounded-xl hover:bg-gray-300 transition">Kembali</a>
+            <a href="index.php" class="mt-6 w-full text-center inline-block bg-gray-200 text-gray-700 px-6 py-2 rounded-xl hover:bg-gray-300 transition">Kembali</a>
         </div>
     </div>
 </div>

@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../auth/cek_bidan.php';
+require_once __DIR__ . '/../../auth/cek_admin.php';
 $title = 'Data Ibu Hamil';
 include __DIR__ . '/../../templates/sidebar.php';
 
@@ -91,7 +91,7 @@ function cekLamaTidakPeriksa($tgl_periksa_terakhir) {
     return $bulan_selisih >= 2;
 }
 
-function getCardColor($status, $need_attention) {
+function getCardColorAdmin($status, $need_attention) {
     if($need_attention && $status == 'aktif') {
         return 'bg-white border-l-4 border-pink-500 border-2 border-pink-300';
     }
@@ -110,7 +110,7 @@ function getCardColor($status, $need_attention) {
     }
 }
 
-function getStatusBadge($status) {
+function getStatusBadgeAdmin($status) {
     switch($status) {
         case 'aktif':
             return '<span class="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700"><i class="fas fa-check-circle mr-1"></i> Aktif</span>';
@@ -123,10 +123,6 @@ function getStatusBadge($status) {
         default:
             return '<span class="px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-700">-</span>';
     }
-}
-if (!isset($_SESSION["nik"])) {
-    header('Location: index.php');
-    exit;
 }
 ?>
 
@@ -179,7 +175,7 @@ if (!isset($_SESSION["nik"])) {
     </div>
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <?php while($row = mysqli_fetch_assoc($result)): 
+        <?php while($row = mysqli_fetch_assoc($result)): 
             $hpl = new DateTime($row['hpl']);
             $today = new DateTime();
             $sisa = $hpl > $today ? $today->diff($hpl)->days : 0;
@@ -189,27 +185,8 @@ if (!isset($_SESSION["nik"])) {
             
             $need_attention = ($row['status_kehamilan'] == 'aktif') ? cekLamaTidakPeriksa($row['tgl_periksa_terakhir']) : false;
             
-            $card_color = getCardColor($row['status_kehamilan'], $need_attention);
-            $status_badge = getStatusBadge($row['status_kehamilan']);
-            
-            $wa_message = "Halo Ibu " . $row['nama_lengkap'] . ",\n\n";
-            if($row['status_kehamilan'] == 'aktif'){
-                $wa_message .= "Kami mengingatkan untuk melakukan pemeriksaan kehamilan rutin.\n\n";
-                $wa_message .= "*Usia Kehamilan:* " . $usia_display . "\n";
-                $wa_message .= "*HPL:* " . formatTanggalIndonesia($row['hpl']) . " (Sisa *$sisa* hari lagi)\n\n";
-                $wa_message .= "Silakan datang ke Posyandu untuk melakukan pemeriksaan berkala.\n\n";
-            } else {
-                $wa_message .= "Bagaimana kondisi kesehatan Anda saat ini?\n\n";
-                $wa_message .= "Jika ada keluhan pasca melahirkan atau keluhan lainnya, silakan melakukan konsultasi ke Posyandu.\n\n";
-            }
-            $wa_message .= "Terima kasih.\n\n-Bidan SIPANDA-";
-            
-            $no_wa = preg_replace('/[^0-9]/', '', $row['no_wa']);
-            if (strpos($no_wa, '08') === 0) {
-                $no_wa = '628' . substr($no_wa, 2);
-            }
-            
-            $wa_url = "https://wa.me/" . $no_wa . "?text=" . urlencode($wa_message);
+            $card_color = getCardColorAdmin($row['status_kehamilan'], $need_attention);
+            $status_badge = getStatusBadgeAdmin($row['status_kehamilan']);
         ?>
         <div class="<?php echo $card_color; ?> rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition">
             <div class="bg-gradient-to-r from-green-500 to-emerald-500 p-4 text-white">
@@ -232,7 +209,6 @@ if (!isset($_SESSION["nik"])) {
                 <p><i class="fas fa-weight-scale w-4 text-gray-500"></i> BB: <?php echo $row['berat_badan_ibu']; ?> kg</p>
                 <p><i class="fas fa-heartbeat w-4 text-gray-500"></i> TD: <?php echo $row['tekanan_darah']; ?></p>
                 <p><i class="fas fa-clock w-4 text-gray-500"></i> Usia: <?php echo $usia_display; ?></p>
-                
                 <p class="mt-1"><i class="fas fa-stethoscope w-4 text-gray-500"></i> Pemeriksaan: <?php echo $row['total_pemeriksaan']; ?> kali</p>
                 
                 <?php if($need_attention): ?>
@@ -253,14 +229,6 @@ if (!isset($_SESSION["nik"])) {
                     <a href="detail_ibu_hamil.php?id=<?php echo $row['id_kehamilan']; ?>" class="flex-1 text-center bg-green-600 text-white py-1 rounded-lg text-sm hover:bg-green-700 transition">
                         <i class="fas fa-eye mr-1"></i> Detail
                     </a>
-                    <?php if($row['status_kehamilan'] == 'aktif'): ?>
-                    <a href="pemeriksaan.php?id=<?php echo $row['id_kehamilan']; ?>" class="flex-1 text-center bg-blue-600 text-white py-1 rounded-lg text-sm hover:bg-blue-700 transition">
-                    Pemeriksaan
-                    </a>
-                    <?php endif; ?>
-                    <a href="<?php echo $wa_url; ?>" target="_blank" class="flex-1 text-center bg-green-500 text-white py-1 rounded-lg text-sm hover:bg-green-600 transition flex items-center justify-center gap-1">
-                        <i class="fab fa-whatsapp"></i> WA
-                    </a>
                 </div>
             </div>
         </div>
@@ -279,7 +247,7 @@ if (!isset($_SESSION["nik"])) {
     
     <?php if($total_pages > 1): ?>
     <div class="mt-6">
-        <?php echo paginate($page, $total_pages, "list_ibu_hamil.php?tab=$tab" . ($search ? "&search=" . urlencode($search) : "")); ?>
+        <?php echo paginate($page, $total_pages, "index.php?tab=$tab" . ($search ? "&search=" . urlencode($search) : "")); ?>
     </div>
     <?php endif; ?>
 </div>

@@ -4,9 +4,9 @@ $base_url = "/posyandu";
 
 if (isLoggedIn()) {
     $user = getCurrentUser();
-    if ($user['role'] == 'admin') header("Location: ../admin/dashboard.php");
-    elseif ($user['role'] == 'bidan') header("Location: ../bidan/dashboard.php");
-    else header("Location: ../ibu/dashboard.php");
+    if ($user['role'] == 'admin') header("Location: ../admin/index.php");
+    elseif ($user['role'] == 'bidan') header("Location: ../bidan/index.php");
+    else header("Location: ../ibu/index.php");
     exit();
 }
 
@@ -45,14 +45,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error = "Akun Anda tidak aktif. Silakan hubungi admin.";
             $error_type = 'inactive';
         } else {
-            // Login sukses
             $_SESSION['nik'] = $user['nik'];
             $_SESSION['nama_lengkap'] = $user['nama_lengkap'];
             $_SESSION['role'] = $user['ROLE'];
             
-            if ($user['ROLE'] == 'admin') header("Location: ../admin/dashboard.php");
-            elseif ($user['ROLE'] == 'bidan') header("Location: ../bidan/dashboard.php");
-            else header("Location: ../ibu/dashboard.php");
+            if ($user['ROLE'] == 'admin') header("Location: ../admin/index.php");
+            elseif ($user['ROLE'] == 'bidan') header("Location: ../bidan/index.php");
+            else header("Location: ../ibu/index.php");
             exit();
         }
     }

@@ -17,6 +17,6 @@ if ($id_pendaftaran > 0) {
     $_SESSION['error'] = "Parameter data tidak valid.";
 }
 
-header("Location: list_jadwal.php?buka_jadwal=" . $jadwal_id);
+header("Location: index.php?buka_jadwal=" . $jadwal_id);
 exit();
 ?>

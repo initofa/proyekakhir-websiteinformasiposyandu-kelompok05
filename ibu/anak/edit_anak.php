@@ -7,12 +7,12 @@ $nik = $_SESSION['nik'];
 $id = isset($_POST['id_anak']) ? (int)$_POST['id_anak'] : 0;
 
 if($id === 0) { 
-    header("Location: list_anak.php"); 
+    header("Location: index.php"); 
     exit(); 
 }
 
 $anak = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM anak WHERE id_anak=$id AND nik_ibu='$nik'"));
-if(!$anak){ header("Location: list_anak.php"); exit(); }
+if(!$anak){ header("Location: index.php"); exit(); }
 
 if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['proses_update'])){
     $nama_anak = mysqli_real_escape_string($conn, $_POST['nama_anak']);
@@ -25,7 +25,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['proses_update'])){
     mysqli_query($conn, "UPDATE anak SET nama_anak='$nama_anak', tempat_lahir='$tempat_lahir', tanggal_lahir='$tanggal_lahir', jenis_kelamin='$jenis_kelamin', berat_lahir='$berat_lahir', panjang_lahir='$panjang_lahir' WHERE id_anak=$id");
     
     $_SESSION['success'] = "Data anak berhasil diupdate!";
-    header("Location: list_anak.php");
+    header("Location: index.php");
     exit();
 }
 $title = 'Edit Anak';
@@ -68,7 +68,7 @@ include __DIR__ . '/../../templates/sidebar.php';
         </div>
         <div class="flex gap-3 mt-6">
             <button type="submit" name="proses_update" class="flex-1 bg-gradient-to-r from-green-600 to-emerald-500 text-white py-2 rounded-xl font-semibold hover:shadow-lg transition">Update</button>
-            <a href="list_anak.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl font-semibold hover:bg-gray-300 transition">Batal</a>
+            <a href="index.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl font-semibold hover:bg-gray-300 transition">Batal</a>
         </div>
     </form>
 </div>

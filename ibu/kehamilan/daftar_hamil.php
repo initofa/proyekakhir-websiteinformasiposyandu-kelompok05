@@ -28,7 +28,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !$ada_kehamilan_aktif){
     
     if(mysqli_query($conn, $query)){
         $_SESSION['success'] = "Pendaftaran kehamilan berhasil!";
-        header("Location: riwayat_hamil.php");
+        header("Location: index.php");
         exit();
     } else {
         $error = "Gagal mendaftarkan kehamilan: " . mysqli_error($conn);
@@ -47,7 +47,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !$ada_kehamilan_aktif){
                 <div>
                     <p class="font-semibold text-yellow-800">Anda sudah memiliki kehamilan aktif!</p>
                     <p class="text-sm text-yellow-700">Tidak dapat mendaftarkan kehamilan baru sebelum kehamilan saat ini selesai.</p>
-                    <a href="riwayat_hamil.php" class="inline-block mt-2 text-sm text-green-600 hover:text-green-700">
+                    <a href="index.php" class="inline-block mt-2 text-sm text-green-600 hover:text-green-700">
                         <i class="fas fa-arrow-left mr-1"></i> Lihat riwayat kehamilan
                     </a>
                 </div>
@@ -148,7 +148,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && !$ada_kehamilan_aktif){
                         <?php echo $ada_kehamilan_aktif ? 'disabled' : ''; ?>>
                     <i class="fas fa-save mr-2"></i> Daftar Kehamilan
                 </button>
-                <a href="riwayat_hamil.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl font-semibold hover:bg-gray-300 transition">
+                <a href="index.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl font-semibold hover:bg-gray-300 transition">
                     <i class="fas fa-times mr-2"></i> Batal
                 </a>
             </div>

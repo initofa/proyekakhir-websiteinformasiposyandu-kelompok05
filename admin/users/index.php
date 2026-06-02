@@ -12,7 +12,7 @@ if (isset($_GET['confirm'])) {
     $nik = $_GET['confirm'];
     mysqli_query($conn, "UPDATE users SET STATUS='active', updated_by='{$_SESSION['nik']}' WHERE nik='$nik'");
     $_SESSION['success'] = "Akun berhasil dikonfirmasi!";
-    header("Location: list_users.php?tab=" . $tab); 
+    header("Location: index.php?tab=" . $tab); 
     exit();
 }
 
@@ -20,7 +20,7 @@ if (isset($_GET['reject'])) {
     $nik = $_GET['reject'];
     mysqli_query($conn, "UPDATE users SET STATUS='inactive', updated_by='{$_SESSION['nik']}' WHERE nik='$nik'");
     $_SESSION['warning'] = "Pendaftaran ditolak!";
-    header("Location: list_users.php?tab=" . $tab);
+    header("Location: index.php?tab=" . $tab);
     exit();
 }
 
@@ -28,7 +28,7 @@ if (isset($_GET['activate'])) {
     $nik = $_GET['activate'];
     mysqli_query($conn, "UPDATE users SET STATUS='active', updated_by='{$_SESSION['nik']}' WHERE nik='$nik'");
     $_SESSION['success'] = "Akun berhasil diaktifkan kembali!";
-    header("Location: list_users.php?tab=" . $tab);
+    header("Location: index.php?tab=" . $tab);
     exit();
 }
 
@@ -36,7 +36,7 @@ if (isset($_GET['deactivate'])) {
     $nik = $_GET['deactivate'];
     mysqli_query($conn, "UPDATE users SET STATUS='inactive', updated_by='{$_SESSION['nik']}' WHERE nik='$nik'");
     $_SESSION['warning'] = "Akun berhasil dinonaktifkan!";
-    header("Location: list_users.php?tab=" . $tab);
+    header("Location: index.php?tab=" . $tab);
     exit();
 }
 
@@ -105,7 +105,7 @@ else {
                 <i class="fas fa-search"></i> Cari
             </button>
             <?php if($search): ?>
-            <a href="list_users.php?tab=<?php echo $tab; ?>&page=1" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition flex items-center justify-center gap-2">
+            <a href="index.php?tab=<?php echo $tab; ?>&page=1" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition flex items-center justify-center gap-2">
                 <i class="fas fa-times"></i> Reset
             </a>
             <?php endif; ?>
@@ -189,7 +189,7 @@ else {
     
     <?php if($total_pages > 1): ?>
     <div class="mt-6">
-        <?php echo paginate($page, $total_pages, "list_users.php?tab=ibu&search=" . urlencode($search)); ?>
+        <?php echo paginate($page, $total_pages, "index.php?tab=ibu&search=" . urlencode($search)); ?>
     </div>
     <?php endif; ?>
     
@@ -282,7 +282,7 @@ else {
     
     <?php if($total_pages > 1): ?>
     <div class="mt-6">
-        <?php echo paginate($page, $total_pages, "list_users.php?tab=bidan&search=" . urlencode($search)); ?>
+        <?php echo paginate($page, $total_pages, "index.php?tab=bidan&search=" . urlencode($search)); ?>
     </div>
     <?php endif; ?>
     <?php endif; ?>

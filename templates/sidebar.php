@@ -228,7 +228,7 @@ $base_url = "/posyandu";
             <?php if ($role == 'admin'): ?>
 
             <li>
-                <a href="<?= $base_url ?>/admin/dashboard.php"
+                <a href="<?= $base_url ?>/admin/index.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-home text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Dashboard</span>
@@ -236,7 +236,7 @@ $base_url = "/posyandu";
             </li>
 
             <li>
-                <a href="<?= $base_url ?>/admin/ibu_hamil/list_ibu_hamil.php"
+                <a href="<?= $base_url ?>/admin/ibu_hamil/index.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-female text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Ibu Hamil</span>
@@ -244,7 +244,7 @@ $base_url = "/posyandu";
             </li>
 
             <li>
-                <a href="<?= $base_url ?>/admin/anak/list_anak.php"
+                <a href="<?= $base_url ?>/admin/anak/index.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-baby text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Anak</span>
@@ -252,7 +252,7 @@ $base_url = "/posyandu";
             </li>
 
             <li>
-                <a href="<?= $base_url ?>/admin/vaksin/list_vaksin.php"
+                <a href="<?= $base_url ?>/admin/vaksin/index.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-syringe text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Vaksin</span>
@@ -260,7 +260,7 @@ $base_url = "/posyandu";
             </li>
 
             <li>
-                <a href="<?= $base_url ?>/admin/jadwal/list_jadwal.php"
+                <a href="<?= $base_url ?>/admin/jadwal/index.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-calendar-alt text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Jadwal</span>
@@ -268,7 +268,7 @@ $base_url = "/posyandu";
             </li>
 
             <li>
-                <a href="<?= $base_url ?>/admin/kategori/list_kategori.php"
+                <a href="<?= $base_url ?>/admin/kategori/index.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-tags text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Kategori</span>
@@ -276,7 +276,7 @@ $base_url = "/posyandu";
             </li>
             
             <li>
-                <a href="<?= $base_url ?>/admin/artikel/list_artikel.php"
+                <a href="<?= $base_url ?>/admin/artikel/index.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-newspaper text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Artikel</span>
@@ -284,7 +284,7 @@ $base_url = "/posyandu";
             </li>
 
             <li>
-                <a href="<?= $base_url ?>/admin/users/list_users.php"
+                <a href="<?= $base_url ?>/admin/users/index.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-users text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Users</span>
@@ -295,7 +295,7 @@ $base_url = "/posyandu";
             <?php elseif ($role == 'bidan'): ?>
 
             <li>
-                <a href="<?= $base_url ?>/bidan/dashboard.php"
+                <a href="<?= $base_url ?>/bidan/index.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-home text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Dashboard</span>
@@ -303,7 +303,7 @@ $base_url = "/posyandu";
             </li>
 
             <li>
-                <a href="<?= $base_url ?>/bidan/ibu_hamil/list_ibu_hamil.php"
+                <a href="<?= $base_url ?>/bidan/ibu_hamil/index.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-female text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Ibu Hamil</span>
@@ -311,7 +311,7 @@ $base_url = "/posyandu";
             </li>
 
             <li>
-                <a href="<?= $base_url ?>/bidan/anak/list_anak.php"
+                <a href="<?= $base_url ?>/bidan/anak/index.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-baby text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Anak</span>
@@ -319,7 +319,7 @@ $base_url = "/posyandu";
             </li>
 
             <li>
-                <a href="<?= $base_url ?>/bidan/vaksin/list_vaksin.php"
+                <a href="<?= $base_url ?>/bidan/vaksin/index.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-syringe text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Vaksin</span>
@@ -327,7 +327,7 @@ $base_url = "/posyandu";
             </li>
 
             <li>
-                <a href="<?= $base_url ?>/bidan/imunisasi/list_pendaftaran.php"
+                <a href="<?= $base_url ?>/bidan/imunisasi/index.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-clipboard-list text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Imunisasi</span>
@@ -335,7 +335,7 @@ $base_url = "/posyandu";
             </li>
 
             <li>
-                <a href="<?= $base_url ?>/bidan/artikel/list_artikel.php"
+                <a href="<?= $base_url ?>/bidan/artikel/index.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-book text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Artikel</span>
@@ -346,7 +346,7 @@ $base_url = "/posyandu";
             <?php elseif ($role == 'ibu'): ?>
 
             <li>
-                <a href="<?= $base_url ?>/ibu/dashboard.php"
+                <a href="<?= $base_url ?>/ibu/index.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-home text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Dashboard</span>
@@ -354,7 +354,7 @@ $base_url = "/posyandu";
             </li>
 
             <li>
-                <a href="<?= $base_url ?>/ibu/kehamilan/riwayat_hamil.php"
+                <a href="<?= $base_url ?>/ibu/kehamilan/index.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-baby-carriage text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Kehamilan</span>
@@ -362,7 +362,7 @@ $base_url = "/posyandu";
             </li>
 
             <li>
-                <a href="<?= $base_url ?>/ibu/anak/list_anak.php"
+                <a href="<?= $base_url ?>/ibu/anak/index.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-baby text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Anak</span>
@@ -370,7 +370,7 @@ $base_url = "/posyandu";
             </li>
 
             <li>
-                <a href="<?= $base_url ?>/ibu/imunisasi/jadwal_imunisasi.php"
+                <a href="<?= $base_url ?>/ibu/imunisasi/index.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-calendar-plus text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Jadwal</span>
@@ -386,7 +386,7 @@ $base_url = "/posyandu";
             </li>
 
             <li>
-                <a href="<?= $base_url ?>/ibu/perkembangan/detail_perkembangan.php"
+                <a href="<?= $base_url ?>/ibu/perkembangan/index.php"
                     class="menu-item flex items-center text-white hover:bg-white hover:bg-opacity-20 py-2 px-3 rounded-xl transition">
                     <i class="fas fa-chart-line text-lg w-6 text-center"></i>
                     <span class="sidebar-text hidden">Perkembangan</span>

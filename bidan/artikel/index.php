@@ -70,7 +70,7 @@ while($cat = mysqli_fetch_assoc($kategori_query)) {
                 <i class="fas fa-search mr-2"></i> Filter
             </button>
             <?php if($search || $kategori_id): ?>
-            <a href="list_artikel.php" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition text-center flex items-center justify-center text-sm font-semibold shadow-sm">
+            <a href="index.php" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition text-center flex items-center justify-center text-sm font-semibold shadow-sm">
                 <i class="fas fa-times mr-2"></i> Reset
             </a>
             <?php endif; ?>
@@ -155,7 +155,7 @@ while($cat = mysqli_fetch_assoc($kategori_query)) {
     
     <?php if($total_pages > 1): ?>
     <div class="mt-8">
-        <?php echo paginate($page, $total_pages, 'list_artikel.php', ['search' => $search, 'kategori' => $kategori_id]); ?>
+        <?php echo paginate($page, $total_pages, 'index.php', ['search' => $search, 'kategori' => $kategori_id]); ?>
     </div>
     <?php endif; ?>
 </div>

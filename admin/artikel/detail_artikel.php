@@ -8,7 +8,7 @@ $id = isset($_POST['id_artikel']) ? (int)$_POST['id_artikel'] : 0;
 
 if($id === 0) {
     $_SESSION['error'] = "Akses tidak sah!";
-    header("Location: list_artikel.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -20,14 +20,14 @@ $artikel = mysqli_fetch_assoc(mysqli_query($conn, "SELECT a.*, k.nama_kategori, 
 
 if(!$artikel) {
     $_SESSION['error'] = "Artikel tidak ditemukan!";
-    header("Location: list_artikel.php");
+    header("Location: index.php");
     exit();
 }
 ?>
 
 <div class="max-w-4xl mx-auto fade-in">
     <div class="mb-4">
-        <a href="list_artikel.php" class="inline-flex items-center gap-2 text-green-600 hover:text-green-700 transition">
+        <a href="index.php" class="inline-flex items-center gap-2 text-green-600 hover:text-green-700 transition">
             <i class="fas fa-arrow-left"></i> Kembali ke Daftar Artikel
         </a>
     </div>
@@ -72,7 +72,7 @@ if(!$artikel) {
             </div>
             
             <div class="flex mt-6">
-                <a href="list_artikel.php" 
+                <a href="index.php" 
                    class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 py-2.5 rounded-xl transition text-center flex items-center justify-center gap-2 font-semibold">
                    Kembali
                 </a>

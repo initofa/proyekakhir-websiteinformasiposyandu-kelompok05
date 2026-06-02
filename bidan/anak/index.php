@@ -1,11 +1,10 @@
 <?php
 require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../auth/cek_admin.php';
+require_once __DIR__ . '/../../auth/cek_bidan.php';
 
 $title = 'Data Anak';
 include __DIR__ . '/../../templates/sidebar.php';
 
-// Menangkap parameter filter, search, dan pagination
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $jk_filter = isset($_GET['jk']) ? $_GET['jk'] : '';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -61,7 +60,7 @@ $result = mysqli_query($conn, $query_anak);
             </button>
             
             <?php if($search || $jk_filter): ?>
-            <a href="list_anak.php" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition text-center flex items-center justify-center">
+            <a href="index.php" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition text-center flex items-center justify-center">
                 <i class="fas fa-times mr-2"></i> Reset
             </a>
             <?php endif; ?>
@@ -123,7 +122,7 @@ $result = mysqli_query($conn, $query_anak);
     
     <?php if($total_pages > 1): ?>
     <div class="mt-6">
-        <?php echo paginate($page, $total_pages, "list_anak.php?search=" . urlencode($search) . "&jk=" . $jk_filter); ?>
+        <?php echo paginate($page, $total_pages, "index.php?search=" . urlencode($search) . "&jk=" . $jk_filter); ?>
     </div>
     <?php endif; ?>
 </div>

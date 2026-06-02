@@ -109,7 +109,7 @@ include __DIR__ . '/../../templates/sidebar.php';
             <button type="submit" class="flex-1 bg-gradient-to-r from-green-600 to-emerald-500 text-white py-2 rounded-xl font-semibold hover:shadow-lg transition">
                 <i class="fas fa-save mr-1"></i> Update
             </button>
-            <a href="list_jadwal.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl font-semibold hover:bg-gray-300 transition flex items-center justify-center">
+            <a href="index.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl font-semibold hover:bg-gray-300 transition flex items-center justify-center">
                 Batal
             </a>
         </div>

@@ -24,6 +24,6 @@ if($id_pendaftaran > 0) {
     $_SESSION['error'] = "ID pendaftaran tidak valid.";
 }
 
-header("Location: list_pendaftaran.php?buka_jadwal=" . $jadwal_id);
+header("Location: index.php?buka_jadwal=" . $jadwal_id);
 exit();
 ?>

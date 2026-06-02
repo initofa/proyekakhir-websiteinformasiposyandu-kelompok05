@@ -10,7 +10,7 @@ $id_kehamilan = isset($_GET['kehamilan_id']) ? (int)$_GET['kehamilan_id'] : (iss
 
 if($id_kehamilan == 0) {
     $_SESSION['error'] = "Data kehamilan tidak ditemukan!";
-    header("Location: riwayat_hamil.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -27,7 +27,7 @@ $kehamilan = mysqli_fetch_assoc($result_kehamilan);
 
 if(!$kehamilan){
     $_SESSION['error'] = "Data kehamilan tidak ditemukan!";
-    header("Location: riwayat_hamil.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -159,7 +159,7 @@ function getStatusBadge($status) {
             <?php endif; ?>
             
             <div class="mt-6 flex gap-3">
-                <a href="riwayat_hamil.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl font-semibold hover:bg-gray-300 transition">
+                <a href="index.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl font-semibold hover:bg-gray-300 transition">
                 Kembali
                 </a>
             </div>

@@ -9,7 +9,7 @@ $id_anak = isset($_POST['id_anak']) ? (int)$_POST['id_anak'] : (isset($_GET['id'
 
 if($id_anak === 0){
     $_SESSION['error'] = "Akses tidak sah atau ID Anak tidak ditemukan!";
-    header("Location: list_anak.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -22,7 +22,7 @@ $anak_data = mysqli_fetch_assoc($result_profil);
 
 if(!$anak_data) {
     $_SESSION['error'] = "Data profil anak tidak ditemukan dalam sistem!";
-    header("Location: list_anak.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -211,7 +211,7 @@ $riwayat_imunisasi = mysqli_query($conn, "SELECT pi.*, pi.STATUS AS status_penda
         <?php endif; ?>
         
         <div class="flex gap-3 mt-6">
-            <a href="list_anak.php" class="flex-1 bg-gray-100 text-gray-600 text-center py-2.5 rounded-xl font-bold hover:bg-gray-200 transition shadow-sm text-sm">
+            <a href="index.php" class="flex-1 bg-gray-100 text-gray-600 text-center py-2.5 rounded-xl font-bold hover:bg-gray-200 transition shadow-sm text-sm">
             Kembali
             </a>
         </div>

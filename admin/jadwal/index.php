@@ -69,7 +69,7 @@ $result = mysqli_query($conn, $query_base);
                 <i class="fas fa-search text-xs"></i> Cari
             </button>
             <?php if ($search): ?>
-            <a href="list_jadwal.php" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition flex items-center justify-center gap-2 text-sm font-semibold shadow-sm">
+            <a href="index.php" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition flex items-center justify-center gap-2 text-sm font-semibold shadow-sm">
                 <i class="fas fa-times text-xs"></i> Reset
             </a>
             <?php endif; ?>
@@ -192,7 +192,7 @@ $result = mysqli_query($conn, $query_base);
 
     <?php if($total_pages > 1): ?>
     <div class="mt-8">
-        <?php echo paginate($page, $total_pages, 'list_jadwal.php', ['search' => $search]); ?>
+        <?php echo paginate($page, $total_pages, 'index.php', ['search' => $search]); ?>
     </div>
     <?php endif; ?>
 </div>

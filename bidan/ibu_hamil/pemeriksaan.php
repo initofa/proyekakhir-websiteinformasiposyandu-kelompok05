@@ -7,7 +7,7 @@ $ibu = mysqli_fetch_assoc(mysqli_query($conn, "SELECT ih.*, u.nama_lengkap FROM 
 
 if(!$ibu){
     $_SESSION['error'] = "Data kehamilan tidak ditemukan!";
-    header("Location: list_ibu_hamil.php");
+    header("Location: index.php");
     exit();
 }
 

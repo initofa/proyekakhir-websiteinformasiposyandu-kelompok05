@@ -8,7 +8,7 @@ $anak_id = isset($_GET['anak_id']) ? (int)$_GET['anak_id'] : 0;
 
 if($jadwal_id == 0){
     $_SESSION['error'] = "Jadwal imunisasi tidak ditemukan!";
-    header("Location: jadwal_imunisasi.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -70,7 +70,7 @@ $jadwal = mysqli_fetch_assoc(mysqli_query($conn, "SELECT j.*, v.nama_vaksin, v.u
 
 if(!$jadwal){
     $_SESSION['error'] = "Jadwal imunisasi tidak ditemukan!";
-    header("Location: jadwal_imunisasi.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -146,7 +146,7 @@ if($usia_rekomendasi == 0){
                 <button type="submit" id="btnDaftar" class="flex-1 bg-gradient-to-r from-green-600 to-emerald-500 text-white py-2 rounded-xl font-semibold hover:shadow-lg transition text-center" <?php echo mysqli_num_rows($anak_list) == 0 ? 'disabled' : ''; ?>>
                     Daftar
                 </button>
-                <a href="jadwal_imunisasi.php" class="flex-1 bg-gray-100 text-gray-600 text-center py-2 rounded-xl font-semibold hover:bg-gray-200 transition text-center">
+                <a href="index.php" class="flex-1 bg-gray-100 text-gray-600 text-center py-2 rounded-xl font-semibold hover:bg-gray-200 transition text-center">
                     Batal
                 </a>
             </div>

@@ -58,7 +58,7 @@ function formatUsia($bulan) {
                 <i class="fas fa-search"></i> Cari
             </button>
             <?php if($search): ?>
-            <a href="list_vaksin.php" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition flex items-center justify-center gap-2">
+            <a href="index.php" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition flex items-center justify-center gap-2">
                 <i class="fas fa-times"></i> Reset
             </a>
             <?php endif; ?>
@@ -106,7 +106,7 @@ function formatUsia($bulan) {
     </div>
     
     <div class="mt-6">
-        <?php echo paginate($page, $total_pages, 'list_vaksin.php', ['search' => $search]); ?>
+        <?php echo paginate($page, $total_pages, 'index.php', ['search' => $search]); ?>
     </div>
     
     <?php else: ?>
@@ -115,7 +115,7 @@ function formatUsia($bulan) {
         <h3 class="text-xl font-semibold text-gray-600 mb-2">Tidak Ada Data Vaksin</h3>
         <p class="text-gray-500">Tidak ada data vaksin dengan kriteria pencarian "<?php echo htmlspecialchars($search); ?>"</p>
         <?php if($search): ?>
-        <a href="list_vaksin.php" class="inline-block mt-4 text-green-600 hover:text-green-700">
+        <a href="index.php" class="inline-block mt-4 text-green-600 hover:text-green-700">
             <i class="fas fa-arrow-left mr-1"></i> Lihat semua vaksin
         </a>
         <?php endif; ?>

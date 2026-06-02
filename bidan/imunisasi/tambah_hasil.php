@@ -16,7 +16,7 @@ $data = mysqli_fetch_assoc(mysqli_query($conn, "SELECT pi.*, a.nama_anak, a.tang
 
 if(!$data) {
     $_SESSION['error'] = "Data pendaftaran tidak ditemukan!";
-    header("Location: list_pendaftaran.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -34,7 +34,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     mysqli_query($conn, "UPDATE pendaftaran_imunisasi SET STATUS='selesai', updated_at=NOW() WHERE id_pendaftaran=$pendaftaran_id");
     
     $_SESSION['success'] = "Hasil imunisasi berhasil disimpan!";
-    header("Location: list_pendaftaran.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -93,7 +93,7 @@ include __DIR__ . '/../../templates/sidebar.php';
             </div>
             <div class="flex gap-3 mt-6">
                 <button type="submit" class="flex-1 bg-gradient-to-r from-green-600 to-emerald-500 text-white py-2 rounded-xl font-semibold hover:shadow-lg transition">Simpan</button>
-                <a href="list_pendaftaran.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl font-semibold hover:bg-gray-300 transition">Batal</a>
+                <a href="index.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl font-semibold hover:bg-gray-300 transition">Batal</a>
             </div>
         </form>
     </div>

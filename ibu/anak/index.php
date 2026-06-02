@@ -92,10 +92,10 @@ include __DIR__ . '/../../templates/sidebar.php';
                 </div>
                 
                 <div class="flex gap-2 mt-4 pt-3 border-t">
-                    <button type="button" onclick="kirimAksiAnakPost('../perkembangan/detail_perkembangan.php', '<?php echo $anak['id_anak']; ?>')" class="flex-1 text-center bg-green-600 text-white py-1 rounded-lg text-sm hover:bg-green-700 transition">
+                    <button type="button" onclick="kirimAksiAnakPost('../perkembangan/index.php', '<?php echo $anak['id_anak']; ?>')" class="flex-1 text-center bg-green-600 text-white py-1 rounded-lg text-sm hover:bg-green-700 transition">
                         <i class="fas fa-child mr-1"></i> Perkembangan
                     </button>
-                    <a href="../imunisasi/jadwal_imunisasi.php" class="flex-1 text-center bg-blue-600 text-white py-1 rounded-lg text-sm hover:bg-blue-700 transition">
+                    <a href="../imunisasi/index.php" class="flex-1 text-center bg-blue-600 text-white py-1 rounded-lg text-sm hover:bg-blue-700 transition">
                         <i class="fas fa-syringe mr-1"></i> Daftar Imunisasi
                     </a>
                 </div>
@@ -119,7 +119,7 @@ include __DIR__ . '/../../templates/sidebar.php';
     
     <?php if($total_pages > 1): ?>
     <div class="mt-6">
-        <?php echo paginate($page, $total_pages, "list_anak.php"); ?>
+        <?php echo paginate($page, $total_pages, "index.php"); ?>
     </div>
     <?php endif; ?>
 </div>
@@ -127,7 +127,7 @@ include __DIR__ . '/../../templates/sidebar.php';
 <script>
 function kirimAksiAnakPost(urlTujuan, idAnak) {
     const form = document.getElementById('formAksiAnakPost');
-    if(urlTujuan.includes('detail_perkembangan.php')) {
+    if(urlTujuan.includes('index.php')) {
         document.getElementById('idAnakAksiPost').name = 'anak_id';
     } else {
         document.getElementById('idAnakAksiPost').name = 'id_anak';

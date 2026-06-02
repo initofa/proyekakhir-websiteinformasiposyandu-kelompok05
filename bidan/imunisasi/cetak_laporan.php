@@ -116,7 +116,7 @@ $jumlah_peserta = mysqli_num_rows($result_peserta);
     
     <div class="no-print bg-gray-800 text-white p-4 flex justify-between items-center print:hidden">
         <div class="flex items-center gap-4">
-            <a href="list_pendaftaran.php" class="bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-lg transition flex items-center gap-2">
+            <a href="index.php" class="bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-lg transition flex items-center gap-2">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
         </div>

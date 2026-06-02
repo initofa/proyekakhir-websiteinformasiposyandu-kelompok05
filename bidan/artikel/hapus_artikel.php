@@ -26,6 +26,6 @@ if($artikel){
     $_SESSION['error'] = "Artikel tidak ditemukan!";
 }
 
-header("Location: list_artikel.php");
+header("Location: index.php");
 exit();
 ?>

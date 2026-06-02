@@ -8,7 +8,7 @@ $kehamilan_id = isset($_GET['kehamilan_id']) ? (int)$_GET['kehamilan_id'] : 0;
 
 if($id_pemeriksaan == 0) {
     $_SESSION['error'] = "Data pemeriksaan tidak ditemukan!";
-    header("Location: riwayat_hamil.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -28,7 +28,7 @@ $pemeriksaan = mysqli_fetch_assoc($result_pemeriksaan);
 
 if(!$pemeriksaan){
     $_SESSION['error'] = "Data pemeriksaan tidak ditemukan!";
-    header("Location: riwayat_hamil.php");
+    header("Location: index.php");
     exit();
 }
 

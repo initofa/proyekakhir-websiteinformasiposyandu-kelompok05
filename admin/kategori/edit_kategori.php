@@ -6,7 +6,7 @@ $id = isset($_POST['id_kategori']) ? (int)$_POST['id_kategori'] : (isset($_GET['
 
 if ($id === 0) {
     $_SESSION['error'] = "Akses tidak sah!";
-    header("Location: list_kategori.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -14,7 +14,7 @@ $kategori = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM kategori_artik
 
 if (!$kategori) {
     $_SESSION['error'] = "Kategori tidak ditemukan!";
-    header("Location: list_kategori.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -25,7 +25,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['ac
     
     if(mysqli_query($conn, $query)){
         $_SESSION['success'] = "Kategori berhasil diupdate!";
-        header("Location: list_kategori.php");
+        header("Location: index.php");
         exit();
     } else {
         $_SESSION['error'] = "Gagal mengupdate kategori: " . mysqli_error($conn);
@@ -64,7 +64,7 @@ include __DIR__ . '/../../templates/sidebar.php';
             <button type="submit" class="flex-1 bg-gradient-to-r from-green-600 to-emerald-500 text-white py-2 rounded-xl font-semibold hover:shadow-lg transition">
                 <i class="fas fa-save mr-1"></i> Update
             </button>
-            <a href="list_kategori.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl font-semibold hover:bg-gray-300 transition flex items-center justify-center">
+            <a href="index.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl font-semibold hover:bg-gray-300 transition flex items-center justify-center">
                 Batal
             </a>
         </div>

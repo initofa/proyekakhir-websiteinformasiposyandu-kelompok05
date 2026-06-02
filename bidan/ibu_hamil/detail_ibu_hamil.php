@@ -174,7 +174,7 @@ function getStatusText($status) {
             </div>
             
             <div class="flex gap-3 mt-6">
-                <a href="list_ibu_hamil.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl hover:bg-gray-300 transition">
+                <a href="index.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-2 rounded-xl hover:bg-gray-300 transition">
                 Kembali
                 </a>
                 <?php if($ibu['status_kehamilan'] == 'aktif'): ?>

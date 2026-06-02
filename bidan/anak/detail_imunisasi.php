@@ -7,7 +7,7 @@ $id_anak_asal = isset($_POST['id_anak_asal']) ? (int)$_POST['id_anak_asal'] : 0;
 
 if($id === 0){
     $_SESSION['error'] = "Data detail imunisasi tidak ditemukan!";
-    header("Location: list_anak.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -27,7 +27,7 @@ $data = mysqli_fetch_assoc(mysqli_query($conn, $query));
 
 if(!$data){
     $_SESSION['error'] = "Data rekam medis imunisasi tidak ditemukan!";
-    header("Location: list_anak.php");
+    header("Location: index.php");
     exit();
 }
 

@@ -11,6 +11,6 @@ if(mysqli_query($conn, $query)){
     $_SESSION['error'] = "Gagal menghapus user!";
 }
 
-header("Location: list_users.php");
+header("Location: index.php");
 exit();
 ?>

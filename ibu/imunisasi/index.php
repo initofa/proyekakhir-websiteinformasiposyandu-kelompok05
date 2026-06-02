@@ -52,7 +52,7 @@ include __DIR__ . '/../../templates/sidebar.php';
                 <i class="fas fa-search"></i> Cari
             </button>
             <?php if($search): ?>
-            <a href="jadwal_imunisasi.php" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition flex items-center justify-center gap-2 text-sm font-semibold shadow-sm">
+            <a href="index.php" class="bg-gray-500 text-white px-6 py-2 rounded-xl hover:bg-gray-600 transition flex items-center justify-center gap-2 text-sm font-semibold shadow-sm">
                 <i class="fas fa-times"></i> Reset
             </a>
             <?php endif; ?>
@@ -145,7 +145,7 @@ include __DIR__ . '/../../templates/sidebar.php';
     
     <?php if($total_pages > 1): ?>
     <div class="mt-6">
-        <?php echo paginate($page, $total_pages, "jadwal_imunisasi.php"); ?>
+        <?php echo paginate($page, $total_pages, "index.php"); ?>
     </div>
     <?php endif; ?>
 </div>

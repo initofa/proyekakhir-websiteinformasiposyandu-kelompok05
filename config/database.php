@@ -60,13 +60,13 @@ function redirectIfRole($role) {
     $current_page = basename($_SERVER['PHP_SELF']);
     
     if ($user && isset($user['ROLE']) && $user['ROLE'] == $role) {
-        if ($current_page != 'dashboard.php' && !strpos($current_page, 'dashboard')) {
+        if ($current_page != 'index.php' && !strpos($current_page, 'dashboard')) {
             if ($role == 'admin') {
-                header("Location: " . BASE_URL . "admin/dashboard.php");
+                header("Location: " . BASE_URL . "admin/index.php");
             } elseif ($role == 'bidan') {
-                header("Location: " . BASE_URL . "bidan/dashboard.php");
+                header("Location: " . BASE_URL . "bidan/index.php");
             } elseif ($role == 'ibu') {
-                header("Location: " . BASE_URL . "ibu/dashboard.php");
+                header("Location: " . BASE_URL . "ibu/index.php");
             }
             exit();
         }

@@ -6,7 +6,7 @@ $nik = isset($_POST['nik']) ? $_POST['nik'] : (isset($_GET['nik']) ? $_GET['nik'
 
 if (empty($nik)) {
     $_SESSION['error'] = "Akses tidak sah!";
-    header("Location: list_users.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -14,7 +14,7 @@ $user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE nik='$
 
 if(!$user) {
     $_SESSION['error'] = "User tidak ditemukan!";
-    header("Location: list_users.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -38,11 +38,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['ac
     
     if(mysqli_query($conn, $query)) {
         $_SESSION['success'] = "User berhasil diupdate!";
-        header("Location: list_users.php?tab=" . ($role == 'ibu' ? 'ibu' : 'bidan'));
+        header("Location: index.php?tab=" . ($role == 'ibu' ? 'ibu' : 'bidan'));
         exit();
     } else {
         $_SESSION['error'] = "Gagal mengupdate user: " . mysqli_error($conn);
-        header("Location: list_users.php");
+        header("Location: index.php");
         exit();
     }
 }
@@ -174,7 +174,7 @@ include __DIR__ . '/../../templates/sidebar.php';
             <button type="submit" class="flex-1 bg-gradient-to-r from-green-600 to-emerald-500 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition duration-300 transform hover:scale-105">
                 <i class="fas fa-save mr-2"></i> Update
             </button>
-            <a href="list_users.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-3 rounded-xl font-semibold hover:bg-gray-300 transition duration-300">
+            <a href="index.php" class="flex-1 bg-gray-200 text-gray-700 text-center py-3 rounded-xl font-semibold hover:bg-gray-300 transition duration-300">
                 <i class="fas fa-times mr-2"></i> Batal
             </a>
         </div>

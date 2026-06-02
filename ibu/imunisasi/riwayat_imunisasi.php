@@ -189,7 +189,7 @@ $result = mysqli_query($conn, "SELECT pi.*, pi.STATUS as status_pendaftaran, a.n
                 Anda belum memiliki riwayat pendaftaran pelayanan imunisasi di posyandu.
                 <?php endif; ?>
             </p>
-            <a href="jadwal_imunisasi.php" class="inline-block mt-4 bg-green-600 text-white px-5 py-2 rounded-xl text-xs font-semibold hover:bg-green-700 transition shadow-sm">
+            <a href="index.php" class="inline-block mt-4 bg-green-600 text-white px-5 py-2 rounded-xl text-xs font-semibold hover:bg-green-700 transition shadow-sm">
                 <i class="fas fa-calendar-plus mr-1"></i> Lihat Jadwal Aktif
             </a>
         </div>

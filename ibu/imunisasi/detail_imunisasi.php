@@ -227,30 +227,25 @@ include __DIR__ . '/../../templates/sidebar.php';
                         </span>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <?php foreach($rekomendasi_artikel as $artikel): ?>
-                        <a href="../artikel/detail_artikel.php?id=<?php echo $artikel['id_artikel']; ?>" 
-                           class="block bg-white rounded-xl p-3 hover:shadow-md transition group border border-transparent hover:border-green-100">
-                            <div class="flex items-start gap-2">
-                                <div class="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0 text-green-600">
-                                    <i class="fas fa-book text-sm"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-gray-800 text-xs leading-snug group-hover:text-green-600 transition line-clamp-2">
-                                        <?php echo htmlspecialchars($artikel['judul']); ?>
-                                    </h4>
-                                    <p class="text-[10px] text-gray-400 mt-1 font-medium">
-                                        <i class="far fa-calendar-alt mr-1"></i> <?php echo formatTanggalIndonesia($artikel['created_at']); ?>
-                                    </p>
-                                </div>
+                    <?php foreach($rekomendasi_artikel as $artikel): ?>
+                    <a href="../artikel_detail.php?id=<?php echo $artikel['id_artikel']; ?>" 
+                    class="block bg-white rounded-xl p-3 hover:shadow-md transition group border border-transparent hover:border-green-100">
+                        <div class="flex items-start gap-2">
+                            <div class="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0 text-green-600">
+                                <i class="fas fa-book text-sm"></i>
                             </div>
-                        </a>
-                        <?php endforeach; ?>
-                    </div>
-                    <div class="mt-3 text-center">
-                        <a href="../artikel/list_artikel.php" class="text-xs text-green-600 hover:text-green-700 font-bold flex items-center justify-center gap-0.5">
-                            Lihat semua koleksi artikel edukasi <i class="fas fa-arrow-right text-[10px] ml-0.5"></i>
-                        </a>
-                    </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-xs leading-snug group-hover:text-green-600 transition line-clamp-2">
+                                    <?php echo htmlspecialchars($artikel['judul']); ?>
+                                </h4>
+                                <p class="text-[10px] text-gray-400 mt-1 font-medium">
+                                    <i class="far fa-calendar-alt mr-1"></i> <?php echo formatTanggalIndonesia($artikel['created_at']); ?>
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                    <?php endforeach; ?>
+                </div>
                 </div>
                 <?php endif; ?>
             </div>
