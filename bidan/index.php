@@ -128,7 +128,7 @@ $jadwal_terdekat = mysqli_query($conn, "SELECT j.*, v.nama_vaksin
                         <i class="fas fa-calendar-alt text-white text-lg"></i>
                         <h3 class="text-white font-semibold">Jadwal Imunisasi Terdekat</h3>
                     </div>
-                    <a href="imunisasi/list_pendaftaran.php" class="text-white/80 hover:text-white text-xs transition">
+                    <a href="imunisasi/index.php" class="text-white/80 hover:text-white text-xs transition">
                         Lihat semua <i class="fas fa-arrow-right ml-1"></i>
                     </a>
                 </div>

@@ -6,14 +6,12 @@ include __DIR__ . '/../templates/sidebar.php';
 
 $nik = $_SESSION['nik'];
 
-// Perbaiki query dengan pengecekan error
 $total_anak = 0;
 $query_total_anak = mysqli_query($conn, "SELECT COUNT(*) as total FROM anak WHERE nik_ibu='$nik'");
 if($query_total_anak) {
     $total_anak = mysqli_fetch_assoc($query_total_anak)['total'];
 }
 
-// Jadwal aktif (pending saja, karena tidak ada confirmed)
 $jadwal_aktif = 0;
 $query_jadwal_aktif = mysqli_query($conn, "SELECT COUNT(*) as total FROM pendaftaran_imunisasi pi 
     JOIN anak a ON pi.id_anak = a.id_anak 
@@ -22,7 +20,6 @@ if($query_jadwal_aktif) {
     $jadwal_aktif = mysqli_fetch_assoc($query_jadwal_aktif)['total'];
 }
 
-// Riwayat selesai
 $riwayat = 0;
 $query_riwayat = mysqli_query($conn, "SELECT COUNT(*) as total FROM pendaftaran_imunisasi pi 
     JOIN anak a ON pi.id_anak = a.id_anak 
@@ -31,7 +28,6 @@ if($query_riwayat) {
     $riwayat = mysqli_fetch_assoc($query_riwayat)['total'];
 }
 
-// Kehamilan aktif
 $kehamilan = 0;
 $kehamilan_data = null;
 $query_kehamilan = mysqli_query($conn, "SELECT * FROM ibu_hamil WHERE nik_ibu='$nik' AND status_kehamilan='aktif' LIMIT 1");
@@ -42,10 +38,8 @@ if($query_kehamilan) {
     }
 }
 
-// Anak terbaru
 $anak_terbaru = mysqli_query($conn, "SELECT * FROM anak WHERE nik_ibu='$nik' ORDER BY created_at DESC LIMIT 3");
 
-// Jadwal terdekat (hanya pending)
 $jadwal_terdekat = mysqli_query($conn, "SELECT pi.*, a.nama_anak, v.nama_vaksin, j.tanggal 
     FROM pendaftaran_imunisasi pi 
     JOIN anak a ON pi.id_anak = a.id_anak 
@@ -54,7 +48,6 @@ $jadwal_terdekat = mysqli_query($conn, "SELECT pi.*, a.nama_anak, v.nama_vaksin,
     WHERE a.nik_ibu='$nik' AND pi.status = 'pending' 
     ORDER BY j.tanggal ASC LIMIT 5");
 
-// Cek apakah ada jadwal yang sudah lewat
 $jadwal_lewat = 0;
 $query_jadwal_lewat = mysqli_query($conn, "SELECT COUNT(*) as total FROM pendaftaran_imunisasi pi 
     JOIN anak a ON pi.id_anak = a.id_anak 
@@ -64,12 +57,10 @@ if($query_jadwal_lewat) {
     $jadwal_lewat = mysqli_fetch_assoc($query_jadwal_lewat)['total'];
 }
 
-// Artikel terbaru
 $artikel_terbaru = mysqli_query($conn, "SELECT * FROM artikel ORDER BY created_at DESC LIMIT 3");
 ?>
 
 <div class="fade-in">
-    <!-- Welcome Banner -->
     <div class="bg-gradient-to-r from-green-600 to-emerald-500 rounded-2xl p-6 mb-8 text-white">
         <div class="flex items-center justify-between">
             <div>
@@ -83,7 +74,6 @@ $artikel_terbaru = mysqli_query($conn, "SELECT * FROM artikel ORDER BY created_a
         </div>
     </div>
     
-    <!-- Alert jika ada jadwal lewat -->
     <?php if($jadwal_lewat > 0): ?>
     <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6">
         <div class="flex items-center gap-3">
@@ -92,7 +82,7 @@ $artikel_terbaru = mysqli_query($conn, "SELECT * FROM artikel ORDER BY created_a
                 <p class="font-semibold">Perhatian!</p>
                 <p class="text-sm">Anda memiliki <?php echo $jadwal_lewat; ?> jadwal imunisasi yang sudah lewat. Segera hubungi bidan!</p>
             </div>
-            <a href="imunisasi/riwayat_imunisasi.php" class="ml-auto bg-red-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600">
+            <a href="imunisasi/index.php" class="ml-auto bg-red-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600">
                 Lihat
             </a>
         </div>
@@ -111,7 +101,7 @@ $artikel_terbaru = mysqli_query($conn, "SELECT * FROM artikel ORDER BY created_a
                     <i class="fas fa-baby text-green-600 text-xl"></i>
                 </div>
             </div>
-            <a href="anak/list_anak.php" class="text-green-600 text-sm mt-3 inline-block hover:text-green-700">
+            <a href="anak/index.php" class="text-green-600 text-sm mt-3 inline-block hover:text-green-700">
                 Kelola <i class="fas fa-arrow-right ml-1"></i>
             </a>
         </div>
@@ -126,7 +116,7 @@ $artikel_terbaru = mysqli_query($conn, "SELECT * FROM artikel ORDER BY created_a
                     <i class="fas fa-calendar-alt text-emerald-600 text-xl"></i>
                 </div>
             </div>
-            <a href="imunisasi/riwayat_imunisasi.php" class="text-emerald-600 text-sm mt-3 inline-block hover:text-emerald-700">
+            <a href="imunisasi/index.php" class="text-emerald-600 text-sm mt-3 inline-block hover:text-emerald-700">
                 Lihat <i class="fas fa-arrow-right ml-1"></i>
             </a>
         </div>
@@ -141,7 +131,7 @@ $artikel_terbaru = mysqli_query($conn, "SELECT * FROM artikel ORDER BY created_a
                     <i class="fas fa-check-circle text-teal-600 text-xl"></i>
                 </div>
             </div>
-            <a href="imunisasi/riwayat_imunisasi.php" class="text-teal-600 text-sm mt-3 inline-block hover:text-teal-700">
+            <a href="imunisasi/index.php" class="text-teal-600 text-sm mt-3 inline-block hover:text-teal-700">
                 Riwayat <i class="fas fa-arrow-right ml-1"></i>
             </a>
         </div>
@@ -161,21 +151,20 @@ $artikel_terbaru = mysqli_query($conn, "SELECT * FROM artikel ORDER BY created_a
                     <i class="fas fa-female text-pink-600 text-xl"></i>
                 </div>
             </div>
-            <a href="kehamilan/riwayat_hamil.php" class="text-pink-600 text-sm mt-3 inline-block hover:text-pink-700">
+            <a href="kehamilan/index.php" class="text-pink-600 text-sm mt-3 inline-block hover:text-pink-700">
                 Detail <i class="fas fa-arrow-right ml-1"></i>
             </a>
         </div>
     </div>
     
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Jadwal Imunisasi Mendatang -->
         <div class="bg-white rounded-2xl shadow-lg p-6">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-semibold text-gray-800">
                     <i class="fas fa-calendar-check text-green-500 mr-2"></i> 
                     Jadwal Imunisasi Mendatang
                 </h3>
-                <a href="imunisasi/riwayat_imunisasi.php" class="text-sm text-green-600 hover:text-green-700">
+                <a href="imunisasi/index.php" class="text-sm text-green-600 hover:text-green-700">
                     Lihat Semua <i class="fas fa-arrow-right ml-1"></i>
                 </a>
             </div>
@@ -219,21 +208,20 @@ $artikel_terbaru = mysqli_query($conn, "SELECT * FROM artikel ORDER BY created_a
                 <div class="text-center py-8 text-gray-500">
                     <i class="fas fa-calendar-times text-4xl mb-2 text-gray-300"></i>
                     <p>Tidak ada jadwal imunisasi mendatang</p>
-                    <a href="imunisasi/jadwal_imunisasi.php" class="text-green-600 text-sm mt-3 inline-block">
+                    <a href="imunisasi/index.php" class="text-green-600 text-sm mt-3 inline-block">
                         Daftar Imunisasi
                     </a>
                 </div>
             <?php endif; ?>
         </div>
         
-        <!-- Data Anak Terbaru -->
         <div class="bg-white rounded-2xl shadow-lg p-6">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-semibold text-gray-800">
                     <i class="fas fa-child text-blue-500 mr-2"></i> 
                     Data Anak
                 </h3>
-                <a href="anak/list_anak.php" class="text-sm text-blue-600 hover:text-blue-700">
+                <a href="anak/index.php" class="text-sm text-blue-600 hover:text-blue-700">
                     Kelola <i class="fas fa-arrow-right ml-1"></i>
                 </a>
             </div>
@@ -264,8 +252,7 @@ $artikel_terbaru = mysqli_query($conn, "SELECT * FROM artikel ORDER BY created_a
                             </p>
                         </div>
                     </div>
-                    <!-- Menggunakan form POST untuk detail perkembangan -->
-                    <form action="perkembangan/detail_perkembangan.php" method="POST" class="inline">
+                    <form action="/posyandu/ibu/perkembangan/index.php" method="POST" class="inline">
                         <input type="hidden" name="anak_id" value="<?php echo $a['id_anak']; ?>">
                         <button type="submit" class="text-blue-600 text-sm hover:text-blue-700">
                             Detail <i class="fas fa-arrow-right ml-1"></i>
@@ -285,9 +272,7 @@ $artikel_terbaru = mysqli_query($conn, "SELECT * FROM artikel ORDER BY created_a
         </div>
     </div>
     
-    <!-- Tips Kesehatan & Artikel -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <!-- Tips Kesehatan Ibu Hamil (jika sedang hamil) -->
         <?php if($kehamilan > 0 && $kehamilan_data): ?>
         <div class="bg-gradient-to-r from-pink-50 to-pink-100 rounded-2xl shadow-lg p-6">
             <h3 class="text-lg font-semibold text-pink-700 mb-3">
@@ -312,12 +297,11 @@ $artikel_terbaru = mysqli_query($conn, "SELECT * FROM artikel ORDER BY created_a
                     <span>Segera ke bidan jika ada keluhan seperti pusing, perdarahan, atau gerakan janin berkurang</span>
                 </li>
             </ul>
-            <a href="kehamilan/riwayat_hamil.php" class="inline-block mt-4 text-pink-600 text-sm hover:text-pink-700">
+            <a href="kehamilan/index.php" class="inline-block mt-4 text-pink-600 text-sm hover:text-pink-700">
                 Lihat Detail Kehamilan <i class="fas fa-arrow-right ml-1"></i>
             </a>
         </div>
         <?php else: ?>
-        <!-- Tips Umum -->
         <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl shadow-lg p-6">
             <h3 class="text-lg font-semibold text-blue-700 mb-3">
                 <i class="fas fa-info-circle mr-2"></i> 
@@ -344,7 +328,6 @@ $artikel_terbaru = mysqli_query($conn, "SELECT * FROM artikel ORDER BY created_a
         </div>
         <?php endif; ?>
         
-        <!-- Artikel Terbaru -->
         <div class="bg-white rounded-2xl shadow-lg p-6">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-semibold text-gray-800">
