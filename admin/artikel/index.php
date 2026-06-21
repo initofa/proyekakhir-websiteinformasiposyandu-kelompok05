@@ -7,7 +7,7 @@ include __DIR__ . '/../../templates/sidebar.php';
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, trim($_GET['search'])) : '';
 $kategori_id = isset($_GET['kategori']) ? (int)$_GET['kategori'] : '';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = 6;
+$limit = 8;
 $offset = ($page - 1) * $limit;
 
 $where = "WHERE 1=1";

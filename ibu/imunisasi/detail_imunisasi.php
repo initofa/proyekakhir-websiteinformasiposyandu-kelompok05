@@ -228,7 +228,7 @@ include __DIR__ . '/../../templates/sidebar.php';
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <?php foreach($rekomendasi_artikel as $artikel): ?>
-                    <a href="../artikel_detail.php?id=<?php echo $artikel['id_artikel']; ?>" 
+                    <a href="/posyandu/artikel_detail.php?id=<?php echo $artikel['id_artikel']; ?>" 
                     class="block bg-white rounded-xl p-3 hover:shadow-md transition group border border-transparent hover:border-green-100">
                         <div class="flex items-start gap-2">
                             <div class="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0 text-green-600">
@@ -256,7 +256,7 @@ include __DIR__ . '/../../templates/sidebar.php';
                     Kembali
                 </a>
                 <?php if($data['status_pendaftaran'] == 'selesai'): ?>
-                <form action="../perkembangan/detail_perkembangan.php" method="POST" class="flex-1">
+                <form action="../perkembangan/index.php" method="POST" class="flex-1">
                     <input type="hidden" name="anak_id" value="<?php echo $data['id_anak']; ?>">
                     <button type="submit" class="w-full bg-gradient-to-r from-green-600 to-emerald-500 text-white text-center py-2.5 rounded-xl font-semibold hover:shadow-lg transition text-sm flex items-center justify-center gap-1">
                         <i class="fas fa-eye text-xs"></i>Perkembangan

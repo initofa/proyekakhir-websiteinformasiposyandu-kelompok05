@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../auth/cek_admin.php';
 
+$hari_ini = date('Y-m-d');
 
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $id_vaksin = (int)$_POST['id_vaksin'];
@@ -10,20 +11,23 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $petugas_nik = mysqli_real_escape_string($conn, $_POST['petugas_nik']);
     $created_by = $_SESSION['nik'];
     
-    $query = "INSERT INTO jadwal_imunisasi (id_vaksin, tanggal, lokasi, petugas_nik, created_by) 
-              VALUES ('$id_vaksin', '$tanggal', '$lokasi', '$petugas_nik', '$created_by')";
-              
-    if(mysqli_query($conn, $query)){
-        $_SESSION['success'] = "Jadwal berhasil ditambahkan!";
-        header("Location: index.php");
-        exit();
+    if ($tanggal < $hari_ini) {
+        $_SESSION['error'] = "Gagal! Tanggal imunisasi tidak boleh menggunakan tanggal yang sudah berlalu.";
     } else {
-        $_SESSION['error'] = "Gagal menambahkan jadwal: " . mysqli_error($conn);
+        $query = "INSERT INTO jadwal_imunisasi (id_vaksin, tanggal, lokasi, petugas_nik, created_by) 
+                  VALUES ('$id_vaksin', '$tanggal', '$lokasi', '$petugas_nik', '$created_by')";
+                  
+        if(mysqli_query($conn, $query)){
+            $_SESSION['success'] = "Jadwal berhasil ditambahkan!";
+            header("Location: index.php");
+            exit();
+        } else {
+            $_SESSION['error'] = "Gagal menambahkan jadwal: " . mysqli_error($conn);
+        }
     }
 }
 
 $vaksin = mysqli_query($conn, "SELECT * FROM vaksin ORDER BY usia_rekomendasi ASC");
-
 $petugas = mysqli_query($conn, "SELECT nik, nama_lengkap FROM users WHERE ROLE = 'bidan' AND STATUS = 'active' ORDER BY nama_lengkap ASC");
 
 $title = 'Tambah Jadwal';
@@ -58,7 +62,8 @@ include __DIR__ . '/../../templates/sidebar.php';
             
             <div>
                 <label class="block font-semibold text-gray-700 mb-2">Tanggal Imunisasi</label>
-                <input type="date" name="tanggal" required 
+                <input type="date" name="tanggal" id="tanggal_jadwal" required 
+                       min="<?php echo $hari_ini; ?>"
                        class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200">
             </div>
 

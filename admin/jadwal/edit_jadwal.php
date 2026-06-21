@@ -2,12 +2,11 @@
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../auth/cek_admin.php';
 
-
 $id = isset($_POST['id_jadwal']) ? (int)$_POST['id_jadwal'] : (isset($_GET['id']) ? (int)$_GET['id'] : 0);
 
 if ($id === 0) {
     $_SESSION['error'] = "Akses tidak sah!";
-    header("Location: list_jadwal.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -15,12 +14,13 @@ $jadwal = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM jadwal_imunisasi
 
 if(!$jadwal){
     $_SESSION['error'] = "Jadwal tidak ditemukan!";
-    header("Location: list_jadwal.php");
+    header("Location: index.php");
     exit();
 }
 
-$vaksin = mysqli_query($conn, "SELECT * FROM vaksin ORDER BY usia_rekomendasi ASC");
+$hari_ini = date('Y-m-d');
 
+$vaksin = mysqli_query($conn, "SELECT * FROM vaksin ORDER BY usia_rekomendasi ASC");
 $petugas_res = mysqli_query($conn, "SELECT nik, nama_lengkap FROM users WHERE ROLE = 'bidan' AND STATUS = 'active' ORDER BY nama_lengkap ASC");
 
 if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'update'){
@@ -29,16 +29,20 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['ac
     $lokasi = mysqli_real_escape_string($conn, trim($_POST['lokasi']));
     $petugas_nik = mysqli_real_escape_string($conn, $_POST['petugas_nik']); 
     
-    $query = "UPDATE jadwal_imunisasi 
-              SET id_vaksin='$id_vaksin', tanggal='$tanggal', lokasi='$lokasi', petugas_nik='$petugas_nik' 
-              WHERE id_jadwal=$id";
-    
-    if(mysqli_query($conn, $query)){
-        $_SESSION['success'] = "Jadwal berhasil diupdate!";
-        header("Location: list_jadwal.php");
-        exit();
+    if ($tanggal != $jadwal['tanggal'] && $tanggal < $hari_ini) {
+        $_SESSION['error'] = "Gagal! Tanggal baru yang dipilih tidak boleh menggunakan tanggal yang sudah berlalu.";
     } else {
-        $_SESSION['error'] = "Gagal mengupdate jadwal: " . mysqli_error($conn);
+        $query = "UPDATE jadwal_imunisasi 
+                  SET id_vaksin='$id_vaksin', tanggal='$tanggal', lokasi='$lokasi', petugas_nik='$petugas_nik' 
+                  WHERE id_jadwal=$id";
+        
+        if(mysqli_query($conn, $query)){
+            $_SESSION['success'] = "Jadwal berhasil diupdate!";
+            header("Location: index.php");
+            exit();
+        } else {
+            $_SESSION['error'] = "Gagal mengupdate jadwal: " . mysqli_error($conn);
+        }
     }
 }
 
@@ -79,12 +83,13 @@ include __DIR__ . '/../../templates/sidebar.php';
             <div>
                 <label class="block font-semibold text-gray-700 mb-2">Tanggal Imunisasi</label>
                 <input type="date" name="tanggal" value="<?php echo $jadwal['tanggal']; ?>" required 
+                       min="<?php echo ($jadwal['tanggal'] < $hari_ini) ? $jadwal['tanggal'] : $hari_ini; ?>"
                        class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200">
             </div>
 
             <div>
                 <label class="block font-semibold text-gray-700 mb-2">Lokasi / Tempat Posyandu</label>
-                <input type="text" name="lokasi" value="<?php echo htmlspecialchars($jadwal['lokasi']); ?>" required placeholder="Contoh: Posyandu Mawar - RT 01"
+                <input type="text" name="lokasi" value="<?php echo htmlspecialchars($jadwal['lokasi']); ?>" required placeholder="Contoh: Posyandu Mawar - RT 01" autocomplete="off"
                        class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200">
             </div>
 

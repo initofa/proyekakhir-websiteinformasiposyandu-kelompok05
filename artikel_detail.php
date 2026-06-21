@@ -204,7 +204,7 @@ include __DIR__ . '/templates/header_public.php';
     </div>
 </div>
 
-<div id="imageModal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-50" onclick="closeImageModal()">
+<div id="imageModal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50" onclick="closeImageModal()">
     <div class="relative max-w-5xl w-full max-h-[90vh] mx-4 flex items-center justify-center">
         <img id="modalImage" src="" alt="" class="max-w-full max-h-[85vh] object-contain cursor-pointer transition-transform duration-200" ondblclick="toggleZoom()">
         <button onclick="closeImageModal()" class="absolute -top-12 right-0 text-white hover:text-gray-300 transition">
