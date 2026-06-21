@@ -5,12 +5,59 @@ require_once __DIR__ . '/../../auth/cek_admin.php';
 $title = 'Data Anak';
 include __DIR__ . '/../../templates/sidebar.php';
 
-// Menangkap parameter filter, search, dan pagination
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $jk_filter = isset($_GET['jk']) ? $_GET['jk'] : '';
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 15;
 $offset = ($page - 1) * $limit;
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'upload_langsung') {
+    $id_anak = (int)$_POST['id_anak'];
+    $nik_ibu = mysqli_real_escape_string($conn, $_POST['nik_ibu']); 
+    
+    if (isset($_FILES['berkas_validasi']) && $_FILES['berkas_validasi']['error'] == 0) {
+        $file_tmp = $_FILES['berkas_validasi']['tmp_name'];
+        $file_name = $_FILES['berkas_validasi']['name'];
+        $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+        
+        $ekstensi_boleh = ['pdf', 'doc', 'docx'];
+        
+        if (in_array($file_ext, $ekstensi_boleh)) {
+            $timestamp = date('Ymd_His');
+            
+            $nama_file_baru = $nik_ibu . "-" . $id_anak . "-" . $timestamp . "." . $file_ext;
+            $folder_tujuan = "../../uploads/berkas_anak/" . $nama_file_baru;
+            
+            if (!file_exists("../../uploads/berkas_anak/")) {
+                mkdir("../../uploads/berkas_anak/", 0777, true);
+            }
+            
+            $old_file_query = mysqli_query($conn, "SELECT berkas FROM anak WHERE id_anak = $id_anak");
+            $old_file_data = mysqli_fetch_assoc($old_file_query);
+            if (!empty($old_file_data['berkas']) && file_exists("../../uploads/berkas_anak/" . $old_file_data['berkas'])) {
+                unlink("../../uploads/berkas_anak/" . $old_file_data['berkas']);
+            }
+            
+            if (move_uploaded_file($file_tmp, $folder_tujuan)) {
+                $update_query = "UPDATE anak SET berkas = '$nama_file_baru' WHERE id_anak = $id_anak";
+                if (mysqli_query($conn, $update_query)) {
+                    $_SESSION['success'] = "Berkas pendaftaran anak berhasil diperbarui!";
+                } else {
+                    $_SESSION['error'] = "Gagal memperbarui data nama berkas di database.";
+                }
+            } else {
+                $_SESSION['error'] = "Gagal memindahkan file ke folder storage server.";
+            }
+        } else {
+            $_SESSION['error'] = "Format file tidak valid! Wajib berformat PDF atau Word (DOC/DOCX).";
+        }
+    } else {
+        $_SESSION['error'] = "Gagal membaca file berkas pendaftaran.";
+    }
+    
+    echo "<script>window.location.href='index.php?page=$page&search=" . urlencode($search) . "&jk=$jk_filter';</script>";
+    exit();
+}
 
 $where = "WHERE 1=1";
 if (!empty($search)) {
@@ -32,6 +79,13 @@ $query_anak = "SELECT a.*, u.nama_lengkap as nama_ibu
                LIMIT $offset, $limit";
 $result = mysqli_query($conn, $query_anak);
 ?>
+
+<?php if(isset($_SESSION['success'])): ?>
+<script>Swal.fire({ icon: 'success', title: 'Berhasil!', text: '<?php echo $_SESSION['success']; unset($_SESSION['success']); ?>', confirmButtonColor: '#10b981' });</script>
+<?php endif; ?>
+<?php if(isset($_SESSION['error'])): ?>
+<script>Swal.fire({ icon: 'error', title: 'Gagal!', text: '<?php echo $_SESSION['error']; unset($_SESSION['error']); ?>', confirmButtonColor: '#ef4444' });</script>
+<?php endif; ?>
 
 <form id="formDetailAnakPost" action="detail_perkembangan.php" method="POST" style="display:none;">
     <input type="hidden" name="id_anak" id="idAnakDetailPost">
@@ -101,10 +155,30 @@ $result = mysqli_query($conn, $query_anak);
                         <td class="p-4 text-sm text-gray-600"><?php echo formatTanggalIndonesia($row['tanggal_lahir']); ?></td>
                         <td class="p-4 text-sm font-medium text-gray-700"><?php echo htmlspecialchars($row['nama_ibu']); ?></td>
                         <td class="p-4 text-center">
-                            <button type="button" onclick="kirimDetailAnakPost('<?php echo $row['id_anak']; ?>')" 
-                                    class="bg-green-500 hover:bg-green-600 text-white px-4 py-1.5 rounded-xl text-xs font-medium transition inline-flex items-center gap-1 shadow-sm">
-                                <i class="fas fa-chart-line"></i> Perkembangan
-                            </button>
+                            <div class="flex items-center justify-center gap-1.5">
+                                <button type="button" onclick="kirimDetailAnakPost('<?php echo $row['id_anak']; ?>')" 
+                                        class="bg-green-500 hover:bg-green-600 text-white px-3 rounded-xl text-xs font-medium transition inline-flex items-center justify-center gap-1 shadow-sm h-8" title="Lihat Rekam Medis">
+                                    <i class="fas fa-chart-line text-[13px]"></i> Perkembangan
+                                </button>
+
+                                <?php if(!empty($row['berkas'])): 
+                                    $file_ext = strtolower(pathinfo($row['berkas'], PATHINFO_EXTENSION));
+                                    $preview_url = "../../uploads/berkas_anak/" . $row['berkas'];
+                                    $is_word = in_array($file_ext, ['doc', 'docx']);
+                                ?>
+                                    <a href="<?php echo $preview_url; ?>" target="_blank" <?php echo $is_word ? 'download' : ''; ?>
+                                    class="bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-xs font-medium transition shadow-sm inline-flex items-center justify-center h-8 w-8 shrink-0" 
+                                    title="<?php echo $is_word ? 'Download Dokumen Word' : 'Lihat Berkas PDF'; ?>">
+                                        <i class="fas <?php echo $is_word ? 'fa-file-word' : 'fa-file-invoice'; ?> text-[13px]"></i>
+                                    </a>
+                                <?php endif; ?>
+
+                                <button type="button" onclick="bukaModalUpload('<?php echo $row['id_anak']; ?>', '<?php echo htmlspecialchars($row['nama_anak'], ENT_QUOTES); ?>', '<?php echo $row['nik_ibu']; ?>')"
+                                        class="<?php echo !empty($row['berkas']) ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-500 hover:bg-gray-600'; ?> text-white rounded-xl text-xs font-medium transition shadow-sm inline-flex items-center justify-center h-8 w-8 shrink-0" 
+                                        title="<?php echo !empty($row['berkas']) ? 'Ganti Berkas' : 'Upload Berkas Pendaftaran'; ?>">
+                                    <i class="fas fa-upload text-[13px]"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     <?php endwhile; ?>
@@ -128,10 +202,85 @@ $result = mysqli_query($conn, $query_anak);
     <?php endif; ?>
 </div>
 
+<div id="modalUpload" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl mx-4 transform scale-95 transition-transform duration-300" id="modalBox">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                <i class="fas fa-user-shield text-green-600"></i>Validasi Berkas
+            </h3>
+            <button type="button" onclick="tutupModalUpload()" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-lg"></i>
+            </button>
+        </div>
+        
+        <div class="mb-4">
+            <p class="text-xs text-gray-600 mb-2">
+                Ganti atau paksa perbarui file kelengkapan fisik anak: <strong id="namaAnakModal" class="text-gray-800"></strong>.
+            </p>
+            <p class="text-[11px] text-gray-500 bg-gray-50 border border-gray-100 p-2.5 rounded-xl leading-relaxed">
+                <span class="font-bold text-gray-700 block mb-1"><i class="fas fa-info-circle text-blue-500 mr-1"></i> Ketentuan Dokumen Wajib (Bundling 1 File PDF/Word):</span>
+                1. Buku KIA<br>
+                2. Kartu Keluarga (KK) Asli/Fotokopi<br>
+                3. Kartu Tanda Penduduk (KTP) Orang Tua
+            </p>
+            <p class="text-[11px] text-blue-600 font-semibold mt-2 flex items-start gap-1">
+                <i class="fas fa-shield-alt shrink-0 mt-0.5"></i>
+                <span>Catatan: Mengunggah berkas baru akan otomatis menghapus dan menimpa berkas lama.</span>
+            </p>
+        </div>
+        
+        <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="id_anak" id="idAnakModal">
+            <input type="hidden" name="nik_ibu" id="nikIbuModal">
+            <input type="hidden" name="action" value="upload_langsung">
+            
+            <div class="mb-5">
+                <input type="file" name="berkas_validasi" accept=".pdf,.doc,.docx" required
+                       class="w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 border border-gray-200 rounded-xl p-1.5 bg-gray-50">
+            </div>
+            
+            <div class="flex gap-2">
+                <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-xl font-semibold text-xs transition shadow-sm">
+                    Simpan Berkas
+                </button>
+                <button type="button" onclick="tutupModalUpload()" class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-xl font-semibold text-xs hover:bg-gray-300 transition">
+                    Batal
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
 function kirimDetailAnakPost(idAnak) {
     document.getElementById('idAnakDetailPost').value = idAnak;
     document.getElementById('formDetailAnakPost').submit();
+}
+
+function bukaModalUpload(idAnak, namaAnak, nikIbu) {
+    document.getElementById('idAnakModal').value = idAnak;
+    document.getElementById('namaAnakModal').innerText = namaAnak;
+    document.getElementById('nikIbuModal').value = nikIbu;
+    
+    const modal = document.getElementById('modalUpload');
+    const box = document.getElementById('modalBox');
+    
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        box.classList.remove('scale-95');
+    }, 20);
+}
+
+function tutupModalUpload() {
+    const modal = document.getElementById('modalUpload');
+    const box = document.getElementById('modalBox');
+    
+    modal.classList.add('opacity-0');
+    box.classList.add('scale-95');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 300);
 }
 </script>
 

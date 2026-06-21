@@ -22,9 +22,15 @@ define('UPLOAD_PATH', $_SERVER['DOCUMENT_ROOT'] . '/posyandu/uploads/');
 // Buat folder uploads jika belum ada
 if (!file_exists(UPLOAD_PATH)) {
     mkdir(UPLOAD_PATH, 0777, true);
+}
+
+if (!file_exists(UPLOAD_PATH . 'artikel/')) {
     mkdir(UPLOAD_PATH . 'artikel/', 0777, true);
 }
 
+if (!file_exists(UPLOAD_PATH . 'berkas_anak/')) {
+    mkdir(UPLOAD_PATH . 'berkas_anak/', 0777, true);
+}
 
 function isLoggedIn() {
     return isset($_SESSION['nik']);

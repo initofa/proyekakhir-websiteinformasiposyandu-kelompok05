@@ -10,6 +10,7 @@ $offset = ($page - 1) * $limit;
 $total = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM anak WHERE nik_ibu='$nik'"))['total'];
 $total_pages = ceil($total / $limit);
 
+// Pastikan query menarik seluruh kolom (a.*) agar field 'berkas' ikut terbawa
 $query_anak = "SELECT a.*, 
     ((SELECT COUNT(*) FROM pendaftaran_imunisasi WHERE id_anak = a.id_anak) + 
      (SELECT COUNT(*) FROM hasil_imunisasi WHERE id_pendaftaran IN (SELECT id_pendaftaran FROM pendaftaran_imunisasi WHERE id_anak = a.id_anak))) AS total_riwayat_imunisasi
@@ -42,60 +43,89 @@ include __DIR__ . '/../../templates/sidebar.php';
             
             $punya_imunisasi = ((int)$anak['total_riwayat_imunisasi'] > 0);
         ?>
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition">
-            <div class="bg-gradient-to-r from-green-600 to-emerald-500 p-4 text-white">
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center gap-2">
-                        <i class="fas fa-child text-xl"></i>
-                        <h3 class="text-lg font-bold"><?php echo htmlspecialchars($anak['nama_anak']); ?></h3>
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition flex flex-col justify-between">
+            <div>
+                <div class="bg-gradient-to-r from-green-600 to-emerald-500 p-4 text-white">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-child text-xl"></i>
+                            <h3 class="text-lg font-bold"><?php echo htmlspecialchars($anak['nama_anak']); ?></h3>
+                        </div>
+                        
+                        <div class="flex gap-2">
+                            <?php if(!$punya_imunisasi): ?>
+                                <button type="button" onclick="kirimAksiAnakPost('edit_anak.php', '<?php echo $anak['id_anak']; ?>')" class="text-white hover:text-green-200" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                
+                                <a href="hapus_anak.php?id=<?php echo $anak['id_anak']; ?>" 
+                                   onclick="confirmDelete(event, this.href)" 
+                                   class="text-white hover:text-red-200" 
+                                   title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                    
-                    <div class="flex gap-2">
-                        <?php if(!$punya_imunisasi): ?>
-                            <button type="button" onclick="kirimAksiAnakPost('edit_anak.php', '<?php echo $anak['id_anak']; ?>')" class="text-white hover:text-green-200" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            
-                            <a href="hapus_anak.php?id=<?php echo $anak['id_anak']; ?>" 
-                               onclick="confirmDelete(event, this.href)" 
-                               class="text-white hover:text-red-200" 
-                               title="Hapus">
-                                <i class="fas fa-trash"></i>
-                            </a>
+                </div>
+                <div class="p-4">
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-calendar w-4 text-green-500"></i>
+                            <span class="text-sm">Lahir: <?php echo date('d/m/Y', strtotime($anak['tanggal_lahir'])); ?></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-clock w-4 text-green-500"></i>
+                            <span class="text-sm">Usia: <?php echo $usia->y; ?> tahun <?php echo $usia->m; ?> bulan</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-venus-mars w-4 text-green-500"></i>
+                            <span class="text-sm"><?php echo $anak['jenis_kelamin'] == 'L' ? 'Laki-laki' : 'Perempuan'; ?></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-weight-scale w-4 text-green-500"></i>
+                            <span class="text-sm">Berat Lahir: <?php echo $anak['berat_lahir']; ?> kg</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-ruler w-4 text-green-500"></i>
+                            <span class="text-sm">Panjang Lahir: <?php echo $anak['panjang_lahir']; ?> cm</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-gray-100">
+                        <?php if(!empty($anak['berkas'])): 
+                            $file_ext = strtolower(pathinfo($anak['berkas'], PATHINFO_EXTENSION));
+                            $preview_url = "../../uploads/berkas_anak/" . $anak['berkas'];
+                            $is_word = in_array($file_ext, ['doc', 'docx']);
+                        ?>
+                            <div class="bg-green-50 border border-green-100 rounded-xl p-2.5 flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-check-circle text-green-500 text-sm"></i>
+                                    <span class="text-[11px] font-bold text-green-800">Berkas Terverifikasi</span>
+                                </div>
+                                <a href="<?php echo $preview_url; ?>" target="_blank" <?php echo $is_word ? 'download' : ''; ?>
+                                   class="bg-green-600 hover:bg-green-700 text-white px-2.5 py-1 rounded-lg text-[11px] font-semibold transition shadow-sm inline-flex items-center gap-1"
+                                   title="<?php echo $is_word ? 'Unduh Berkas Word' : 'Lihat Berkas PDF'; ?>">
+                                    <i class="fas <?php echo $is_word ? 'fa-file-word' : 'fa-file-invoice'; ?>"></i> Berkas
+                                </a>
+                            </div>
                         <?php else: ?>
+                            <div class="bg-gray-50 border border-gray-200 border-dashed rounded-xl p-2.5 text-center">
+                                <span class="text-[11px] text-gray-400 font-medium">
+                                    <i class="fas fa-info-circle mr-1"></i> Berkas belum divalidasi petugas
+                                </span>
+                            </div>
                         <?php endif; ?>
                     </div>
-                </div>
+                    </div>
             </div>
-            <div class="p-4">
-                <div class="space-y-2">
-                    <div class="flex items-center gap-2">
-                        <i class="fas fa-calendar w-4 text-green-500"></i>
-                        <span class="text-sm">Lahir: <?php echo date('d/m/Y', strtotime($anak['tanggal_lahir'])); ?></span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <i class="fas fa-clock w-4 text-green-500"></i>
-                        <span class="text-sm">Usia: <?php echo $usia->y; ?> tahun <?php echo $usia->m; ?> bulan</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <i class="fas fa-venus-mars w-4 text-green-500"></i>
-                        <span class="text-sm"><?php echo $anak['jenis_kelamin'] == 'L' ? 'Laki-laki' : 'Perempuan'; ?></span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <i class="fas fa-weight-scale w-4 text-green-500"></i>
-                        <span class="text-sm">Berat Lahir: <?php echo $anak['berat_lahir']; ?> kg</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <i class="fas fa-ruler w-4 text-green-500"></i>
-                        <span class="text-sm">Panjang Lahir: <?php echo $anak['panjang_lahir']; ?> cm</span>
-                    </div>
-                </div>
-                
-                <div class="flex gap-2 mt-4 pt-3 border-t">
-                    <button type="button" onclick="kirimAksiAnakPost('../perkembangan/index.php', '<?php echo $anak['id_anak']; ?>')" class="flex-1 text-center bg-green-600 text-white py-1 rounded-lg text-sm hover:bg-green-700 transition">
+
+            <div class="p-4 pt-0">
+                <div class="flex gap-2 mt-2 pt-3 border-t border-gray-100">
+                    <button type="button" onclick="kirimAksiAnakPost('../perkembangan/index.php', '<?php echo $anak['id_anak']; ?>')" class="flex-1 text-center bg-green-600 text-white py-1.5 rounded-lg text-sm hover:bg-green-700 transition">
                         <i class="fas fa-child mr-1"></i> Perkembangan
                     </button>
-                    <a href="../imunisasi/index.php" class="flex-1 text-center bg-blue-600 text-white py-1 rounded-lg text-sm hover:bg-blue-700 transition">
+                    <a href="../imunisasi/index.php" class="flex-1 text-center bg-blue-600 text-white py-1.5 rounded-lg text-sm hover:bg-blue-700 transition">
                         <i class="fas fa-syringe mr-1"></i> Daftar Imunisasi
                     </a>
                 </div>
